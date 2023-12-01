@@ -1,0 +1,440 @@
+/*
+mps.css
+*/
+
+body {
+    padding: 0;
+    margin: 0;
+}
+html, body, #mpsMap {
+    height: 100%;
+    width: 100vw;
+}
+
+#mpsMap {
+    z-index: 10;
+}
+.leaflet-container {
+    height: 400px;
+    width: 600px;
+    max-width: 100%;
+    max-height: 100%;
+}
+
+.leaflet-floating-button  {
+    display: block;
+    background-color: #fff;
+    background-position: 50% 50%;
+    font-size: 22px;
+    width: 30px;
+    height: 30px;
+    line-height: 30px;
+    text-align: center;
+    border: 2px solid rgba(0,0,0,0.2);
+    border-radius: 2px;
+}
+
+.marker1 {
+    fill-opacity: 0.7;
+    fill: #ff5ca8;
+    stroke-linejoin: bevel;
+    stroke-width: 1;
+    stroke: #555;
+    opacity: .6;
+}
+
+/*
+*
+*/
+
+
+#cnvAuthBox, #cnvUserBox {
+    position: absolute;
+    top: 12vh;
+    left: 0; 
+    right: 0;
+    margin: auto; 
+    width:80vw;
+    max-width: 600px;
+    padding:10px;
+    z-index: 5;
+    backdrop-filter: blur(10px);
+    border-radius: 12px;
+    border-style: double;
+    border-color: darkgray;
+}
+
+#cnvPlaceBox {
+    position: absolute;
+    top: 8vh;
+    left: 0; 
+    right: 0;
+    margin: auto; 
+    width:90vw;
+    max-width:550px;
+    padding:8px;
+    z-index: 5;
+    backdrop-filter: blur(10px);
+    border-radius: 12px;
+    border-style: double;
+    border-color: darkgray;
+/*
+    background: conic-gradient( #3edf4b0d, #3363ff0d, #b102b70d, #fd004c0d, #fd004c0d, #fe90000d, #fff0200d );
+*/
+}
+
+#mpsAuthentication, #mpsUser, #mpsPlace {
+}
+
+
+#blanket {
+    position:fixed;
+    width:100vw;
+    height:100vw;
+    z-index: 8;
+    background-color: white;
+}
+/* login form */
+
+.wrapper, wrapperPlace {
+    position: relative;
+    border-radius: 12px;
+    padding: 20px 30px 120px;
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+.form.login {
+    position: absolute;
+    left: 50%;
+    bottom: -86%;
+    transform: translateX(-50%);
+    width: calc(100% + 220px);
+    padding: 20px 140px;
+    border-radius: 50%;
+    height: 100%;
+    background: #fff;
+    transition: all 0.6s ease;
+    box-sizing: border-box;
+}
+
+.wrapper.active .form.login {
+    bottom: -15%;
+    border-radius: 35%;
+    box-shadow: 0 -5px 10px rgba(0, 0, 0, 0.1);
+}
+
+.form header, .profile header {
+    font-size: 30px;
+    text-shadow: 0px 0px 2px #444;
+    text-align: center;
+    color: #fff;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.form.login header {
+    color: #333;
+    opacity: 0.6;
+}
+
+.wrapper.active .form.login header {
+    opacity: 1;
+}
+
+.wrapper.active .signup header {
+    opacity: 0.6;
+}
+
+.wrapper form {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 40px;
+}
+
+.wrapperUser form input {
+    width: 100%;
+}
+
+.wrapperUser form {
+    padding: 0 15px;
+}
+
+form input, table {
+    height: 30px;
+    outline: none;
+    border: none;
+    padding: 0 15px;
+    font-size: 16px;
+    font-weight: 400;
+    color: #333;
+    border-radius: 8px;
+    background: #fff;
+}
+
+.profile table {
+    font-size: 12px;
+    margin: auto;
+    width: 90%;
+    margin-top: 1em;
+}
+
+.form.login input {
+    border: 1px solid #aaa;
+}
+
+.form.login input:focus {
+    box-shadow: 0 1px 0 #ddd;
+}
+
+form .checkbox {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.checkbox input[type="checkbox"] {
+    height: 16px;
+    width: 16px;
+    accent-color: #fff;
+    cursor: pointer;
+}
+
+form .checkbox label {
+    cursor: pointer;
+}
+
+form a {
+    color: #333;
+    text-decoration: none;
+}
+
+form a:hover {
+    text-decoration: underline;
+}
+
+form input[type="submit"] {
+    background: #4070f4;
+    color: #fff;
+    margin-top: 15px;
+    padding: none;
+    font-size: 18px;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.form.login input[type="submit"] {
+    border: none;
+}
+
+.loginMessage {
+    text-align: center;
+    color: rebeccapurple;
+    font-weight: bold;
+}
+
+.forgot {
+    text-align: center;
+    padding: 1em;
+}
+
+/*
+ * 
+ Tabs CSS for the main interaction
+ * 
+*/
+.tabset > input[type="radio"] {
+    position: absolute;
+    left: -200vw;
+}
+
+.tabset .tab-panel {
+    display: none;
+}
+
+.tabset > input:first-child:checked ~ .tab-panels > .tab-panel:first-child,
+.tabset > input:nth-child(3):checked ~ .tab-panels > .tab-panel:nth-child(2),
+.tabset > input:nth-child(5):checked ~ .tab-panels > .tab-panel:nth-child(3),
+.tabset > input:nth-child(7):checked ~ .tab-panels > .tab-panel:nth-child(4),
+.tabset > input:nth-child(9):checked ~ .tab-panels > .tab-panel:nth-child(5),
+.tabset > input:nth-child(11):checked ~ .tab-panels > .tab-panel:nth-child(6),
+.tabset > input:nth-child(13):checked ~ .tab-panels > .tab-panel:nth-child(7) {
+    display: block;
+}
+
+/*
+ Styling
+*/
+
+
+.tabset > label {
+    position: relative;
+    display: inline-block;
+    padding: 12px;
+    border: 2px solid transparent;
+    border-bottom: 0;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+/*
+.tabset > label::after {
+    content: "";
+    position: absolute;
+    left: 15px;
+    bottom: 10px;
+    width: 22px;
+    height: 4px;
+    background: #8d8d8d;
+}
+*/
+
+input:focus-visible + label {
+    outline: 2px solid rgba(0,102,204,1);
+    border-radius: 3px;
+}
+
+.tabset > label:hover,
+.tabset > input:focus + label,
+.tabset > input:checked + label {
+    color: #46739f;
+}
+
+.tab-panels {
+    height: 70vh;
+    overflow-y: auto;
+}
+
+/*
+.tabset > label:hover::after,
+.tabset > input:focus + label::after,
+.tabset > input:checked + label::after {
+    background: #06c;
+}
+*/
+
+.tabset > input:checked + label {
+    border-color: #ccc;
+    border-bottom: 1px solid #fff;
+    margin-bottom: -1px;
+    border-radius: 8px 8px 0px 0px;
+    backdrop-filter: blur(20px);
+    background-color: rgba(76, 76, 76, 0.1);
+}
+
+.tab-panel {
+    padding: 30px 0;
+    border-top: 2px solid #ccc;
+    border-radius: 0px 0px 8px 8px;
+    backdrop-filter: blur(20px);
+    padding: 8px;
+}
+
+.user-messages {
+    margin: 2em;
+}
+
+hr {
+    margin: 2em;
+}
+
+.pell-content {
+    height: 50vh;
+}
+
+.pell-content img {
+    width: 90%;
+}
+
+/*
+ * Spazi meta
+*/
+
+.spazi-meta {
+    margin: 0.5em;
+    text-align: right;
+}
+
+.spazi-meta input {
+    float: right;
+    width: 100%;
+    background: none;
+    border-width: 1px;
+    margin: 0.5em;
+}
+
+#spazi-name {
+    width: 100%;
+    background: none;
+    border:none;
+    display:block;
+    font-size: 30px;
+    text-shadow: 0px 0px 2px #444;
+    text-align: center;
+    color: #fff;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.spazi-meta label {
+    margin: 0.5em;
+}
+
+textarea:disabled {
+    color: rgb(25,25,25);
+}
+
+
+/*
+ * spazi foto
+*/
+
+.spazi-foto img {
+    width: 100%;
+    margin-bottom: 0.5em;
+}
+
+.spazi-foto input {
+    display: block;
+    margin: -3em 0.5em 0.5em 0.5em;
+    background: none;
+    border-radius: 6px;
+}
+
+.spazi-foto textarea {
+    background: none;
+    border-radius: 6px;
+    width: 98%;
+}
+
+
+#spazi-fairness_description {
+    width: 98%;
+    background: none;
+    border-radius: 6px;
+}
+
+#spazi-status,
+#spazi-use,
+#spazi-accessibility,
+#spazi-interviews,
+#spazi-participation {
+    width: 98%;
+    height: 50vh;
+    background: none;
+    border-radius: 6px;
+}
+
+.field-select {
+    margin: 1em 0 1em;
+}
+
+fieldset label {
+    margin-right: 2em;
+}
+
+fieldset span {
+    display: inline-table;
+    margin: 0.10em;
+}
