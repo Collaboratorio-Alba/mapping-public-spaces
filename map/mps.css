@@ -47,6 +47,12 @@ html, body, #mpsMap {
 *
 */
 
+#collapse {
+    font-size: 32px;
+    float: right;
+    margin-top: -10px;
+    cursor: ns-resize;
+}
 
 #cnvAuthBox, #cnvUserBox {
     position: absolute;
@@ -365,7 +371,7 @@ hr {
 }
 
 #spazi-name {
-    width: 100%;
+    width: 90%;
     background: none;
     border:none;
     display:block;

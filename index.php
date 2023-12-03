@@ -4,8 +4,11 @@
     <meta charset="utf-8" name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
 	<title>Public or vacant spaces map</title>
     <link rel="icon" href="favicon.png">
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
+    <script src="map/alg.js"></script>
+
+    <link rel="stylesheet" type="text/css" href="vendor/leaflet.css">
+    <script src="vendor/leaflet.js"></script>
     <script src=" https://cdn.jsdelivr.net/npm/regenerator-runtime@0.13.11/runtime.min.js "></script>
     <link rel="stylesheet" href="map/MarkerCluster.css">
     <link rel="stylesheet" href="map/MarkerCluster.Default.css">
@@ -15,6 +18,7 @@
     <link rel="stylesheet" type="text/css" href="vendor/pell.min.css">
     <link rel="stylesheet" type="text/css" href="map/mps.css">
     <link rel="stylesheet" type="text/css" href="map/radial-octoslider-monstruosity.css">
+    
     <script src="map/mps.js"></script>
 </head>
 <body>
@@ -22,7 +26,9 @@
 <div id="cnvPlaceBox">
     <section class="wrapperPlace">
         <div class="profile" id="mpsPlace">
+            <div id="collapse" class="dropdown-content">&#9776;</div>
             <input type="text" class="form-control ui" name="spazi-name" id="spazi-name" onfocusout="onUpdateDatafields(event)">
+            
             <div class="tabset">
               <!-- Tab 1 -->
               <input type="radio" name="tabset" id="tab1" aria-controls="funzione" checked>
@@ -172,7 +178,7 @@
   
               </section>
                 <section id="uso" class="tab-panel">
-                  <h2>Uso, condizioni, cenni storici</h2>
+                  <h2>Uso, storia, prospettive</h2>
                   <div class="field-select">
                     <label for="spazi-lifecycle_status" class="spazi-meta-label">stato attuale: </label>
                     <select class="form-control ui" name="spazi-lifecycle_status" id="spazi-lifecycle_status" onfocusout="onUpdateDatafields(event)">
@@ -420,7 +426,8 @@
                     <div class="spazi-meta form-group">
                         <p><a id="spazi-linkOSM" href="#" target="_blank">Apri su Openstreetmap</a></p>
                         <p><a id="spazi-linkURI" href="#" target="_blank">Dati in formato JSON</a></p>
-                        <p><a id="spazi-linkPP" href="#" target="_blank">Partecipa con la comunità a ridefinire l'uso di questo spazio!</a></p>
+                        <p><a id="spazi-linkPDF" href="#" target="_blank">Dati in formato PDF</a></p>
+                        <p><a id="spazi-linkPP" href="#" target="_blank">Partecipa con la comunità per ridefinire l'uso di questo spazio!</a></p>
                     </div>
                 </div>
                 </section>

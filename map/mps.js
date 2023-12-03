@@ -6,8 +6,9 @@ const ways_data_file = "/data/nodes.json";
 var ways_data_ntts = {};
 var me;
 var mpsMap;
-var activeMarker;
+var activeMarker = null;
 var editorP;
+const pedonalDistance15 = 1250; // @ 5km/h , t=15min. Distance of a 15 minute walk
 const jcaconfigHeaders = {headers : {
     'Access-Control-Allow-Origin':'*',
     'Access-Control-Allow-Methods':'GET, POST, PUT, DELETE, PATCH, OPTIONS',
@@ -15,6 +16,7 @@ const jcaconfigHeaders = {headers : {
 const jca=jscrudapi(api_url);
 //markerCluster plugin
 var markers = L.markerClusterGroup();
+var nears = L.markerClusterGroup();
 var panels_hidden = true;
 let mapOptions = {
         preferCanvas: true,
@@ -67,9 +69,9 @@ function initMap() {
         maxZoom: 19,
         attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, <a href="mailto:ssh8lt5kr@mozmail.com?subject=segnalazione%20problema%20del%20sito%20collab.42web.io&body=Mentre%20usavo%20il%20sito%20ho%20riscontrato%20questo%20problema%3A%0A%0A%C3%A8%20successo%20mentre%20stavo...%0A%0Asto%20navigando%20da%3A%20telefono%2Fcomputer%0A%0Acon%20il%20browser%3A%20%0A">Segnala</a> un problema.'
     }).addTo(mpsMap);
-    loadJson(ways_data_file, ways_data_ntts);
     mpsMap.on('click', mapClick);
     mpsMap.addLayer(markers);
+    mpsMap.addLayer(nears);
     loadSpaces();
     mpsMap.on("click", allToBackground);
     const scale = L.control.scale().addTo(mpsMap);
@@ -113,7 +115,12 @@ function mapClick(e) {
         }
     } else {
         allToBackground();
-        activeMarker = null;
+        if (activeMarker !== null) {
+            nears.removeLayer(activeMarker.livedata.near);
+            nears.removeLayer(activeMarker.livedata.nearLine);
+            nears.removeLayer(activeMarker.livedata.isochrone);
+            activeMarker = null;
+        }
     }
 }
 
@@ -134,10 +141,34 @@ async function addPlace(latlng,data) {
         let nn = nearest_node_ID(latlng);
         mar.livedata.nearest_node_ID = nn[0];
         mar.livedata.nearest_node_dst = nn[1];
+        let coordsNear = ways_data_ntts[mar.livedata.nearest_node_ID].slice(0, 2);
+        let isodista = findIsodistancePolyline(ways_data_ntts, mar.livedata.nearest_node_ID, pedonalDistance15, mar.livedata.nearest_node_dst);
+        let convh = findConvexHull(isodista);
+        mar.livedata.isochrone = L.polygon(convh);
+        mar.livedata.near = L.circleMarker(coordsNear,{radius:5});
+        mar.livedata.nearLine = L.polyline([coordsNear,latlng]);
+
         mar.on('dragend', function(event){
             var marker = event.target;
+            if (me === null) {
+                marker.setLatLng([marker.data.latitude,marker.data.longitude],{draggable:'false'}).update();
+                return
+            };
             var position = marker.getLatLng();
             marker.setLatLng(position,{draggable:'true'}).update();
+            let nn = nearest_node_ID([position.lat,position.lng]);
+            marker.livedata.nearest_node_ID = nn[0];
+            marker.livedata.nearest_node_dst = nn[1];
+            let coordsNear = ways_data_ntts[marker.livedata.nearest_node_ID].slice(0, 2);
+            let isodista = findIsodistancePolyline(ways_data_ntts,marker.livedata.nearest_node_ID,pedonalDistance15,marker.livedata.nearest_node_dst);
+            let convh = findConvexHull(isodista);
+            nears.removeLayer(marker.livedata.isochrone);
+            marker.livedata.isochrone = L.polygon(convh);
+            marker.livedata.near.setLatLng(coordsNear);
+            nears.removeLayer(marker.livedata.nearLine);
+            marker.livedata.nearLine = L.polyline([coordsNear,position]);
+            nears.addLayer(marker.livedata.nearLine);
+            nears.addLayer(marker.livedata.isochrone);
             // update record
             updatePlace(mar, {latitude: position.lat,
                  longitude: position.lng});
@@ -164,9 +195,17 @@ function createNewSpace(latlng, named) {
 
 //marker interaction
 function onMarkerClick(e) {
+    if (activeMarker !== null) {
+        nears.removeLayer(activeMarker.livedata.near);
+        nears.removeLayer(activeMarker.livedata.nearLine);
+        nears.removeLayer(activeMarker.livedata.isochrone);
+    }
     activeMarker = this;
     placeToForeground(this.data);
     // here calculate, save and visualize spatial statistics.
+    nears.addLayer(activeMarker.livedata.near);
+    nears.addLayer(activeMarker.livedata.nearLine);
+    nears.addLayer(activeMarker.livedata.isochrone);
 }
 
 function toggleUserPanel() {
@@ -180,7 +219,15 @@ function toggleUserPanel() {
         };
     } else {
         allToBackground();
-    }
+    };
+}
+
+function toggleTabPanels() {
+    if (document.getElementsByClassName("tab-panels")[0].style.height == "0vh") {
+        document.getElementsByClassName("tab-panels")[0].style.height = "70vh";
+    } else {
+        document.getElementsByClassName("tab-panels")[0].style.height = "0vh";
+    };
 }
 
 function loginError(e) {
@@ -204,6 +251,11 @@ function setMe(dati) {
     }
     document.getElementsByClassName("pell-content")[0].setAttribute('contenteditable',"true");
     document.getElementsByClassName("pell-actionbar")[0].style.display = 'block';
+    markers.eachLayer(function (l) {
+        if (l.hasOwnProperty("dragging")){
+            l.dragging.enable();
+        }
+    });
     allToBackground();
 }
 
@@ -219,6 +271,11 @@ function unsetMe() {
     }
     document.getElementsByClassName("pell-content")[0].setAttribute('contenteditable',"false");
     document.getElementsByClassName("pell-actionbar")[0].style.display = 'none';
+    markers.eachLayer(function (l) {
+        if (l.hasOwnProperty("dragging")){
+            l.dragging.disable();
+        }
+    });
     allToBackground();
 }
 
@@ -278,6 +335,8 @@ function fillPlaceFields(data) {
     document.getElementById("spazi-linkURI").setAttribute('href', URIURL);
     let linkPP = data.participatory_process_link;
     document.getElementById("spazi-linkPP").setAttribute('href', linkPP);
+    let linkPDF = "ptopdf.php?id=" + data.id;
+    document.getElementById("spazi-linkPDF").setAttribute('href', linkPDF);
     redrawOctosliderCanvas();
 }
 
@@ -392,85 +451,6 @@ function postImage(event) {
     );
 }
 
-// avoiding Dealunay tessellation, finds the nearest node
-function nearest_node_ID(latlon) {
-    let verts = adaptive_filter_bbox(latlon);
-    let min = Number.POSITIVE_INFINITY;
-    let minID = 0;
-    for (let key in verts) {
-        let d12 = dist2({x:verts[key][0],y:verts[key][1]}, {x:latlon[0],y:latlon[1]})
-        if (d12 < min) {
-            min = d12;
-            minID = key;
-        }
-    }
-    let hdist = haversineDistance(latlon, ways_data_ntts[minID]);
-    return [minID, hdist];
-}
-
-// 
-function haversineDistance(coords1, coords2) {
-    function toRad(x) {
-        return x * Math.PI / 180;
-    }
-    
-    var lon1 = coords1[0];
-    var lat1 = coords1[1];
-
-    var lon2 = coords2[0];
-    var lat2 = coords2[1];
-    
-    var R = 6371; // km
-    
-    var x1 = lat2 - lat1;
-    var dLat = toRad(x1);
-    var x2 = lon2 - lon1;
-    var dLon = toRad(x2)
-    var a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-    Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) *
-    Math.sin(dLon / 2) * Math.sin(dLon / 2);
-    var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-    var d = R * c * 1000;
-    
-    return d.toFixed(2); //meters
-}
-
-// try to limit the number of nodes based on distance, it returns as soon as it finds some node
-function adaptive_filter_bbox(latlon) {
-    var n_filt = {};
-    let xspan = 0.0005;
-    let yspan = 0.00065;
-    while (Object.keys(n_filt).length == 0) {
-        n_filt = filter_bbox(ways_data_ntts,latlon,xspan,yspan);
-        xspan += 0.0005;
-        yspan += 0.00065;
-    }
-    return n_filt;
-}
-
-// Functiion to filter points inside a bounding box square centered at a point
-function filter_bbox(dct, pnt, extentx, extenty) {
-    let pmin = {x:(pnt[0] - extentx), y:(pnt[1] - extenty)};
-    let pmax = {x:(pnt[0] + extentx), y:(pnt[1] + extenty)};
-    //return Object.assign({},Object.entries(dct).filter(([k,el]) => el[0] > pmin.x && el[0] < pmax.x && el[1] > pmin.y && el[1] < pmax.y).map(([k,v]) => ({[k]:v})));
-    return Object.assign({}, ... Object.entries(ways_data_ntts).filter((en) => en[1][0] > pmin.x && en[1][0] < pmax.x && en[1][1] > pmin.y && en[1][1] < pmax.y).map(([k,v]) => ({[k]:v})))
-}
-
-function sqr(x) { return x * x }
-function dist2(v, w) { return sqr(v.x - w.x) + sqr(v.y - w.y) }
-// Function to return the minimum distance
-// between a line segment AB and a point E
-function distToSegmentSquared(p, v, w) {
-  var l2 = dist2(v, w);
-  if (l2 == 0) return dist2(p, v);
-  var t = ((p.x - v.x) * (w.x - v.x) + (p.y - v.y) * (w.y - v.y)) / l2;
-  t = Math.max(0, Math.min(1, t));
-  return dist2(p, { x: v.x + t * (w.x - v.x),
-                    y: v.y + t * (w.y - v.y) });
-}
-function distToSegment(p, v, w) { return Math.sqrt(distToSegmentSquared(p, v, w)); }
-
-
 // radial octoslider monstruosity
 const positions = [
     [[265,170],[300,155],[333,140],[373,123]],
@@ -546,6 +526,7 @@ function setOctosliderCanvas(event) {
 
 //initialize events in window.onload
 function todoOnload() {
+    loadJson(ways_data_file, ways_data_ntts);
     let sldr = document.getElementsByClassName("octoslider");
     for (let i = 0; i < sldr.length; i++){
         sldr[i].addEventListener('pointerup', function(e) {
@@ -564,6 +545,15 @@ function todoOnload() {
         sldrlbl[i].addEventListener('pointerdown', e => setOctoMiniature(e, true));
     }
     
+    document.getElementById("collapse").addEventListener('pointerdown', function(e) {
+            toggleTabPanels();
+        });
+    
+    let tabs = document.getElementsByName("tabset");
+    for (let i = 0; i < tabs.length; i++){
+        tabs[i].nextElementSibling.addEventListener('pointerdown', function(e) {document.getElementsByClassName("tab-panels")[0].style.height = "70vh";});
+    }
+    
     document.register.addEventListener('submit', async event => {
         event.preventDefault();
         
@@ -580,7 +570,6 @@ function todoOnload() {
           },
         );
         const resData = await res.json();
-        console.log(resData);
         } catch (err) {
         console.log(err.message);
         }
@@ -601,11 +590,10 @@ function todoOnload() {
     
     document.logout.addEventListener('submit', async event => {
         event.preventDefault();
-        jca.logout().then(
-            unsetMe()
-        ).catch (
+        jca.logout().catch (
             error=>console.log(error)
         );
+        unsetMe();
     });
     
     editorP = window.pell.init({
