@@ -66,6 +66,7 @@
                         <option value="cura">cura</option>
                         <option value="contemplazione">contemplazione</option>
                         <option value="attivismo">attivismo</option>
+                        <option value="educazione">educazione</option>
                     </select>
                   </div>
                   <div class="field-select">
