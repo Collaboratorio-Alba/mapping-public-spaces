@@ -362,9 +362,16 @@ hr {
     text-align: right;
 }
 
+.field-select input {
+    float: right;
+    width: 5em;
+    background: none;
+    border-width: 1px;
+}
+
 .spazi-meta input {
     float: right;
-    width: 100%;
+    width: 90%;
     background: none;
     border-width: 1px;
     margin: 0.5em;

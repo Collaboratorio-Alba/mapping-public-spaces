@@ -54,6 +54,41 @@
               <div class="tab-panels">
                 <section id="funzione" class="tab-panel">
                   <h2>Funzione, caratteristiche</h2>
+                  <!-- tipo sottotipo -->
+                  <div class="field-select">
+                    <label for="spazi-vocation" class="spazi-meta-label">vocazione del luogo: </label>
+                    <select class="form-control ui" name="spazi-vocation" id="spazi-vocation" onfocusout="onUpdateDatafields(event)">
+                        <option value="nessuno">nessuna</option>
+                        <option value="movimento">movimento</option>
+                        <option value="natura">natura</option>
+                        <option value="creatività">creatività</option>
+                        <option value="comunità">comunità</option>
+                        <option value="cura">cura</option>
+                        <option value="contemplazione">contemplazione</option>
+                        <option value="attivismo">attivismo</option>
+                    </select>
+                  </div>
+                  <div class="field-select">
+                    <label for="spazi-type" class="spazi-meta-label">tipologia: </label>
+                    <select class="form-control ui" name="spazi-type" id="spazi-type" onfocusout="onUpdateDatafields(event)">
+                        <option value="nessuna">nessuna</option>
+                        <option value="scuola">scuola</option>
+                        <option value="parrocchia">parrocchia</option>
+                        <option value="biblioteca">biblioteca</option>
+                        <option value="museo">museo</option>
+                        <option value="centro_culturale">centro culturale</option>
+                        <option value="centro_volontariato">centro di volontariato</option>
+                        <option value="centro_sportivo">centro sportivo</option>
+                        <option value="centro_sociale">centro sociale</option>
+                        <option value="centro_giovani">centro giovani</option>
+                        <option value="centro_anziani">centro anziani</option>
+                        <option value="parco">parco</option>
+                        <option value="piazza">piazza pedonale</option>
+                        <option value="piazza">piazza a parcheggi</option>
+                        <option value="altro">altro</option>
+                        
+                    </select>
+                  </div>
                   <!-- Rich text editor Pell -->
                   <div id="editor" class="pell"></div>
                   <!-- risorse -->
@@ -220,6 +255,18 @@
                         <option value="residenti">residenti</option>
                     </select>
                   </div>
+                  <div class="field-select">
+                        <label for="spazi-attendees_yearly" class="spazi-meta-label">frequentatori abituali su base annua:
+                        <input type="number" min="0" max="30000" value="0" class="form-control ui" id="spazi-attendees_yearly" onfocusout="onUpdateDatafields(event)"></label>
+                  </div>    
+                  <div class="field-select">
+                        <label for="spazi-attendee_min_age" class="spazi-meta-label">età minima tipica per i destinatari/frequentatori abituali:
+                        <input type="number" min="0" max="100" value="0" class="form-control ui" id="spazi-attendee_min_age" onfocusout="onUpdateDatafields(event)"></label>
+                  </div>
+                  <div class="field-select">
+                        <label for="spazi-attendee_max_age" class="spazi-meta-label">età massima tipica per i destinatari/frequentatori abituali:
+                        <input type="number" min="0" max="100" value="0" class="form-control ui" id="spazi-attendee_max_age" onfocusout="onUpdateDatafields(event)"></label>
+                  </div>  
                   <label for="spazi-accessibility" class="spazi-meta-label">considerazioni</label>
                   <textarea rows="8" cols="38" class="form-control ui" name="spazi-accessibility" id="spazi-accessibility" onfocusout="onUpdateDatafields(event)"></textarea>
                   <!-- equità -->
@@ -342,6 +389,9 @@
                   <h2>Colloqui, discussioni, interviste</h2>
                   <label for="spazi-interviews" class="spazi-meta-label">resoconti</label>
                   <textarea rows="8" cols="38" class="form-control ui" name="spazi-interviews" id="spazi-interviews" onfocusout="onUpdateDatafields(event)"></textarea>
+                  <div class="spazi-meta form-group">
+                        <p><a id="spazi-linkPP" href="#" target="_blank">Partecipa con la comunità per ridefinire l'uso di questo spazio!</a></p>
+                  </div>
                 </section>
                 <section id="foto" class="tab-panel">
                   <h2>Fotografie</h2>
@@ -427,7 +477,6 @@
                         <p><a id="spazi-linkOSM" href="#" target="_blank">Apri su Openstreetmap</a></p>
                         <p><a id="spazi-linkURI" href="#" target="_blank">Dati in formato JSON</a></p>
                         <p><a id="spazi-linkPDF" href="#" target="_blank">Dati in formato PDF</a></p>
-                        <p><a id="spazi-linkPP" href="#" target="_blank">Partecipa con la comunità per ridefinire l'uso di questo spazio!</a></p>
                     </div>
                 </div>
                 </section>

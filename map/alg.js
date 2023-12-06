@@ -120,26 +120,29 @@ function findIsodistancePolyline(dictionary, nodeId, distance, currentDist) {
     if (!dictionary.hasOwnProperty(nodeId)) {
         throw new Error("Node id does not exist in the dictionary.");
     }
+    
+    const distance15 = distance;
+    const distance10 = distance*2/3;
+    const distance5 = distance/3;
 
     // Get the latitude and longitude of the starting node
     const startNode = dictionary[nodeId];
     const startLat = startNode[0];
     const startLng = startNode[1];
 
-    // Initialize an array to store the coordinates of the isodistance polyline
-    const polylineCoordinates = [[startLat, startLng]];
+    // Initialize an array to store the coordinates of the isodistance polyline <5,<10,<15min
+    const polylineCoordinates = [[[startLat, startLng]],[[startLat, startLng]],[[startLat, startLng]]];
     
     // for each visited node, store the distance reached, starting with the max_distance. if another path allows to cross the node with a lower distance, try it and update the distance for that node, otherwise skip the path.
     const visitedNodes = {};
     for (let n in dictionary) {
-        visitedNodes[n] = distance;
+        visitedNodes[n] = distance15;
     };
 
     // Recursive function to find the coordinates of the isodistance polyline
     function findCoordinates(currentNodeId, currentDistance) {
         // Check if the current distance is greater than or equal to the desired distance
-        if (currentDistance > distance) {
-            console.log(currentDistance);
+        if (currentDistance > distance15) {
             return;
         }
 
@@ -153,10 +156,19 @@ function findIsodistancePolyline(dictionary, nodeId, distance, currentDist) {
             
             let newDistance = currentDistance + connectedDistance;
             // Check if the connected distance is within the desired range
-            if (newDistance <= distance) {
+            
+            if (newDistance <= distance15) {
+                var arrayAddress = 0;
+                // choose the array for the appropriate range
+                if (newDistance >= distance10) {
+                    arrayAddress = 2;
+                } else if (newDistance >= distance5) {
+                    arrayAddress = 1;
+                }
+                
                 // Add the coordinates of the connected node to the polyline
                 // Check if the connected node is already included in the polyline
-                if (polylineCoordinates.some(coord => coord[0] === dictionary[connectedNodeId][0] && coord[1] === dictionary[connectedNodeId][1])) {
+                if (polylineCoordinates[arrayAddress].some(coord => coord[0] === dictionary[connectedNodeId][0] && coord[1] === dictionary[connectedNodeId][1])) {
                     if (visitedNodes[connectedNodeId] > newDistance) {
                         visitedNodes[connectedNodeId] = newDistance;
                         findCoordinates(connectedNodeId, newDistance);
@@ -164,11 +176,11 @@ function findIsodistancePolyline(dictionary, nodeId, distance, currentDist) {
                     continue;
                     };
                 } else {
-                    polylineCoordinates.push([dictionary[connectedNodeId][0], dictionary[connectedNodeId][1]]);
+                    polylineCoordinates[arrayAddress].push([dictionary[connectedNodeId][0], dictionary[connectedNodeId][1]]);
                     // Recursively find the coordinates of the connected node
                     findCoordinates(connectedNodeId, newDistance);
                 }
-            }
+            } //TODO: also calculate the remaining part of a segment crossing the limit and stop propagation.
         }
     }
 

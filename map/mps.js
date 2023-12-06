@@ -116,63 +116,84 @@ function mapClick(e) {
     } else {
         allToBackground();
         if (activeMarker !== null) {
-            nears.removeLayer(activeMarker.livedata.near);
-            nears.removeLayer(activeMarker.livedata.nearLine);
-            nears.removeLayer(activeMarker.livedata.isochrone);
+            nears.clearLayers();
             activeMarker = null;
         }
     }
 }
 
+// draw but do not show
+function drawIsochrone(marker) {
+    const latlng = [marker.data.latitude,marker.data.longitude];
+    let nn = nearest_node_ID(latlng);
+    var update = false;
+    // use nn to detect missing data or moved node
+    if (nn[0] != marker.data.nearest_node_ID) {
+        marker.data.nearest_node_ID = nn[0];
+        marker.data.nearest_node_dst = nn[1];
+        let isodista = findIsodistancePolyline(ways_data_ntts,marker.data.nearest_node_ID,pedonalDistance15,marker.data.nearest_node_dst);
+        marker.data.isochrone15_latlngs = findConvexHull(isodista[2]);
+        marker.data.isochrone10_latlngs = findConvexHull(isodista[1]);
+        marker.data.isochrone5_latlngs = findConvexHull(isodista[0]);
+        update = true;
+    }
+    marker.viewdata = {};
+    let coordsNear = ways_data_ntts[marker.data.nearest_node_ID].slice(0, 2);
+    marker.viewdata.isochrone5 = L.polygon(marker.data.isochrone5_latlngs,{weight:1}).bindTooltip("5 minuti a piedi");
+    marker.viewdata.isochrone10 = L.polygon(marker.data.isochrone10_latlngs,{weight:1}).bindTooltip("10 minuti a piedi");
+    marker.viewdata.isochrone15 = L.polygon(marker.data.isochrone15_latlngs,{weight:1}).bindTooltip("15 minuti a piedi");
+    marker.viewdata.nearLine = L.polyline([coordsNear,latlng]);
+    marker.viewdata.near = L.circleMarker(coordsNear,{radius:5});
+    return update;
+}
+
 async function addPlace(latlng,data) {
         var mar = L.marker(latlng,{draggable: 'true'}).on('click', onMarkerClick);
+        // if creating new space
         if (typeof(data) === "string") {
             data = await createNewSpace(latlng, data)
             // reload from db
             jca.read('spaces', data
             ).then(function(resp){
                 mar.data = resp;
-            });            
+                drawIsochrone(mar);
+            });   
+        // else loading space
         } else {
             mar.data = data;
+            // unserialize
+            mar.data.latitude = parseFloat(mar.data.latitude);
+            mar.data.longitude = parseFloat(mar.data.longitude);
+            mar.data.isochrone5_latlngs = JSON.parse(data.isochrone5_latlngs);
+            mar.data.isochrone10_latlngs = JSON.parse(data.isochrone10_latlngs);
+            mar.data.isochrone15_latlngs = JSON.parse(data.isochrone15_latlngs);
+            drawIsochrone(mar);
         }
-        mar.livedata = {};
         // add nearest node features to mar.data
-        let nn = nearest_node_ID(latlng);
-        mar.livedata.nearest_node_ID = nn[0];
-        mar.livedata.nearest_node_dst = nn[1];
-        let coordsNear = ways_data_ntts[mar.livedata.nearest_node_ID].slice(0, 2);
-        let isodista = findIsodistancePolyline(ways_data_ntts, mar.livedata.nearest_node_ID, pedonalDistance15, mar.livedata.nearest_node_dst);
-        let convh = findConvexHull(isodista);
-        mar.livedata.isochrone = L.polygon(convh);
-        mar.livedata.near = L.circleMarker(coordsNear,{radius:5});
-        mar.livedata.nearLine = L.polyline([coordsNear,latlng]);
-
         mar.on('dragend', function(event){
             var marker = event.target;
             if (me === null) {
                 marker.setLatLng([marker.data.latitude,marker.data.longitude],{draggable:'false'}).update();
                 return
             };
-            var position = marker.getLatLng();
+            const position = marker.getLatLng();
             marker.setLatLng(position,{draggable:'true'}).update();
-            let nn = nearest_node_ID([position.lat,position.lng]);
-            marker.livedata.nearest_node_ID = nn[0];
-            marker.livedata.nearest_node_dst = nn[1];
-            let coordsNear = ways_data_ntts[marker.livedata.nearest_node_ID].slice(0, 2);
-            let isodista = findIsodistancePolyline(ways_data_ntts,marker.livedata.nearest_node_ID,pedonalDistance15,marker.livedata.nearest_node_dst);
-            let convh = findConvexHull(isodista);
-            nears.removeLayer(marker.livedata.isochrone);
-            marker.livedata.isochrone = L.polygon(convh);
-            marker.livedata.near.setLatLng(coordsNear);
-            nears.removeLayer(marker.livedata.nearLine);
-            marker.livedata.nearLine = L.polyline([coordsNear,position]);
-            nears.addLayer(marker.livedata.nearLine);
-            nears.addLayer(marker.livedata.isochrone);
+            marker.data.latitude = position.lat;
+            marker.data.longitude = position.lng;
+            nears.clearLayers();
+            let update = drawIsochrone(marker);
+            drawViewdata(marker);
             // update record
-            updatePlace(mar, {latitude: position.lat,
-                 longitude: position.lng});
-    });
+            if (update) {
+                updatePlace(mar, {latitude: position.lat,
+                longitude: position.lng,
+                nearest_node_ID: marker.data.nearest_node_ID,
+                nearest_node_dst: marker.data.nearest_node_dst,
+                isochrone15_latlngs: JSON.stringify(marker.data.isochrone15_latlngs),
+                isochrone10_latlngs: JSON.stringify(marker.data.isochrone10_latlngs),
+                isochrone5_latlngs: JSON.stringify(marker.data.isochrone5_latlngs)});
+            };
+        });
         markers.addLayer(mar);     
 }
 
@@ -193,19 +214,23 @@ function createNewSpace(latlng, named) {
     );
 }
 
+function drawViewdata(marker) {
+    nears.addLayer(marker.viewdata.near);
+    nears.addLayer(marker.viewdata.nearLine);
+    nears.addLayer(marker.viewdata.isochrone15);
+    nears.addLayer(marker.viewdata.isochrone10);
+    nears.addLayer(marker.viewdata.isochrone5);    
+}
+
 //marker interaction
 function onMarkerClick(e) {
     if (activeMarker !== null) {
-        nears.removeLayer(activeMarker.livedata.near);
-        nears.removeLayer(activeMarker.livedata.nearLine);
-        nears.removeLayer(activeMarker.livedata.isochrone);
+        nears.clearLayers();
     }
     activeMarker = this;
     placeToForeground(this.data);
     // here calculate, save and visualize spatial statistics.
-    nears.addLayer(activeMarker.livedata.near);
-    nears.addLayer(activeMarker.livedata.nearLine);
-    nears.addLayer(activeMarker.livedata.isochrone);
+    drawViewdata(activeMarker);
 }
 
 function toggleUserPanel() {
@@ -347,6 +372,13 @@ function parseISOString(s) {
 
 function updatePlace(marker, dataDict) {
     var datetimeNow = new Date();
+    //check if datetime_last_edited is not null (to prevent errors of data coming from imports).
+    if (marker.data.datetime_last_edited == null) {
+        marker.data.datetime_last_edited = datetimeNow.toISOString();
+    }
+    if (marker.data.edited_by == null) {
+        marker.data.edited_by = '';
+    }
     let lastUpDate = parseISOString(marker.data.datetime_last_edited)
     let ms = lastUpDate.getTime() + 86400000;
     let datetimeNewVersion = new Date(ms); // change version number only once per day
