@@ -228,7 +228,7 @@ function recomputeDistances (marker, nearNode) {
   marker.data.isochrone10_latlngs = findConvexHull(isodista[1])
   marker.data.isochrone5_latlngs = findConvexHull(isodista[0])
   // isodista[3] is a dict of places found while traversing, and their distance. Use them to save relevant information.
-  extractSpatialData (isodista[3], marker)
+  extractSpatialData(isodista[3], marker)
   const areas51015 = areaOfPolygons([marker.data.isochrone5_latlngs, marker.data.isochrone10_latlngs, marker.data.isochrone15_latlngs])
   marker.data.isochrone_area5 = parseInt(areas51015[0])
   marker.data.isochrone_area10 = parseInt(areas51015[1])
@@ -249,17 +249,17 @@ function extractSpatialData (srcMarkerList, dstMarker) {
     const distance = element[1]
     if (['scuola_k', 'scuola_p', 'scuola_m', 'scuola_h'].includes(ma.data.type)) {
       let distanceSuffix
-      if (distance > pedonalDistance10) {
+      if ((distance > pedonalDistance10) && (distance < pedonalDistance15)) {
         distanceSuffix = '_15_m_walk'
-      } else if (distance > pedonalDistance5) {
+      } else if ((distance > pedonalDistance5) && (distance < pedonalDistance10)) {
         distanceSuffix = '_10_m_walk'
-      } else { distanceSuffix = '_5_m_walk' }
-      const fieldName = 'students_'+ ma.data.type.slice(-1) + distanceSuffix
+      } else if ((distance >= 0) && (distance < pedonalDistance5)) { distanceSuffix = '_5_m_walk' }
+      const fieldName = 'students_' + ma.data.type.slice(-1) + distanceSuffix
       // attendees_yearly
-      addValueToDict (updatedFields, fieldName, ma.data.attendees_yearly)
+      addValueToDict(updatedFields, fieldName, ma.data.attendees_yearly)
     }
   })
-  updatePlace(dstMarker,updatedFields)
+  updatePlace(dstMarker, updatedFields)
 }
 
 function addMarkerToNodes (marker) {
