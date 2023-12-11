@@ -595,7 +595,7 @@
               <input type="email" name="email" autocomplete="email" placeholder="Email address" required>
               <input type="password" name="password" autocomplete="new-password" placeholder="Password" required>
               <div class="checkbox">
-                <input type="checkbox" id="signupCheck" name="terms" onclick="checkTerms();">
+                <input type="checkbox" id="signupCheck" name="terms">
                 <label for="signupCheck">I accept all <a href="terms-and-conditions.php" target="_blank">terms & conditions</a> and <a href="privacy-policy.php" target="_blank">privacy policy</a></label>
               </div>
               <input type="submit" name="submitregistration" value="Signup">
