@@ -2,3 +2,4 @@ cgi-bin/
 root/
 .well-known/
 info.php
+prettierrc
