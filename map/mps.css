@@ -21,7 +21,8 @@ html, body, #mpsMap {
     max-height: 100%;
 }
 
-.leaflet-floating-button  {
+.leaflet-control-filter-button,
+.leaflet-user-button  {
     display: block;
     background-color: #fff;
     background-position: 50% 50%;
@@ -41,6 +42,22 @@ html, body, #mpsMap {
     stroke-width: 1;
     stroke: #555;
     opacity: .6;
+}
+
+/* Chrome, Safari, Edge, Opera */
+input[type="number"].readonly::-webkit-outer-spin-button ,
+input[type="number"].readonly::-webkit-inner-spin-button   {
+    -webkit-appearance: none;
+    margin: 0;
+    width: 5em;
+    background-color: transparent;
+}
+
+/* Firefox */
+input[type="number"].readonly {
+    -moz-appearance: textfield;
+    width: 5em;
+    background-color: transparent;
 }
 
 /*
@@ -130,25 +147,26 @@ html, body, #mpsMap {
     box-shadow: 0 -5px 10px rgba(0, 0, 0, 0.1);
 }
 
-.form header, .profile header {
-    font-size: 30px;
+.form h2, .profile h2 {
+    font-size: 18px;
     text-shadow: 0px 0px 2px #444;
     text-align: center;
     color: #fff;
     font-weight: 600;
     cursor: pointer;
+    font-family: arial;
 }
 
-.form.login header {
+.form.login h2 {
     color: #333;
     opacity: 0.6;
 }
 
-.wrapper.active .form.login header {
+.wrapper.active .form.login h2 {
     opacity: 1;
 }
 
-.wrapper.active .signup header {
+.wrapper.active .signup h2 {
     opacity: 0.6;
 }
 
@@ -184,6 +202,7 @@ form input, table {
     margin: auto;
     width: 90%;
     margin-top: 1em;
+    margin-bottom: 1em;
 }
 
 .form.login input {
@@ -308,7 +327,7 @@ input:focus-visible + label {
 }
 
 .tab-panels {
-    height: 70vh;
+    height: 0vh;
     overflow-y: auto;
 }
 
@@ -349,9 +368,11 @@ hr {
     height: 50vh;
 }
 
+/*
 .pell-content img {
     width: 90%;
 }
+*/
 
 /*
  * Spazi meta
@@ -382,7 +403,7 @@ hr {
     background: none;
     border:none;
     display:block;
-    font-size: 30px;
+    font-size: 20px;
     text-shadow: 0px 0px 2px #444;
     text-align: center;
     color: #fff;
@@ -428,7 +449,6 @@ textarea:disabled {
     border-radius: 6px;
 }
 
-#spazi-status,
 #spazi-use,
 #spazi-accessibility,
 #spazi-interviews,
@@ -451,3 +471,48 @@ fieldset span {
     display: inline-table;
     margin: 0.10em;
 }
+
+.tg {
+    border-collapse:collapse;
+    border-color:#ccc;
+    border-spacing:0;
+    background: none;
+}
+ .tg td{
+    background-color:rgba(0,0,0,0.06);
+    border-color:#ccc;
+    border-style:dotted;
+    border-width:1px;
+    color:#333;
+     font-family:Arial, sans-serif;
+    font-size:14px;
+    overflow:hidden;
+    padding:10px 5px;
+    word-break:normal;
+}
+ .tg th{
+    background-color:#f0f0f0;
+    border-color:#ccc;
+    border-style:solid;
+    border-width:1px;
+    color:#333;
+     font-family:Arial, sans-serif;
+    font-size:14px;
+    font-weight:normal;
+    overflow:hidden;
+    padding:10px 5px;
+    word-break:normal;
+}
+ .tg .tg-ul38{
+    position:-webkit-sticky;
+    position:sticky;
+    text-align:left;
+    top:-1px;
+    vertical-align:top;
+    will-change:transform
+}
+ .tg .tg-0lax{
+    text-align:left;
+    vertical-align:top
+}
+

@@ -1,4 +1,71 @@
 
+/**
+ * Function to find the area of a triangle given its sides using Heron's formula
+ */
+function tiangleArea(a,b,c) {
+    const s = (a+b+c)/2;
+    return parseInt(Math.sqrt(s * (s-a) * (s-b) * (s-c)));
+    
+}
+
+
+/**
+ * Function to find the area of set of points.
+ *
+ * @param {Array<Array<number>>} pointsArray represented as array of [latitude, longitude].
+ * @param {Array<number>} center represented as [latitude, longitude].
+ */
+function area(pointsArray,center) {
+    var area = 0;
+    const sides = [];
+    const centerLines = [];
+    for (var i = 0; i < pointsArray.length; i++)
+    {
+        let j = i + 1;
+        if ( (pointsArray.length - 1) == i ) {
+            j = 0;
+        }
+        sides.push(haversineDistance(pointsArray[i],pointsArray[j]));
+        centerLines.push(haversineDistance(center,pointsArray[i])); 
+    }
+    // calculate
+    for (var i = 0; i < pointsArray.length; i++)
+    {
+        let j = i + 1;
+        if ( (pointsArray.length - 1) == i ) {
+            j = 0;
+        }
+        area += tiangleArea(sides[i],centerLines[i],centerLines[j]);
+    }
+    return area
+}
+
+
+function areaOfPolygons(pointsArrays) {
+    // calculate the center using the first array
+    const center = centerOfPoints(pointsArrays[0]);
+    // TODO: check if the center is inside each polygon
+    const areas = [];
+    for  (var i = 0; i < pointsArrays.length; i++)
+    {
+        areas.push(area(pointsArrays[i],center));
+    }
+    return areas
+}
+
+
+function centerOfPoints(points) {
+    var latitude_center = 0;
+    var longitude_center = 0;
+    for (var i = 0; i < points.length; i++)
+    {
+        latitude_center += points[i][0];
+        longitude_center += points[i][1];
+    }
+    return [latitude_center / points.length, longitude_center / points.length];
+}
+
+
 function nearest_node_ID(latlon) {
     let verts = adaptive_filter_bbox(latlon);
     let min = Number.POSITIVE_INFINITY;
@@ -14,7 +81,7 @@ function nearest_node_ID(latlon) {
     return [minID, hdist];
 }
 
-// 
+// haversine Distance
 function haversineDistance(coords1, coords2) {
     function toRad(x) {
         return x * Math.PI / 180;
@@ -38,7 +105,7 @@ function haversineDistance(coords1, coords2) {
     var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
     var d = R * c * 1000;
     
-    return d.toFixed(2); //meters
+    return parseFloat(d.toFixed(2)); //meters
 }
 
 // try to limit the number of nodes based on distance, it returns as soon as it finds some node
@@ -46,12 +113,20 @@ function adaptive_filter_bbox(latlon) {
     var n_filt = {};
     let xspan = 0.0005;
     let yspan = 0.00065;
-    while (Object.keys(n_filt).length == 0) {
+    let i = 1;
+    while (isEmpty(n_filt)) {
         n_filt = filterPointsByCoordinates(ways_data_ntts,latlon,xspan,yspan);
-        xspan += 0.0005;
-        yspan += 0.00065;
+        xspan += 0.0005 * i;
+        yspan += 0.00065 * i;
+        i++;
     }
     return n_filt;
+}
+
+// js missing basic functionality.
+function isEmpty(ob){
+   for(var i in ob){ return false;}
+  return true;
 }
 
 /**
@@ -71,23 +146,19 @@ function filterPointsByCoordinates(points, pnt, extentLat, extentLng) {
     const centerLng = pnt[1];
     // Iterate over each key-value pair in the points dictionary
     for (const key in points) {
-        if (points.hasOwnProperty(key)) {
-            // Get the latitude and longitude values from the array
-            const [lat, lng] = points[key];
-
-            // Check if the point is within the specified rectangle
-            if (
-                lat >= centerLat - extentLat / 2 &&
-                lat <= centerLat + extentLat / 2 &&
-                lng >= centerLng - extentLng / 2 &&
-                lng <= centerLng + extentLng / 2
-            ) {
-                // Add the point to the filteredPoints object
-                filteredPoints[key] = points[key];
-            }
+        // Get the latitude and longitude values from the array
+        const [lat, lng] = points[key].slice(0,2);
+        // Check if the point is within the specified rectangle
+        if (
+            (lat >= (centerLat - extentLat / 2)) &&
+            (lat <= (centerLat + extentLat / 2)) &&
+            (lng >= (centerLng - extentLng / 2)) &&
+            (lng <= (centerLng + extentLng / 2))
+        ) {
+            // Add the point to the filteredPoints object
+            filteredPoints[key] = points[key];
         }
     }
-
     // Return the filteredPoints object
     return filteredPoints;
 }

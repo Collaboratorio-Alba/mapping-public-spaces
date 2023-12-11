@@ -13,9 +13,17 @@ const jcaconfigHeaders = {headers : {
     'Access-Control-Allow-Origin':'*',
     'Access-Control-Allow-Methods':'GET, POST, PUT, DELETE, PATCH, OPTIONS',
     'Access-Control-Allow-Headers':'Origin, X-Requested-With, Content, Accept, Content-Type, Authorization'}};
+
+	/**
+	 * Represents a JavaScript CRUD API client for performing CRUD operations on a specific API endpoint.
+	 *
+	 * @param {string} apiUrl - The URL of the API endpoint to interact with.
+	 * @returns {Object} An instance of the jscrudapi client.
+	 */
 const jca=jscrudapi(api_url);
+
 //markerCluster plugin
-var markers = L.markerClusterGroup();
+var markers = L.markerClusterGroup({disableClusteringAtZoom:16});
 var nears = L.markerClusterGroup();
 var panels_hidden = true;
 let mapOptions = {
@@ -25,7 +33,6 @@ let mapOptions = {
     };
 
 window.onload = (event) => {
-    todoOnload();
     if (typeof me == 'undefined') {
         jca.me().then(
             data => setMe(data)
@@ -33,35 +40,9 @@ window.onload = (event) => {
             error=>loginError(error)
         );
     }
+    todoOnload();
 };
 
-function loadJson(fname,variab) {
-    fetch(fname)
-    .then(response => response.json())
-    .then(function(data){
-        for (const [key, value] of Object.entries(data)) {
-            variab[key] = value}
-    }).catch (
-        error=>console.log(error)
-    );
-}
-
-function loadSpaces() {
-    jca.list('spaces')
-    .then(function(data){
-        data['records'].forEach(function (item, index) {
-            addPlace([parseFloat(item.latitude),parseFloat(item.longitude)],item);
-        })
-    }).catch (
-        error=>console.log(error)
-    );
-}
-
-function loadAmenities(dct) {
-    for (const [key,value] of Object.entries(dct)) {
-        L.circleMarker([value[0],value[1]]).addTo(mpsMap);
-    }
-}
     
 function initMap() {
     mpsMap = L.map('mpsMap', mapOptions).setView(map_center, 14);
@@ -75,16 +56,26 @@ function initMap() {
     loadSpaces();
     mpsMap.on("click", allToBackground);
     const scale = L.control.scale().addTo(mpsMap);
+    
+    // Create a container div for the buttons
+    const container = L.DomUtil.create('div', 'leaflet-control leaflet-bar');    
     // create user button
-    let userButtonElement = document.createElement('a');
+    const userButtonElement = L.DomUtil.create('a', 'leaflet-user-button', container);
     userButtonElement.innerHTML = '\u{1F464}';
     userButtonElement.setAttribute("href", "#");
-    userButtonElement.className = 'leaflet-floating-button';
     userButtonElement.id = "usericon";
     L.DomEvent.disableClickPropagation(userButtonElement);
-        L.DomEvent.on(userButtonElement, 'click', toggleUserPanel);
+    L.DomEvent.on(userButtonElement, 'click', toggleUserPanel);
+    // Create the filter button
+    const filterButtonElement = L.DomUtil.create('a', 'leaflet-control-filter-button', container);
+    filterButtonElement.setAttribute("href", "#");
+    filterButtonElement.title = 'Filtro';
+    filterButtonElement.innerHTML = '\u{29E9}';
+    filterButtonElement.id = "filter";
+    L.DomEvent.disableClickPropagation(filterButtonElement);
+    L.DomEvent.on(filterButtonElement, 'click', filterButtonClick);
     // Add this leaflet control
-    var buttonControl = L.Control.extend({
+    var userControl = L.Control.extend({
       options: {
         position: 'topright'
       },
@@ -95,13 +86,23 @@ function initMap() {
         return container;
       }
     });
-    mpsMap.addControl(new buttonControl());
-    
-    if(L.Browser.mobile) {
-        
-    } else {
-
-    };
+    // Add this leaflet control
+    var filterControl = L.Control.extend({
+      options: {
+        position: 'topright'
+      },
+  
+      onAdd: function () {
+        var container = L.DomUtil.create('div');
+        container.appendChild(filterButtonElement);
+        return container;
+      }
+    });
+    mpsMap.addControl(new userControl());
+    mpsMap.addControl(new filterControl());
+    //if(L.Browser.mobile) {
+    //} else {
+    //};
 };
 
 function mapClick(e) {
@@ -122,29 +123,21 @@ function mapClick(e) {
     }
 }
 
-// draw but do not show
-function drawIsochrone(marker) {
-    const latlng = [marker.data.latitude,marker.data.longitude];
-    let nn = nearest_node_ID(latlng);
-    var update = false;
-    // use nn to detect missing data or moved node
-    if (nn[0] != marker.data.nearest_node_ID) {
-        marker.data.nearest_node_ID = nn[0];
-        marker.data.nearest_node_dst = nn[1];
-        let isodista = findIsodistancePolyline(ways_data_ntts,marker.data.nearest_node_ID,pedonalDistance15,marker.data.nearest_node_dst);
-        marker.data.isochrone15_latlngs = findConvexHull(isodista[2]);
-        marker.data.isochrone10_latlngs = findConvexHull(isodista[1]);
-        marker.data.isochrone5_latlngs = findConvexHull(isodista[0]);
-        update = true;
-    }
-    marker.viewdata = {};
-    let coordsNear = ways_data_ntts[marker.data.nearest_node_ID].slice(0, 2);
-    marker.viewdata.isochrone5 = L.polygon(marker.data.isochrone5_latlngs,{weight:1}).bindTooltip("5 minuti a piedi");
-    marker.viewdata.isochrone10 = L.polygon(marker.data.isochrone10_latlngs,{weight:1}).bindTooltip("10 minuti a piedi");
-    marker.viewdata.isochrone15 = L.polygon(marker.data.isochrone15_latlngs,{weight:1}).bindTooltip("15 minuti a piedi");
-    marker.viewdata.nearLine = L.polyline([coordsNear,latlng]);
-    marker.viewdata.near = L.circleMarker(coordsNear,{radius:5});
-    return update;
+	/**
+	 * Loads spaces from the API and adds them to the UI.
+	 *
+	 * This function retrieves a list of spaces from the API, filters out the deleted spaces,
+	 * and adds the remaining spaces to the UI by calling the addPlace function.
+	 */
+function loadSpaces() {
+    jca.list('spaces', {filter:'deleted,eq,0'})
+    .then(function(response){
+        response['records'].forEach(function (item, index) {
+            addPlace([parseFloat(item.latitude),parseFloat(item.longitude)],item);
+        })
+    }).catch (
+        error=>console.log(error)
+    );
 }
 
 async function addPlace(latlng,data) {
@@ -167,34 +160,101 @@ async function addPlace(latlng,data) {
             mar.data.isochrone5_latlngs = JSON.parse(data.isochrone5_latlngs);
             mar.data.isochrone10_latlngs = JSON.parse(data.isochrone10_latlngs);
             mar.data.isochrone15_latlngs = JSON.parse(data.isochrone15_latlngs);
+            mar.data.isochrone_area5 = parseInt(data.isochrone_area5);
+            mar.data.isochrone_area10 = parseInt(data.isochrone_area10);
+            mar.data.isochrone_area15 = parseInt(data.isochrone_area15);
             drawIsochrone(mar);
         }
         // add nearest node features to mar.data
-        mar.on('dragend', function(event){
-            var marker = event.target;
-            if (me === null) {
-                marker.setLatLng([marker.data.latitude,marker.data.longitude],{draggable:'false'}).update();
-                return
-            };
-            const position = marker.getLatLng();
-            marker.setLatLng(position,{draggable:'true'}).update();
-            marker.data.latitude = position.lat;
-            marker.data.longitude = position.lng;
-            nears.clearLayers();
-            let update = drawIsochrone(marker);
-            drawViewdata(marker);
-            // update record
-            if (update) {
-                updatePlace(mar, {latitude: position.lat,
-                longitude: position.lng,
-                nearest_node_ID: marker.data.nearest_node_ID,
-                nearest_node_dst: marker.data.nearest_node_dst,
-                isochrone15_latlngs: JSON.stringify(marker.data.isochrone15_latlngs),
-                isochrone10_latlngs: JSON.stringify(marker.data.isochrone10_latlngs),
-                isochrone5_latlngs: JSON.stringify(marker.data.isochrone5_latlngs)});
-            };
-        });
+        mar.on('dragend', e => markerMoved(e));
         markers.addLayer(mar);     
+}
+
+// draw but do not show
+function drawIsochrone(marker) {
+    const latlng = [parseFloat(marker.data.latitude),parseFloat(marker.data.longitude)];
+    let nn = nearest_node_ID(latlng);
+    var update = false;
+    // detect missing data or moved node this solution is prone to missing updates in case of markers far away from nodes
+    if ((nn[0] != marker.data.nearest_node_ID) || (Number.isNaN(marker.data.isochrone_area5))) {
+        recomputeDistances(marker,nn);
+    // update record
+    if (me !== null) {
+        updatePlace(marker, {latitude: latlng[0],
+        longitude: latlng[1],
+        nearest_node_ID: marker.data.nearest_node_ID,
+        nearest_node_dst: marker.data.nearest_node_dst,
+        isochrone15_latlngs: JSON.stringify(marker.data.isochrone15_latlngs),
+        isochrone10_latlngs: JSON.stringify(marker.data.isochrone10_latlngs),
+        isochrone5_latlngs: JSON.stringify(marker.data.isochrone5_latlngs),
+        isochrone_area5: marker.data.isochrone_area5,
+        isochrone_area10: marker.data.isochrone_area10,
+        isochrone_area15: marker.data.isochrone_area15});
+        };
+    };
+    marker.viewdata = {};
+    let coordsNear = ways_data_ntts[marker.data.nearest_node_ID].slice(0, 2);
+    if (typeof marker.data.isochrone5_latlngs === 'string') {
+        marker.data.isochrone5_latlngs = JSON.parse(marker.data.isochrone5_latlngs);
+        marker.data.isochrone10_latlngs = JSON.parse(marker.data.isochrone10_latlngs);
+        marker.data.isochrone15_latlngs = JSON.parse(marker.data.isochrone15_latlngs);
+    };
+    marker.viewdata.isochrone5 = L.polygon(marker.data.isochrone5_latlngs,{weight:1}).bindTooltip("5 minuti a piedi");
+    marker.viewdata.isochrone10 = L.polygon(marker.data.isochrone10_latlngs,{weight:1}).bindTooltip("10 minuti a piedi");
+    marker.viewdata.isochrone15 = L.polygon(marker.data.isochrone15_latlngs,{weight:1}).bindTooltip("15 minuti a piedi");
+    marker.viewdata.nearLine = L.polyline([coordsNear,latlng]);
+    marker.viewdata.near = L.circleMarker(coordsNear,{radius:5});
+    // add marker to nearest node's list of near relevant markers
+    if (ways_data_ntts[marker.data.nearest_node_ID].length == 3) {
+        ways_data_ntts[marker.data.nearest_node_ID].push([]);
+    }
+    if (!ways_data_ntts[marker.data.nearest_node_ID][3].includes(marker)) {
+        ways_data_ntts[marker.data.nearest_node_ID][3].push(marker);
+    }
+}
+
+function recomputeDistances(marker,nearNode) {
+    // if node has this marker in neighbours list, remove it.
+    if ((marker.data.nearest_node_ID != null) && (marker.data.nearest_node_ID in ways_data_ntts) && (ways_data_ntts[marker.data.nearest_node_ID].lenght == 3)) {
+        let markerIndex = ways_data_ntts[marker.data.nearest_node_ID][3].indexOf(marker);
+        if (markerIndex > -1) {
+            ways_data_ntts[marker.data.nearest_node_ID][3].splice(markerIndex, 1);
+            console.log('removing reference to this marker');
+        }
+    }
+    marker.data.nearest_node_ID = nearNode[0];
+    marker.data.nearest_node_dst = nearNode[1];
+    const isodista = findIsodistancePolyline(ways_data_ntts,marker.data.nearest_node_ID,pedonalDistance15,marker.data.nearest_node_dst);
+    marker.data.isochrone15_latlngs = findConvexHull(isodista[2]);
+    marker.data.isochrone10_latlngs = findConvexHull(isodista[1]);
+    marker.data.isochrone5_latlngs = findConvexHull(isodista[0]);
+    const areas_5_10_15 = areaOfPolygons([marker.data.isochrone5_latlngs, marker.data.isochrone10_latlngs, marker.data.isochrone15_latlngs]);
+    marker.data.isochrone_area5 = parseInt(areas_5_10_15[0]);
+    marker.data.isochrone_area10 = parseInt(areas_5_10_15[1]);
+    marker.data.isochrone_area15 = parseInt(areas_5_10_15[2]);
+}
+
+function markerMoved(event){
+    var marker = event.target;
+    if (me === null) {
+        marker.setLatLng([marker.data.latitude,marker.data.longitude],{draggable:'false'}).update();
+        return
+    };
+    const position = marker.getLatLng();
+    marker.setLatLng(position,{draggable:'true'}).update();
+    marker.data.latitude = parseFloat(position.lat);
+    marker.data.longitude = parseFloat(position.lng);
+    nears.clearLayers();
+    drawIsochrone(marker);
+    drawViewdata(marker);
+}
+
+function drawViewdata(m) {
+    nears.addLayer(m.viewdata.near);
+    nears.addLayer(m.viewdata.nearLine);
+    nears.addLayer(m.viewdata.isochrone15);
+    nears.addLayer(m.viewdata.isochrone10);
+    nears.addLayer(m.viewdata.isochrone5);    
 }
 
 function createNewSpace(latlng, named) {
@@ -212,14 +272,6 @@ function createNewSpace(latlng, named) {
     ]).catch(
         error=>console.log(error)
     );
-}
-
-function drawViewdata(marker) {
-    nears.addLayer(marker.viewdata.near);
-    nears.addLayer(marker.viewdata.nearLine);
-    nears.addLayer(marker.viewdata.isochrone15);
-    nears.addLayer(marker.viewdata.isochrone10);
-    nears.addLayer(marker.viewdata.isochrone5);    
 }
 
 //marker interaction
@@ -447,6 +499,12 @@ function onUpdateListboxfields(event,cname) {
     updatePlace(activeMarker, {[cname]:flist});
 }
 
+// Define the onClick function for the filter button
+function filterButtonClick() {
+    // Perform filtering logic here
+    console.log('Filter button clicked!');
+}
+
 function onFileSelected(event) {
     var selectedFile = event.target.files[0];
     var reader = new FileReader();
@@ -515,7 +573,7 @@ const octodescriptions = {
     "conviviality":"<b>Comunità:</b> per esempio mangiare e bere assieme e altre esperienze piacevoli con gli altri, come organizzare feste, riunioni o giocare. ",
     "care":"<b>Cura:</b> per esempio il volontariato, fornire assistenza sanitaria o personale, assistenza all'infanzia o agli anziani e fornire supporto a persone in situazioni di crisi o emergenza.",
     "contemplation":"<b>Contemplazione:</b> per esempio attività come preghiera, meditazione, consapevolezza e indagine filosofica o spirituale.",
-    "citizenship":"<b>Attivismo:</b> lavoro di comunità, per esempio attività civiche, politiche o sociali che generano un valore o che promuovono il benessere e lo sviluppo delle comunità, come la partecipazione a processi di rinnovamento sociale e urbano, il volontariato politico sociale, l'attivismo e il sostegno.",
+    "citizenship":"<b>Attivismo:</b> progetti e lavoro di comunità, per esempio attività civiche, politiche o sociali che generano un valore o che promuovono il benessere e lo sviluppo delle comunità, come la partecipazione a processi di rinnovamento sociale e urbano, il volontariato politico sociale, l'attivismo e il sostegno.",
     "learning":"<b>Educazione:</b> per esempio lo studio in gruppo, i gruppi di lettura e la partecipazione ad attività educative."
     };
 
@@ -556,9 +614,38 @@ function setOctosliderCanvas(event) {
     redrawOctosliderCanvas();
 }
 
+function loadJson(fname,variab) {
+    fetch(fname)
+    .then(response => response.json())
+    .then(function(data){
+        for (const [key, value] of Object.entries(data)) {
+            variab[key] = value}
+    }).catch (
+        error=>console.log(error)
+    );
+}
+
+function loadAmenities(dct) {
+    for (const [key,value] of Object.entries(dct)) {
+        L.circleMarker([value[0],value[1]]).addTo(mpsMap);
+    }
+}
+
 //initialize events in window.onload
 function todoOnload() {
     loadJson(ways_data_file, ways_data_ntts);
+    
+    const wrapper = document.querySelector(".wrapper"),
+      signupHeader = document.querySelector(".signup h2"),
+      loginHeader = document.querySelector(".login h2");
+
+    loginHeader.addEventListener("click", () => {
+      wrapper.classList.add("active");
+    });
+    signupHeader.addEventListener("click", () => {
+      wrapper.classList.remove("active");
+    });
+    
     let sldr = document.getElementsByClassName("octoslider");
     for (let i = 0; i < sldr.length; i++){
         sldr[i].addEventListener('pointerup', function(e) {
@@ -571,6 +658,12 @@ function todoOnload() {
                 onUpdateDatafields(e);
         });
     }
+    
+    let flds = document.getElementsByClassName("fout");
+    for (let i = 0; i < flds.length; i++){
+        flds[i].addEventListener('focusout', e => onUpdateDatafields(e));
+    } 
+    
     // be sure to display an icon when clicking the label
     let sldrlbl = document.getElementsByClassName("spazi-meta-label octolabel");
     for (let i = 0; i < sldrlbl.length; i++){
@@ -579,6 +672,14 @@ function todoOnload() {
     
     document.getElementById("collapse").addEventListener('pointerdown', function(e) {
             toggleTabPanels();
+        });
+        
+    document.getElementById("spazi-fairness").addEventListener('focusout', function(e) {
+            onUpdateListboxfields(e,'fairness');
+        });
+        
+    document.getElementById("spazi-resources").addEventListener('focusout', function(e) {
+            onUpdateListboxfields(e,'resources');
         });
     
     let tabs = document.getElementsByName("tabset");
@@ -628,13 +729,20 @@ function todoOnload() {
         unsetMe();
     });
     
+    document.Delete.addEventListener('submit', async event => {
+        event.preventDefault();
+        updatePlace(activeMarker, {deleted:1});
+        // delete marker
+        markers.removeLayer(activeMarker);
+        nears.clearLayers();
+        allToBackground();
+    });
+    
     editorP = window.pell.init({
         element: document.getElementById('editor'),
         actions: ['bold', 'italic', 'underline', 'strikethrough', 'heading3', 'heading4', 'paragraph', 'quote', 'link', 'image', 'olist', 'ulist', 'line'],
         defaultParagraphSeparator: 'p',
         onChange: function (html) {
-          //document.getElementById('text-output').innerHTML = html //document.getElementById('html-output').textContent = html
-          // update both the local marker data and the server field
           updatePlace(activeMarker, {"description":html});
         }
       })    
