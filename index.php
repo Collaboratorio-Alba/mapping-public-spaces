@@ -76,7 +76,7 @@
                         <option value="scuola_p">scuola primaria</option>
                         <option value="scuola_m">scuola media</option>
                         <option value="scuola_h">scuola superiore</option>
-                        <option value="biblioteca">biblioteca/centro culturale</option>
+                        <option value="biblioteca">biblioteca/libreria/centro culturale</option>
                         <option value="parrocchia">parrocchia/centro religioso</option>
                         <option value="centro_sportivo">campo sportivo/area gioco</option>
                         <option value="centro_giovani">centro giovani</option>

@@ -179,24 +179,28 @@ function distToSegment (p, v, w) { return Math.sqrt(distToSegmentSquared(p, v, w
  *
  * @param {Object} dictionary - The dictionary containing node ids and their corresponding latitude, longitude, and connections.
  * @param {string} nodeId - The node id for which the isodistance polyline needs to be found.
+ * @param {string} placeId - The place id for which the isodistance polyline needs to be found.
  * @param {number} distance - The distance for the isodistance polyline.
- * @returns {Array} The coordinates of the isodistance polyline.
+ * @returns {Array} The coordinates of the isodistance polyline and a dict of relevant nodes foud traversing the map.
  */
 // eslint-disable-next-line no-unused-vars
-function findIsodistancePolyline (dictionary, nodeId, distance, currentDist) {
+function findIsodistancePolyline (dictionary, nodeId, placeId, distances, currentDist) {
   // Check if the node id exists in the dictionary
   if (!Object.prototype.hasOwnProperty.call(dictionary, nodeId)) {
     throw new Error('Node id does not exist in the dictionary.')
   }
 
-  const distance15 = distance
-  const distance10 = distance * 2 / 3
-  const distance5 = distance / 3
+  const distance15 = distances[0]
+  const distance10 = distances[1]
+  const distance5 = distances[2]
 
   // Get the latitude and longitude of the starting node
   const startNode = dictionary[nodeId]
   const startLat = startNode[0]
   const startLng = startNode[1]
+
+  // an array of array listing places found while traversing the map and their distance
+  const placesFound = {}
 
   // Initialize an array to store the coordinates of the isodistance polyline <5,<10,<15min
   const polylineCoordinates = [[[startLat, startLng]], [[startLat, startLng]], [[startLat, startLng]]]
@@ -212,6 +216,19 @@ function findIsodistancePolyline (dictionary, nodeId, distance, currentDist) {
     // Check if the current distance is greater than or equal to the desired distance
     if (currentDistance > distance15) {
       return
+    }
+
+    // add places found while traversing the map id:[marker,distance]
+    if ((dictionary[currentNodeId].length === 4) && (dictionary[currentNodeId][3].length !== 0)) {
+      dictionary[currentNodeId][3].forEach((element) => {
+        if (element.data.id !== placeId) {
+          if (placesFound[element.data.id] !== undefined) {
+            placesFound[element.data.id] = [element, Math.min(placesFound[element.data.id][1], currentDistance)]
+          } else {
+            placesFound[element.data.id] = [element, currentDistance]
+          }
+        }
+      })
     }
 
     // Get the connections of the current node
@@ -254,6 +271,7 @@ function findIsodistancePolyline (dictionary, nodeId, distance, currentDist) {
 
   // Start finding the coordinates of the isodistance polyline
   findCoordinates(nodeId, parseInt(currentDist))
+  polylineCoordinates.push(Object.values(placesFound))
 
   return polylineCoordinates
 }

@@ -11,6 +11,8 @@ let mpsMap
 let activeMarker
 let editorP
 const pedonalDistance15 = 1250 // @ 5km/h , t=15min. Distance of a 15 minute walk
+const pedonalDistance10 = parseInt(pedonalDistance15 * 2 / 3)
+const pedonalDistance5 = parseInt(pedonalDistance15 / 3)
 // const jcaconfigHeaders = {headers : {
 // 'Access-Control-Allow-Origin':'*',
 // 'Access-Control-Allow-Methods':'GET, POST, PUT, DELETE, PATCH, OPTIONS',
@@ -26,7 +28,7 @@ const jca = jscrudapi(apiUrl)
 
 // markerCluster plugin
 const markers = L.markerClusterGroup({ disableClusteringAtZoom: 16 })
-const nears = L.markerClusterGroup()
+const nears = L.layerGroup()
 let panelsHidden = true
 const mapOptions = {
   preferCanvas: true,
@@ -155,7 +157,10 @@ async function addPlace (latlng, data) {
     // else loading space
   } else {
     mar.data = data
+    // add node to nearest neighbour list
+    addMarkerToNodes(mar)
     // unserialize
+    mar.data.nearest_node_dst = parseFloat(mar.data.nearest_node_dst)
     mar.data.latitude = parseFloat(mar.data.latitude)
     mar.data.longitude = parseFloat(mar.data.longitude)
     mar.data.isochrone5_latlngs = JSON.parse(data.isochrone5_latlngs)
@@ -206,34 +211,65 @@ function drawIsochrone (marker) {
   marker.viewdata.isochrone15 = L.polygon(marker.data.isochrone15_latlngs, { weight: 1 }).bindTooltip('15 minuti a piedi')
   marker.viewdata.nearLine = L.polyline([coordsNear, latlng])
   marker.viewdata.near = L.circleMarker(coordsNear, { radius: 5 })
-  // add marker to nearest node's list of near relevant markers
+}
+
+function recomputeDistances (marker, nearNode) {
+  // if node has this marker in neighbours list, remove it.
+  if ((marker.data.nearest_node_ID != null) && (marker.data.nearest_node_ID in waysDataNtts) && (waysDataNtts[marker.data.nearest_node_ID].lenght === 4)) {
+    const markerIndex = waysDataNtts[marker.data.nearest_node_ID][3].indexOf(marker)
+    if (markerIndex > -1) {
+      waysDataNtts[marker.data.nearest_node_ID][3].splice(markerIndex, 1)
+    }
+  }
+  marker.data.nearest_node_ID = nearNode[0]
+  marker.data.nearest_node_dst = nearNode[1]
+  const isodista = findIsodistancePolyline(waysDataNtts, marker.data.nearest_node_ID, marker.data.id, [pedonalDistance15, pedonalDistance10, pedonalDistance5], marker.data.nearest_node_dst)
+  marker.data.isochrone15_latlngs = findConvexHull(isodista[2])
+  marker.data.isochrone10_latlngs = findConvexHull(isodista[1])
+  marker.data.isochrone5_latlngs = findConvexHull(isodista[0])
+  // isodista[3] is a dict of places found while traversing, and their distance. Use them to save relevant information.
+  extractSpatialData (isodista[3], marker)
+  const areas51015 = areaOfPolygons([marker.data.isochrone5_latlngs, marker.data.isochrone10_latlngs, marker.data.isochrone15_latlngs])
+  marker.data.isochrone_area5 = parseInt(areas51015[0])
+  marker.data.isochrone_area10 = parseInt(areas51015[1])
+  marker.data.isochrone_area15 = parseInt(areas51015[2])
+  addMarkerToNodes(marker)
+}
+
+function addValueToDict (dict, key, value) {
+  if (key in dict) { dict[key] += value } else { dict[key] = value }
+  return dict
+}
+
+// copy distances and inhabitants to the pertinent field
+function extractSpatialData (srcMarkerList, dstMarker) {
+  const updatedFields = {}
+  srcMarkerList.forEach((element) => {
+    const ma = element[0]
+    const distance = element[1]
+    if (['scuola_k', 'scuola_p', 'scuola_m', 'scuola_h'].includes(ma.data.type)) {
+      let distanceSuffix
+      if (distance > pedonalDistance10) {
+        distanceSuffix = '_15_m_walk'
+      } else if (distance > pedonalDistance5) {
+        distanceSuffix = '_10_m_walk'
+      } else { distanceSuffix = '_5_m_walk' }
+      const fieldName = 'students_'+ ma.data.type.slice(-1) + distanceSuffix
+      // attendees_yearly
+      addValueToDict (updatedFields, fieldName, ma.data.attendees_yearly)
+    }
+  })
+  updatePlace(dstMarker,updatedFields)
+}
+
+function addMarkerToNodes (marker) {
+  // add marker to new nearest node's neighbours list
   if (waysDataNtts[marker.data.nearest_node_ID].length === 3) {
     waysDataNtts[marker.data.nearest_node_ID].push([])
   }
   if (!waysDataNtts[marker.data.nearest_node_ID][3].includes(marker)) {
     waysDataNtts[marker.data.nearest_node_ID][3].push(marker)
   }
-}
-
-function recomputeDistances (marker, nearNode) {
-  // if node has this marker in neighbours list, remove it.
-  if ((marker.data.nearest_node_ID != null) && (marker.data.nearest_node_ID in waysDataNtts) && (waysDataNtts[marker.data.nearest_node_ID].lenght === 3)) {
-    const markerIndex = waysDataNtts[marker.data.nearest_node_ID][3].indexOf(marker)
-    if (markerIndex > -1) {
-      waysDataNtts[marker.data.nearest_node_ID][3].splice(markerIndex, 1)
-      console.log('removing reference to this marker')
-    }
-  }
-  marker.data.nearest_node_ID = nearNode[0]
-  marker.data.nearest_node_dst = nearNode[1]
-  const isodista = findIsodistancePolyline(waysDataNtts, marker.data.nearest_node_ID, pedonalDistance15, marker.data.nearest_node_dst)
-  marker.data.isochrone15_latlngs = findConvexHull(isodista[2])
-  marker.data.isochrone10_latlngs = findConvexHull(isodista[1])
-  marker.data.isochrone5_latlngs = findConvexHull(isodista[0])
-  const areas51015 = areaOfPolygons([marker.data.isochrone5_latlngs, marker.data.isochrone10_latlngs, marker.data.isochrone15_latlngs])
-  marker.data.isochrone_area5 = parseInt(areas51015[0])
-  marker.data.isochrone_area10 = parseInt(areas51015[1])
-  marker.data.isochrone_area15 = parseInt(areas51015[2])
 }
 
 function markerMoved (event) {
