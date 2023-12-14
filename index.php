@@ -340,21 +340,24 @@
                   <!-- equità -->
                   <div class="checkbox">
                       <fieldset id="spazi-fairness" class="lbfout">
-                      <legend>non equità rispetto a...</legend> <!-- disabilità, età, economiche, lingua, orientamento sessuale, dipendenze, etnia, religione, nazionalità o geografica, condizione sociale, convinzione politica -->
+                      <legend>Organizzazione, pratiche e strutture attente a...</legend> <!-- disabilità, età, economiche, lingua, orientamento sessuale, dipendenze, etnia, religione, nazionalità o geografica, condizione sociale, convinzione politica -->
                         <span><input type="checkbox" class="fairness ui" id="disabilità" name="disabilità" value="disabilità">
                         <label for="disabilità">disabilità</label></span>
 
                         <span><input type="checkbox" class="fairness ui" name="età" id="età" value="età">
-                        <label for="età">età</label></span>
+                        <label for="infanzia">prima infanzia e maternità</label></span>
+
+                        <span><input type="checkbox" class="fairness ui" name="età" id="età" value="età">
+                        <label for="terza_età">terza e quarta età</label></span>
 
                         <span><input type="checkbox" class="fairness ui" name="economiche" id="economiche" value="economiche">
-                        <label for="lingua">condizioni economiche</label></span>
+                        <label for="lingua">condizioni economiche difficili</label></span>
 
                         <span><input type="checkbox" class="fairness ui" name="lingua" id="lingua" value="lingua">
                         <label for="lingua">lingua</label></span>
 
                         <span><input type="checkbox" class="fairness ui" name="sessuale" id="sessuale" value="sessuale">
-                        <label for="sessuale">genere o sessuale</label></span>
+                        <label for="sessuale">diversità di genere, LGBT+ e sessuale</label></span>
 
                         <span><input type="checkbox" class="fairness ui" name="dipendenze" id="dipendenze" value="dipendenze">
                         <label for="dipendenze">dipendenze</label></span>
@@ -372,8 +375,8 @@
                         <label for="politica">idee politiche</label></span>
 
                       </fieldset>
-                  <label for="spazi-fairness_description" class="spazi-meta-label">descrizione delle iniquità</label>
-                  <textarea rows="3" cols="38" class="fout form-control ui" name="spazi-fairness_description" id="spazi-fairness_description"></textarea>
+                  <label for="spazi-fairness_description" class="spazi-meta-label">descrizione delle pratiche</label>
+                  <textarea rows="8" cols="38" class="fout form-control ui" name="spazi-fairness_description" id="spazi-fairness_description"></textarea>
                   </div>
                 </section>
                 <section id="partecipazione" class="tab-panel">
@@ -449,6 +452,72 @@
                   </div>
                   <label for="spazi-participation" class="spazi-meta-label">osservazioni</label>
                   <textarea rows="8" cols="38" class="fout form-control ui" name="spazi-participation" id="spazi-participation"></textarea>
+                  
+                  <!--
+                    partecipazione nella proprietà
+                  -->
+                  <div class="field-select">
+                    <label for="spazi-participation_property" class="spazi-meta-label">partecipazione nella proprietà dei beni</label>
+                    <select class="fout form-control ui" name="spazi-participation_property" id="spazi-participation_property">
+                        <option value="esclusi">esclusi</option>
+                        <option value="informati">informati</option>
+                        <option value="consultati">consultati</option>
+                        <option value="inclusi">inclusi</option>
+                        <option value="partecipi">partecipi</option>
+                    </select>
+                  </div>
+                  <!--
+                    partecipazione nella direzione
+                  -->
+                  <div class="field-select">
+                    <label for="spazi-participation_direction" class="spazi-meta-label">partecipazione nella direzione</label>
+                    <select class="fout form-control ui" name="spazi-participation_direction" id="spazi-participation_direction">
+                        <option value="esclusi">esclusi</option>
+                        <option value="informati">informati</option>
+                        <option value="consultati">consultati</option>
+                        <option value="inclusi">inclusi</option>
+                        <option value="partecipi">partecipi</option>
+                    </select>
+                  </div>
+                  <!--
+                    partecipazione nella pianificazione
+                  -->
+                  <div class="field-select">
+                    <label for="spazi-participation_planning" class="spazi-meta-label">partecipazione nella pianificazione</label>
+                    <select class="fout form-control ui" name="spazi-participation_planning" id="spazi-participation_planning">
+                        <option value="esclusi">esclusi</option>
+                        <option value="informati">informati</option>
+                        <option value="consultati">consultati</option>
+                        <option value="inclusi">inclusi</option>
+                        <option value="partecipi">partecipi</option>
+                    </select>
+                  </div>
+                  <!--
+                    partecipazione nella attività
+                  -->
+                  <div class="field-select">
+                    <label for="spazi-participation_labor" class="spazi-meta-label">partecipazione nelle attività</label>
+                    <select class="fout form-control ui" name="spazi-participation_labor" id="spazi-participation_labor">
+                        <option value="esclusi">esclusi</option>
+                        <option value="informati">informati</option>
+                        <option value="consultati">consultati</option>
+                        <option value="inclusi">inclusi</option>
+                        <option value="partecipi">partecipi</option>
+                    </select>
+                  </div>
+                  <!--
+                    partecipazione nella comunicazione
+                  -->
+                  <div class="field-select">
+                    <label for="spazi-participation_communication" class="spazi-meta-label">partecipazione nella comunicazione</label>
+                    <select class="fout form-control ui" name="spazi-participation_communication" id="spazi-participation_communication">
+                        <option value="esclusi">esclusi</option>
+                        <option value="informati">informati</option>
+                        <option value="consultati">consultati</option>
+                        <option value="inclusi">inclusi</option>
+                        <option value="partecipi">partecipi</option>
+                    </select>
+                  </div>
                 </section>
                 <section id="colloqui" class="tab-panel">
                   <h2>Colloqui, discussioni, interviste</h2>
@@ -519,6 +588,17 @@
                         <input type="text" class="fout form-control ui" name="spazi-participatory_process_link" id="spazi-participatory_process_link">
                     </div>
                     <hr>
+                                      <!-- stage della scheda -->
+                  <div class="field-select stage">
+                    <label for="spazi-stage" class="spazi-meta-label">stato della scheda: </label>
+                    <select class="fout form-control ui" name="spazi-stage" id="spazi-stage">
+                        <option value="da_completare">da completare</option>
+                        <option value="in_lavorazione">in lavorazione</option>
+                        <option value="completa">completa</option>
+
+                    </select>
+                  </div>
+                    <br>
                     <form name="Delete" action="#">
                         <input type="submit" name="Delete" value="Cancella questa scheda">
                     </form>
@@ -600,6 +680,7 @@
               </div>
               <input type="submit" name="submitregistration" value="Signup">
             </form>
+            <div class="registerMessage"><p id="registerMessage"></p></div>
           </div>
     
           <div class="form login">
