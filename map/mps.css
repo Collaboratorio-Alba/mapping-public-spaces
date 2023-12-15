@@ -73,7 +73,7 @@ input[type="number"].readonly {
 
 #cnvAuthBox, #cnvUserBox {
     position: absolute;
-    top: 12vh;
+    top: 15vh;
     left: 0; 
     right: 0;
     margin: auto; 
@@ -82,6 +82,7 @@ input[type="number"].readonly {
     padding:10px;
     z-index: 5;
     backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
     border-radius: 12px;
     border-style: double;
     border-color: darkgray;
@@ -89,7 +90,7 @@ input[type="number"].readonly {
 
 #cnvPlaceBox {
     position: absolute;
-    top: 8vh;
+    top: 15vh;
     left: 0; 
     right: 0;
     margin: auto; 
@@ -98,6 +99,7 @@ input[type="number"].readonly {
     padding:8px;
     z-index: 5;
     backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
     border-radius: 12px;
     border-style: double;
     border-color: darkgray;
@@ -253,7 +255,8 @@ form input[type="submit"] {
     border: none;
 }
 
-.loginMessage {
+.loginMessage,
+.registerMessage {
     text-align: center;
     color: rebeccapurple;
     font-weight: bold;
@@ -345,6 +348,7 @@ input:focus-visible + label {
     margin-bottom: -1px;
     border-radius: 8px 8px 0px 0px;
     backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
     background-color: rgba(76, 76, 76, 0.1);
 }
 
@@ -353,6 +357,7 @@ input:focus-visible + label {
     border-top: 2px solid #ccc;
     border-radius: 0px 0px 8px 8px;
     backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
     padding: 8px;
 }
 
@@ -365,7 +370,7 @@ hr {
 }
 
 .pell-content {
-    height: 50vh;
+    height: 40vh;
 }
 
 /*
@@ -454,9 +459,12 @@ textarea:disabled {
 #spazi-interviews,
 #spazi-participation {
     width: 98%;
-    height: 50vh;
+/*
+    height: 40vh;
+*/
     background: none;
     border-radius: 6px;
+    resize: vertical;
 }
 
 .field-select {

@@ -341,7 +341,7 @@ function toggleUserPanel () {
 
 function toggleTabPanels () {
   if (document.getElementsByClassName('tab-panels')[0].style.height === '0vh') {
-    document.getElementsByClassName('tab-panels')[0].style.height = '70vh'
+    document.getElementsByClassName('tab-panels')[0].style.height = '60vh'
   } else {
     document.getElementsByClassName('tab-panels')[0].style.height = '0vh'
   };
@@ -354,6 +354,20 @@ function loginError (e) {
   if (e.code === 1012) {
     document.getElementById('loginMessage').innerText = e.message
   }
+}
+
+function registerError (e) {
+  console.log(e)
+  authToForeground()
+  document.getElementById('registerMessage').innerText = e.message
+}
+
+function registerMe(dati) {
+    if (dati.hasOwnProperty('code')) {
+        registerError(dati)
+    } else {
+        setMe(dati)
+    }
 }
 
 function setMe (dati) {
@@ -718,30 +732,27 @@ function todoOnload () {
 
   const tabs = document.getElementsByName('tabset')
   for (let i = 0; i < tabs.length; i++) {
-    tabs[i].nextElementSibling.addEventListener('pointerdown', function (e) { document.getElementsByClassName('tab-panels')[0].style.height = '70vh' })
+    tabs[i].nextElementSibling.addEventListener('pointerdown', function (e) { document.getElementsByClassName('tab-panels')[0].style.height = '60vh' })
   }
 
   document.register.addEventListener('submit', async event => {
     event.preventDefault()
-
     const data = new FormData(document.register)
     const formDataObj = {}
     data.forEach((value, key) => (formDataObj[key] = value))
 
-    try {
-      const res = await fetch(
+    fetch(
         apiUrl + '/register',
         {
           method: 'POST',
           body: JSON.stringify(formDataObj)
         }
-      )
-      const resData = await res.json()
-      console.log(resData)
-    } catch (err) {
-      console.log(err.message)
-    }
-  })
+    ).then(response => response.json()
+    ).then(data => registerMe(data)
+    ).catch(
+      error => registerError(error)
+    )
+    })
 
   document.getElementById('cnvUserBox').addEventListener('click', function (e) {
     document.getElementById('cnvUserBox').style.zIndex = '5'

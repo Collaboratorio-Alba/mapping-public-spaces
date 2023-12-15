@@ -3,3 +3,4 @@ root/
 .well-known/
 info.php
 prettierrc
+.eslintrc.js
