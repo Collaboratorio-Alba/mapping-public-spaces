@@ -27,7 +27,7 @@ const pedonalDistance5 = parseInt(pedonalDistance15 / 3)
 const jca = jscrudapi(apiUrl)
 
 // markerCluster plugin
-const markers = L.markerClusterGroup({ disableClusteringAtZoom: 16 })
+const markers = L.markerClusterGroup({ disableClusteringAtZoom: 16, removeOutsideVisibleBounds: false })
 const nears = L.layerGroup()
 let panelsHidden = true
 const mapOptions = {
@@ -37,14 +37,23 @@ const mapOptions = {
 }
 
 window.onload = (event) => {
-  if (typeof me === 'undefined') {
-    jca.me().then(
-      data => setMe(data)
-    ).catch(
-      error => loginError(error)
+  fetch(waysDataFile)
+    .then(response => response.json())
+    .then(function (data) {
+      for (const [key, value] of Object.entries(data)) {
+        waysDataNtts[key] = value
+      }
+      if (typeof me === 'undefined') {
+        jca.me().then(
+          data => setMe(data)
+        ).catch(
+          error => loginError(error)
+        )
+      }
+      todoOnload()      
+    }).catch(
+      error => console.log(error)
     )
-  }
-  todoOnload()
 }
 
 function initMap () {
@@ -59,7 +68,6 @@ function initMap () {
   loadSpaces()
   mpsMap.on('click', allToBackground)
   L.control.scale().addTo(mpsMap)
-
   // Create a container div for the buttons
   const container = L.DomUtil.create('div', 'leaflet-control leaflet-bar')
   // create user button
@@ -106,6 +114,9 @@ function initMap () {
   // if(L.Browser.mobile) {
   // } else {
   // };
+  markers.eachLayer(function(marker) {
+    colorizeMarker(marker)
+  })
 };
 
 function mapClick (e) {
@@ -143,6 +154,18 @@ function loadSpaces () {
     )
 }
 
+function colorizeMarker (marker) {
+  let topic = marker.data.vocation
+  const topics = ['nessuna','movimento','natura','creatività','comunità','cura','contemplazione','attivismo','educazione']
+  const mappingHue = [0, 25, 270, 240, 190, 145, 90, 320, 0]
+  const mappingSat = [1, 1.6, 1.4, 1.8, 1.4, 1.1, 1, 1.1, 1.1]
+  if (topics.indexOf(topic) == 0) {
+    marker._icon.style.filter = 'saturate(0)'
+  } else {
+    marker._icon.style.filter = 'brightness(' + mappingSat[topics.indexOf(topic)] + ') hue-rotate(' + mappingHue[topics.indexOf(topic)] + 'deg)'
+  }
+}
+
 async function addPlace (latlng, data) {
   const mar = L.marker(latlng, { draggable: 'true' }).on('click', onMarkerClick)
   // if creating new space
@@ -173,6 +196,7 @@ async function addPlace (latlng, data) {
   }
   // add nearest node features to mar.data
   mar.on('dragend', e => markerMoved(e))
+  mar.on('add', e => colorizeMarker(e.target))
   markers.addLayer(mar)
 }
 
@@ -348,7 +372,7 @@ function toggleTabPanels () {
 }
 
 function loginError (e) {
-  console.log(e)
+  //console.log(e)
   authToForeground()
   unsetMe()
   if (e.code === 1012) {
@@ -357,7 +381,7 @@ function loginError (e) {
 }
 
 function registerError (e) {
-  console.log(e)
+  //console.log(e)
   authToForeground()
   document.getElementById('registerMessage').innerText = e.message
 }
@@ -366,7 +390,13 @@ function registerMe(dati) {
     if (dati.hasOwnProperty('code')) {
         registerError(dati)
     } else {
-        setMe(dati)
+        allToBackground()
+        const registerFields = document.getElementsByClassName('registr')
+        for (const f of registerFields) {
+            f.value = ""
+        }
+        document.getElementById("signupCheck").checked = false 
+        alert("Bin venü! Ti abbiamo inviato una email con il link per confermare il tuo account!!");
     }
 }
 
@@ -612,13 +642,13 @@ function setOctoMiniature (event, isLabel) {
 const octomappings = { 0: 'physical_activity', 1: 'nature', 2: 'creativity', 3: 'conviviality', 4: 'care', 5: 'contemplation', 6: 'citizenship', 7: 'learning' }
 
 const octodescriptions = {
-  physical_activity: '<b>Movimento:</b> per esempio camminare, fare sport, ballare e altre forme di esercizio fisico. ',
-  nature: "<b>Natura:</b> interazione con la natura e cura dell'ambiente: osservare, identificare o interagire con la natura e prendersi cura dell'ambiente.",
-  creativity: "<b>Creatività:</b> per esempio la creazione o l'espressione artistica, come recitare, partecipare a laboratori artistici, stare assieme per costruire opere artigianali o fare musica. ",
-  conviviality: '<b>Comunità:</b> per esempio mangiare e bere assieme e altre esperienze piacevoli con gli altri, come organizzare feste, riunioni o giocare. ',
-  care: "<b>Cura:</b> per esempio il volontariato, fornire assistenza sanitaria o personale, assistenza all'infanzia o agli anziani e fornire supporto a persone in situazioni di crisi o emergenza.",
-  contemplation: '<b>Contemplazione:</b> per esempio attività come preghiera, meditazione, consapevolezza e indagine filosofica o spirituale.',
-  citizenship: "<b>Attivismo:</b> progetti e lavoro di comunità, per esempio attività civiche, politiche o sociali che generano un valore o che promuovono il benessere e lo sviluppo delle comunità, come la partecipazione a processi di rinnovamento sociale e urbano, il volontariato politico sociale, l'attivismo e il sostegno.",
+  physical_activity: '<b>Movimento:</b> per esempio camminare, fare sport, ballare. ',
+  nature: "<b>Natura:</b> osservare o interagire con la natura e prendersi cura dell'ambiente.",
+  creativity: "<b>Creatività:</b> per esempio la creazione o l'espressione artistica, come recitare, laboratori artistici o fare musica. ",
+  conviviality: '<b>Comunità:</b> per esempio mangiare e bere assieme, feste, riunioni o giocare. ',
+  care: "<b>Cura:</b> per esempio fare volontariato, fornire assistenza e supporto a persone in situazioni di bisogno.",
+  contemplation: '<b>Contemplazione:</b> per esempio attività come preghiera, meditazione, consapevolezza.',
+  citizenship: "<b>Attivismo:</b> attività civiche, politiche, culturali o sociali che generano un valore o che promuovono il benessere e lo sviluppo delle comunità.",
   learning: '<b>Educazione:</b> per esempio lo studio in gruppo, i gruppi di lettura e la partecipazione ad attività educative.'
 }
 
@@ -659,18 +689,6 @@ function setOctosliderCanvas (event) {
   redrawOctosliderCanvas()
 }
 
-function loadJson (fname, variab) {
-  fetch(fname)
-    .then(response => response.json())
-    .then(function (data) {
-      for (const [key, value] of Object.entries(data)) {
-        variab[key] = value
-      }
-    }).catch(
-      error => console.log(error)
-    )
-}
-
 // eslint-disable-next-line no-unused-vars
 function loadAmenities (dct) {
   for (const [key, value] of Object.entries(dct)) {
@@ -681,8 +699,6 @@ function loadAmenities (dct) {
 
 // initialize events in window.onload
 function todoOnload () {
-  loadJson(waysDataFile, waysDataNtts)
-
   const wrapper = document.querySelector('.wrapper')
   const signupHeader = document.querySelector('.signup h2')
   const loginHeader = document.querySelector('.login h2')
@@ -728,6 +744,11 @@ function todoOnload () {
 
   document.getElementById('spazi-resources').addEventListener('focusout', function (e) {
     onUpdateListboxfields(e, 'resources')
+  })
+  
+  document.getElementById('spazi-vocation').addEventListener('focusout', function (e) {
+    let mar = activeMarker
+    colorizeMarker(mar)
   })
 
   const tabs = document.getElementsByName('tabset')

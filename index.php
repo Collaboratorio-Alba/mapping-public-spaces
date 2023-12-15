@@ -57,7 +57,7 @@
                   <div class="field-select">
                     <label for="spazi-vocation" class="spazi-meta-label">vocazione del luogo: </label>
                     <select class="fout form-control ui" name="spazi-vocation" id="spazi-vocation">
-                        <option value="nessuno">nessuna</option>
+                        <option value="nessuna">nessuna</option>
                         <option value="movimento">movimento</option>
                         <option value="natura">natura</option>
                         <option value="creatività">creatività</option>
@@ -669,11 +669,11 @@
           <div class="form signup">
             <h2>Signup</h2>
             <form name="register" action="#">
-              <input type="text" name="first_name" autocomplete="given-name" placeholder="First name" required>
-              <input type="text" name="last_name" autocomplete="family-name" placeholder="Last name" required>
-              <input type="text" name="username" autocomplete="username" placeholder="Username" required>
-              <input type="email" name="email" autocomplete="email" placeholder="Email address" required>
-              <input type="password" name="password" autocomplete="new-password" placeholder="Password" required>
+              <input class="registr" type="text" name="first_name" autocomplete="given-name" placeholder="First name" required>
+              <input class="registr" type="text" name="last_name" autocomplete="family-name" placeholder="Last name" required>
+              <input class="registr" type="text" name="username" autocomplete="username" placeholder="Username" required>
+              <input class="registr" type="email" name="email" autocomplete="email" placeholder="Email address" required>
+              <input class="registr" type="password" name="password" autocomplete="new-password" placeholder="Password" required>
               <div class="checkbox">
                 <input type="checkbox" id="signupCheck" name="terms">
                 <label for="signupCheck">I accept all <a href="terms-and-conditions.php" target="_blank">terms & conditions</a> and <a href="privacy-policy.php" target="_blank">privacy policy</a></label>
