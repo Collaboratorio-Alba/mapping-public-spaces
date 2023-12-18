@@ -2,9 +2,6 @@
 A Leaflet map showing georeferenced crowdsourced data, about vacant properties and public spaces.
 These reports are intended to document public spaces and the vacancy situation in various cities and to stimulate a discourse about vacancies, spaces and possible uses.
 
-To start defining the spaces it is best to clarify the criteria, metrics and ontologies we want to use.
-One possible approach to describing social public spaces is to use a combination of objective criteria, qualitative observations and user feedback.
-
 It is best to be clear about the criteria, measurements, and ontologies we intend to employ before we begin defining the spaces.
 A viable method for characterizing social public spaces is to combine user feedback, qualitative observations, and objective criteria.
 
