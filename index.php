@@ -167,7 +167,7 @@
                         <label for="tavoli_e_sedie">tavoli e sedie</label></span>
 
                         <span><input type="checkbox" class="resources ui" name="WiFi" id="WiFi" value="WiFi">
-                        <label for="WiFi">WiFi libero</label></span>
+                        <label for="WiFi">WiFi</label></span>
 
                         <span><input type="checkbox" class="resources ui" name="PC" id="PC" value="PC">
                         <label for="PC">postazioni informatiche</label></span>
@@ -248,6 +248,10 @@
                   <div class="spazi-meta form-group">
                         <label for="spazi-operator" class="spazi-meta-label">gestore: </label>
                         <input type="text" class="fout form-control ui" name="spazi-operator" id="spazi-operator">
+                  </div>
+                  <div class="spazi-meta form-group">
+                        <label for="spazi-contacts" class="spazi-meta-label">referente e contatti: </label>
+                        <input type="text" class="fout form-control ui" name="spazi-contacts" id="spazi-contacts">
                   </div>
                   <label for="spazi-use" class="spazi-meta-label">osservazioni</label>
                   <textarea rows="8" cols="38" class="fout form-control ui" name="spazi-use" id="spazi-use"></textarea>
@@ -340,7 +344,7 @@
                   <!-- equità -->
                   <div class="checkbox">
                       <fieldset id="spazi-fairness" class="lbfout">
-                      <legend>Organizzazione, pratiche e strutture attente a...</legend> <!-- disabilità, età, economiche, lingua, orientamento sessuale, dipendenze, etnia, religione, nazionalità o geografica, condizione sociale, convinzione politica -->
+                      <legend>Organizzazione, pratiche e strutture attente e aperte a...</legend> <!-- disabilità, età, economiche, lingua, orientamento sessuale, dipendenze, etnia, religione, nazionalità o geografica, condizione sociale, convinzione politica -->
                         <span><input type="checkbox" class="fairness ui" id="disabilità" name="disabilità" value="disabilità">
                         <label for="disabilità">disabilità</label></span>
 
