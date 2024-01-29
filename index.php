@@ -672,6 +672,9 @@
         <div id="mpsAuthentication">
           <div class="form signup">
             <h2>Signup</h2>
+            <div class="user-messages">
+              <p>Leggi la <a href="uso.html">guida all'uso</a></p>
+            </div>
             <form name="register" action="#">
               <input class="registr" type="text" name="first_name" autocomplete="given-name" placeholder="First name" required>
               <input class="registr" type="text" name="last_name" autocomplete="family-name" placeholder="Last name" required>
