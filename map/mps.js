@@ -3,20 +3,29 @@
 /* global jscrudapi, L, nearestNodeID, findIsodistancePolyline, findConvexHull, areaOfPolygons */
 
 const apiUrl = 'https://collab.42web.io/api/api.php'
+const houseNumbersUrl = 'https://collab.42web.io/tiles/t'
 const mapCenter = [44.6798, 8.0362]
 const waysDataFile = '/data/nodes.json'
 const waysDataNtts = {}
+const peoplePerNtts = {}
+const flat_density = 2.25 // in base a dati ISTAT 2011
 let me
 let mpsMap
 let activeMarker
+let activeEntrance
 let editorP
-const pedonalDistance15 = 1250 // @ 5km/h , t=15min. Distance of a 15 minute walk
+let houseNumbersLayer
+let entranceMarker
+const pedonalDistance15 = 1000 // @ 4km/h , t=15min. Distance of a 15 minute walk
 const pedonalDistance10 = parseInt(pedonalDistance15 * 2 / 3)
 const pedonalDistance5 = parseInt(pedonalDistance15 / 3)
 // const jcaconfigHeaders = {headers : {
 // 'Access-Control-Allow-Origin':'*',
 // 'Access-Control-Allow-Methods':'GET, POST, PUT, DELETE, PATCH, OPTIONS',
 // 'Access-Control-Allow-Headers':'Origin, X-Requested-With, Content, Accept, Content-Type, Authorization'}};
+// limits of colored map computation
+const boundingRect = L.latLngBounds(L.latLng(44.6437000,7.9709000), L.latLng(44.7370000,8.0593000));
+
 
 /**
  * Represents a JavaScript CRUD API client for performing CRUD operations on a specific API endpoint.
@@ -28,6 +37,7 @@ const jca = jscrudapi(apiUrl)
 
 // markerCluster plugin
 const markers = L.markerClusterGroup({ disableClusteringAtZoom: 16, removeOutsideVisibleBounds: false })
+const houses = L.layerGroup()
 const nears = L.layerGroup()
 let panelsHidden = true
 const mapOptions = {
@@ -50,7 +60,7 @@ window.onload = (event) => {
           error => loginError(error)
         )
       }
-      todoOnload()      
+      todoOnload()
     }).catch(
       error => console.log(error)
     )
@@ -62,8 +72,16 @@ function initMap () {
     maxZoom: 19,
     attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, <a href="https://github.com/Collaboratorio-Alba/mapping-public-spaces"><img class="githubLogo" src="images/github-mark.svg" alt="Github repository"/></a>, <a href="mailto:ssh8lt5kr@mozmail.com?subject=segnalazione%20problema%20del%20sito%20collab.42web.io&body=Mentre%20usavo%20il%20sito%20ho%20riscontrato%20questo%20problema%3A%0A%0A%C3%A8%20successo%20mentre%20stavo...%0A%0Asto%20navigando%20da%3A%20telefono%2Fcomputer%0A%0Acon%20il%20browser%3A%20%0A">Segnala</a> un problema.'
   }).addTo(mpsMap)
+
+  // house_numbers layer
+  houseNumbersLayer = L.tileLayer(houseNumbersUrl + '/{z}/{y}/{x}', {
+    minZoom: 19,
+    maxZoom: 19
+  })
+
   mpsMap.on('click', mapClick)
   mpsMap.addLayer(markers)
+  mpsMap.addLayer(houses)
   mpsMap.addLayer(nears)
   loadSpaces()
   mpsMap.on('click', allToBackground)
@@ -85,6 +103,14 @@ function initMap () {
   filterButtonElement.id = 'filter'
   L.DomEvent.disableClickPropagation(filterButtonElement)
   L.DomEvent.on(filterButtonElement, 'click', filterButtonClick)
+  // Create the entrances button
+  const entrancesButtonElement = L.DomUtil.create('a', 'leaflet-control-entrances-button', container)
+  entrancesButtonElement.setAttribute('href', '#')
+  entrancesButtonElement.title = 'Ingressi'
+  entrancesButtonElement.innerHTML = '\u{2302}'
+  entrancesButtonElement.id = 'entrances'
+  L.DomEvent.disableClickPropagation(entrancesButtonElement)
+  L.DomEvent.on(entrancesButtonElement, 'click', onEntrancesButtonClick)
   // Add this leaflet control
   const UserControl = L.Control.extend({
     options: {
@@ -109,12 +135,25 @@ function initMap () {
       return container
     }
   })
+  // Add this leaflet control
+  const EntrancesControl = L.Control.extend({
+    options: {
+      position: 'topright'
+    },
+
+    onAdd: function () {
+      const container = L.DomUtil.create('div')
+      container.appendChild(entrancesButtonElement)
+      return container
+    }
+  })
   mpsMap.addControl(new UserControl())
   mpsMap.addControl(new FilterControl())
+  mpsMap.addControl(new EntrancesControl())
   // if(L.Browser.mobile) {
   // } else {
   // };
-  markers.eachLayer(function(marker) {
+  markers.eachLayer(function (marker) {
     colorizeMarker(marker)
   })
 };
@@ -154,12 +193,42 @@ function loadSpaces () {
     )
 }
 
+function loadEntrances () {
+  jca.list('entrances')
+  .then(function (response) {
+    response.records.forEach(function (item, index) {
+      const lat = parseFloat(item.latitude)
+      const lng = parseFloat(item.longitude)
+      const nndist = parseFloat(item.nearest_node_dst)
+      const color = item.flats_count >= 0 ? '#72a3eb' : '#ae7a7a'
+      const circMar = L.circleMarker([lat, lng], { radius: 5, color })
+      circMar.data = item
+      circMar.data.latitude = lat
+      circMar.data.longitude = lng
+      circMar.data.nearest_node_dst = nndist
+      circMar.bindTooltip(circMar.data.street_number)
+      circMar.on('click', onCircleEntranceClick)
+      circMar.addTo(houses)
+      // fill a dict with people distribution
+      if ( circMar.data.inhabited_flats_count != -1 ) {
+        const peoplePerNtt = circMar.data.inhabited_flats_count * flat_density
+        if (typeof peoplePerNtts[circMar.data.nearest_node_ID] === 'undefined') { peoplePerNtts[circMar.data.nearest_node_ID] = [] }
+        peoplePerNtts[circMar.data.nearest_node_ID].push([parseFloat(circMar.data.nearest_node_dst), peoplePerNtt])        
+      }
+    })
+  }).catch(
+      error => console.log(error)
+  )
+}
+
+
+
 function colorizeMarker (marker) {
-  let topic = marker.data.vocation
-  const topics = ['nessuna','movimento','natura','creatività','comunità','cura','contemplazione','attivismo','educazione']
+  const topic = marker.data.vocation
+  const topics = ['nessuna', 'movimento', 'natura', 'creatività', 'comunità', 'cura', 'contemplazione', 'attivismo', 'educazione']
   const mappingHue = [0, 25, 270, 240, 190, 145, 90, 320, 0]
   const mappingSat = [1, 1.6, 1.4, 1.8, 1.4, 1.1, 1, 1.1, 1.1]
-  if (topics.indexOf(topic) == 0) {
+  if (topics.indexOf(topic) === 0) {
     marker._icon.style.filter = 'saturate(0)'
   } else {
     marker._icon.style.filter = 'brightness(' + mappingSat[topics.indexOf(topic)] + ') hue-rotate(' + mappingHue[topics.indexOf(topic)] + 'deg)'
@@ -201,11 +270,11 @@ async function addPlace (latlng, data) {
 }
 
 // draw but do not show
-function drawIsochrone (marker) {
+function drawIsochrone (marker, force_update=false) {
   const latlng = [parseFloat(marker.data.latitude), parseFloat(marker.data.longitude)]
   const nn = nearestNodeID(latlng, waysDataNtts)
   // detect missing data or moved node this solution is prone to missing updates in case of markers far away from nodes
-  if ((nn[0] !== marker.data.nearest_node_ID) || (Number.isNaN(marker.data.isochrone_area5))) {
+  if (force_update || ((nn[0] !== marker.data.nearest_node_ID) || (Number.isNaN(marker.data.isochrone_area5)))) {
     recomputeDistances(marker, nn)
     // update record
     if (me !== null) {
@@ -247,16 +316,16 @@ function recomputeDistances (marker, nearNode) {
   }
   marker.data.nearest_node_ID = nearNode[0]
   marker.data.nearest_node_dst = nearNode[1]
-  const isodista = findIsodistancePolyline(waysDataNtts, marker.data.nearest_node_ID, marker.data.id, [pedonalDistance15, pedonalDistance10, pedonalDistance5], marker.data.nearest_node_dst)
+  const isodista = findIsodistancePolyline(waysDataNtts, peoplePerNtts, marker.data.nearest_node_ID, marker.data.id, [pedonalDistance15, pedonalDistance10, pedonalDistance5], marker.data.nearest_node_dst)
   marker.data.isochrone15_latlngs = findConvexHull(isodista[2])
   marker.data.isochrone10_latlngs = findConvexHull(isodista[1])
   marker.data.isochrone5_latlngs = findConvexHull(isodista[0])
-  // isodista[3] is a dict of places found while traversing, and their distance. Use them to save relevant information.
-  extractSpatialData(isodista[3], marker)
   const areas51015 = areaOfPolygons([marker.data.isochrone5_latlngs, marker.data.isochrone10_latlngs, marker.data.isochrone15_latlngs])
   marker.data.isochrone_area5 = parseInt(areas51015[0])
   marker.data.isochrone_area10 = parseInt(areas51015[1])
   marker.data.isochrone_area15 = parseInt(areas51015[2])
+  // isodista[3] is a dict of places found while traversing, and their distance. isodista[4] has the people count inside each isochrone. Use them to save relevant information.
+  extractSpatialData(isodista[3], isodista[4], marker)
   addMarkerToNodes(marker)
 }
 
@@ -265,8 +334,8 @@ function addValueToDict (dict, key, value) {
   return dict
 }
 
-// copy distances and inhabitants to the pertinent field
-function extractSpatialData (srcMarkerList, dstMarker) {
+// copy distances and inhabitants to the pertinent fields
+function extractSpatialData (srcMarkerList, peopleCount, dstMarker) {
   const updatedFields = {}
   srcMarkerList.forEach((element) => {
     const ma = element[0]
@@ -281,18 +350,42 @@ function extractSpatialData (srcMarkerList, dstMarker) {
       const fieldName = 'students_' + ma.data.type.slice(-1) + distanceSuffix
       // attendees_yearly
       addValueToDict(updatedFields, fieldName, ma.data.attendees_yearly)
+      // if distance is 0-5 add also to 5-10 and 10-15
+      if (distanceSuffix === '_5_m_walk') {
+        let tenFieldName = fieldName.replace('_5_', '_10_')
+        let ftFieldName = fieldName.replace('_5_', '_15_')
+        addValueToDict(updatedFields, tenFieldName, ma.data.attendees_yearly)
+        addValueToDict(updatedFields, ftFieldName, ma.data.attendees_yearly)
+      }
+      // if distance is 5-10 add also to 10-15
+      if (distanceSuffix === '_10_m_walk') {
+        let fifteenFieldName = fieldName.replace('_10_', '_15_')
+        addValueToDict(updatedFields, fifteenFieldName, ma.data.attendees_yearly)
+      }
     }
   })
+  updatedFields['residents_5_m_walk'] = parseInt(peopleCount[0])
+  updatedFields['residents_10_m_walk'] = parseInt(peopleCount[1])
+  updatedFields['residents_15_m_walk'] = parseInt(peopleCount[2])
+  updatedFields['habha_5_m_walk'] = (peopleCount[0] / ( dstMarker.data.isochrone_area5 / 10000 )).toFixed(2)
+  updatedFields['habha_10_m_walk'] = (peopleCount[1] / ( dstMarker.data.isochrone_area10 / 10000 )).toFixed(2)
+  updatedFields['habha_15_m_walk'] = (peopleCount[2] / ( dstMarker.data.isochrone_area15 / 10000 )).toFixed(2)
   updatePlace(dstMarker, updatedFields)
 }
 
 function addMarkerToNodes (marker) {
   // add marker to new nearest node's neighbours list
-  if (waysDataNtts[marker.data.nearest_node_ID].length === 3) {
-    waysDataNtts[marker.data.nearest_node_ID].push([])
-  }
-  if (!waysDataNtts[marker.data.nearest_node_ID][3].includes(marker)) {
-    waysDataNtts[marker.data.nearest_node_ID][3].push(marker)
+  try {
+    if (waysDataNtts[marker.data.nearest_node_ID].length === 3) {
+      waysDataNtts[marker.data.nearest_node_ID].push([])
+    }
+    if (!waysDataNtts[marker.data.nearest_node_ID][3].includes(marker)) {
+      waysDataNtts[marker.data.nearest_node_ID][3].push(marker)
+    }
+  } catch (err) {
+    console.log(err.message)
+    console.log('riposizionare marker nearest node')
+    console.log(marker.data.name)
   }
 }
 
@@ -338,6 +431,62 @@ function createNewSpace (latlng, named) {
   )
 }
 
+function createNewEntrance (latlng, streetName, streetNumber, city, flatCount, inhabitedFlatCount, nearestNode) {
+  let datetimeNow = new Date()
+  datetimeNow = datetimeNow.toISOString()
+  const enData = {
+      street: streetName,
+      street_number: streetNumber,
+      city,
+      latitude: latlng.lat,
+      longitude: latlng.lng,
+      nearest_node_ID: nearestNode[0],
+      nearest_node_dst: nearestNode[1],
+      flats_count: flatCount,
+      inhabited_flats_count: inhabitedFlatCount,
+      datetime_created: datetimeNow,
+      created_by: me.username
+    }
+  jca.create('entrances', [
+    enData
+  ]).then(function (response) { 
+    if (Number.isInteger(response[0])) {
+      const idEn = response[0]
+      console.log(response)
+      const color = enData.flats_count >= 0 ? '#72a3eb' : '#ae7a7a'
+      const circMar = L.circleMarker(latlng, { radius: 5, color }).bindTooltip(streetNumber).on('click', onCircleEntranceClick)
+      circMar.data = enData
+      circMar.data.id = idEn
+      circMar.addTo(houses) 
+    } }).catch(
+      error => console.log(error)
+    )
+}
+
+function updateEntrance (id, streetName, streetNumber, city, flatCount, inhabitedFlatCount) {
+  let datetimeNow = new Date()
+  datetimeNow = datetimeNow.toISOString()
+  const dataDict = {
+    street: streetName,
+    street_number: streetNumber,
+    city,
+    flats_count: flatCount,
+    inhabited_flats_count: inhabitedFlatCount,
+    datetime_last_edited: datetimeNow,
+    edited_by: me.username
+  }
+  for (const [key, value] of Object.entries(dataDict)) {
+    activeEntrance.data[key] = value
+  };
+  // update marker color
+  const color = dataDict.flats_count >= 0 ? '#72a3eb' : '#ae7a7a'
+  activeEntrance.setStyle({ color })
+  jca.update('entrances', id,
+    dataDict).catch(
+    error => console.log(error)
+  )
+}
+
 // marker interaction
 function onMarkerClick (e) {
   if (activeMarker !== null) {
@@ -347,6 +496,13 @@ function onMarkerClick (e) {
   placeToForeground(this.data)
   // here calculate, save and visualize spatial statistics.
   drawViewdata(activeMarker)
+}
+
+// entrance editing
+function onCircleEntranceClick (e) {
+  activeEntrance = this
+  entrancesToForeground(this.data)
+  L.DomEvent.stopPropagation(e)
 }
 
 function toggleUserPanel () {
@@ -372,7 +528,7 @@ function toggleTabPanels () {
 }
 
 function loginError (e) {
-  //console.log(e)
+  // console.log(e)
   authToForeground()
   unsetMe()
   if (e.code === 1012) {
@@ -381,23 +537,24 @@ function loginError (e) {
 }
 
 function registerError (e) {
-  //console.log(e)
+  // console.log(e)
   authToForeground()
   document.getElementById('registerMessage').innerText = e.message
 }
 
-function registerMe(dati) {
-    if (dati.hasOwnProperty('code')) {
-        registerError(dati)
-    } else {
-        allToBackground()
-        const registerFields = document.getElementsByClassName('registr')
-        for (const f of registerFields) {
-            f.value = ""
-        }
-        document.getElementById("signupCheck").checked = false 
-        alert("Bin venü! Ti abbiamo inviato una email con il link per confermare il tuo account!!");
+function registerMe (dati) {
+  // eslint-disable-next-line no-prototype-builtins
+  if (dati.hasOwnProperty('code')) {
+    registerError(dati)
+  } else {
+    allToBackground()
+    const registerFields = document.getElementsByClassName('registr')
+    for (const f of registerFields) {
+      f.value = ''
     }
+    document.getElementById('signupCheck').checked = false
+    alert('Bin venü! Ti abbiamo inviato una email con il link per confermare il tuo account!!')
+  }
 }
 
 function setMe (dati) {
@@ -418,9 +575,24 @@ function setMe (dati) {
     }
   })
   allToBackground()
+  // this is rude, why not adding an admin field?
+  if (me.id === 1) {
+    document.getElementById('entrances').parentElement.style.display = 'block'
+    if (houses.getLayers().length === 0) {
+      loadEntrances()
+    }
+  }
+  if (me.id == 1) {
+    mpsMap.addLayer(houseNumbersLayer)
+  }
 }
 
 function unsetMe () {
+  if (me != null) {
+    if (me.id == 1) {
+      mpsMap.removeLayer(houseNumbersLayer)
+    }
+  }
   me = null
   document.getElementById('profileUsername').innerText = ''
   document.getElementById('profileFirst_name').innerText = ''
@@ -438,11 +610,23 @@ function unsetMe () {
     }
   })
   allToBackground()
+  document.getElementById('entrances').parentElement.style.display = 'none'
+
+}
+
+function fillEntranceFields (data) {
+  for (const [key, value] of Object.entries(data)) {
+    if (document.getElementById('entrances-' + key)) {
+      document.getElementById('entrances-' + key).value = value
+    }
+  }
 }
 
 function fillPlaceFields (data) {
   for (const [key, value] of Object.entries(data)) {
     if (document.getElementById('spazi-' + key)) {
+      let readonly = document.getElementById('spazi-' + key).readOnly
+      document.getElementById('spazi-' + key).readOnly = false
       // dirotta immagini su img field, il browser blocca input file fields
       if (['picture_1', 'picture_2', 'picture_3'].includes(key)) {
         if (value != null) {
@@ -457,7 +641,7 @@ function fillPlaceFields (data) {
         for (const b of fboxes) {
           if (b.checked) { b.checked = false };
         };
-        if (value != null) {
+        if ((value != null) && (value != '')) {
           const values = value.split(', ')
           values.forEach(function (v) { document.getElementsByName(v.replace(' ', '_'))[0].checked = true })
         }
@@ -466,12 +650,15 @@ function fillPlaceFields (data) {
         for (const b of rboxes) {
           if (b.checked) { b.checked = false };
         };
-        if (value != null) {
+        if ((value != null) && (value != '')) {
           const values = value.split(', ')
           values.forEach(function (v) { document.getElementsByName(v.replace(' ', '_'))[0].checked = true })
         }
       } else {
         document.getElementById('spazi-' + key).value = value
+      }
+      if (readonly) {
+        document.getElementById('spazi-' + key).readOnly = true
       }
     };
     if (key === 'description') {
@@ -529,24 +716,37 @@ function updatePlace (marker, dataDict) {
 function placeToForeground (data) {
   fillPlaceFields(data)
   panelsHidden = false
-  document.getElementById('cnvPlaceBox').style.zIndex = '15'
+  document.getElementById('cnvPlaceBox').style.display = 'block'
 }
 
 function userToForeground () {
   panelsHidden = false
-  document.getElementById('cnvUserBox').style.zIndex = '15'
+  document.getElementById('cnvUserBox').style.display = 'block'
 }
 
 function authToForeground () {
   panelsHidden = false
-  document.getElementById('cnvAuthBox').style.zIndex = '15'
+  document.getElementById('cnvAuthBox').style.display = 'block'
+}
+
+function entrancesToForeground (data=null) {
+  if (data != null) { 
+    fillEntranceFields(data)
+  }
+  panelsHidden = false
+  document.getElementById('cnvEntrancesBox').style.display = 'block'
 }
 
 function allToBackground () {
   panelsHidden = true
-  document.getElementById('cnvPlaceBox').style.zIndex = '5'
-  document.getElementById('cnvAuthBox').style.zIndex = '5'
-  document.getElementById('cnvUserBox').style.zIndex = '5'
+  document.getElementById('blanket').style.display = 'none'
+  document.getElementById('cnvPlaceBox').style.display = 'none'
+  document.getElementById('cnvAuthBox').style.display = 'none'
+  document.getElementById('cnvUserBox').style.display = 'none'
+  document.getElementById('cnvEntrancesBox').style.display = 'none'
+  if (entranceMarker !== undefined) {
+    mpsMap.removeLayer(entranceMarker)
+  }
 }
 
 function checkTerms () {
@@ -577,6 +777,26 @@ function onUpdateListboxfields (event, cname) {
 function filterButtonClick () {
   // Perform filtering logic here
   console.log('Filter button clicked!')
+}
+
+// Define the onClick function for the filter button
+function onEntrancesButtonClick () {
+  document.getElementById('entrances-id').value = ''
+  document.getElementById('entrances-inhabited_flats_count').value = -1
+  document.getElementById('entrances-flats_count').value = -1
+  entrancesToForeground()
+  addEntrance()
+}
+
+function addEntrance () {
+  const entranceIcon = L.icon({
+    iconUrl: 'images/marker-icon_entrance.png',
+    iconSize: [25, 41],
+    iconAnchor: [12, 41],
+    shadowUrl: 'images/marker-shadow.png',
+    shadowSize: [41, 41]
+  })
+  entranceMarker = L.marker(mpsMap.getCenter(), { draggable: 'true', icon: entranceIcon }).addTo(mpsMap)
 }
 
 // eslint-disable-next-line no-unused-vars
@@ -646,9 +866,9 @@ const octodescriptions = {
   nature: "<b>Natura:</b> osservare o interagire con la natura e prendersi cura dell'ambiente.",
   creativity: "<b>Creatività:</b> per esempio la creazione o l'espressione artistica, come recitare, laboratori artistici o fare musica. ",
   conviviality: '<b>Comunità:</b> per esempio mangiare e bere assieme, feste, riunioni o giocare. ',
-  care: "<b>Cura:</b> per esempio fare volontariato, fornire assistenza e supporto a persone in situazioni di bisogno.",
+  care: '<b>Cura:</b> per esempio fare volontariato, fornire assistenza e supporto a persone in situazioni di bisogno.',
   contemplation: '<b>Contemplazione:</b> per esempio attività come preghiera, meditazione, consapevolezza.',
-  citizenship: "<b>Attivismo:</b> attività civiche, politiche, culturali o sociali che generano un valore o che promuovono il benessere e lo sviluppo delle comunità.",
+  citizenship: '<b>Attivismo:</b> attività civiche, politiche, culturali o sociali che generano un valore o che promuovono il benessere e lo sviluppo delle comunità.',
   learning: '<b>Educazione:</b> per esempio lo studio in gruppo, i gruppi di lettura e la partecipazione ad attività educative.'
 }
 
@@ -745,16 +965,17 @@ function todoOnload () {
   document.getElementById('spazi-resources').addEventListener('focusout', function (e) {
     onUpdateListboxfields(e, 'resources')
   })
-  
+
   document.getElementById('spazi-vocation').addEventListener('focusout', function (e) {
-    let mar = activeMarker
-    colorizeMarker(mar)
+    colorizeMarker(activeMarker)
   })
 
   const tabs = document.getElementsByName('tabset')
   for (let i = 0; i < tabs.length; i++) {
     tabs[i].nextElementSibling.addEventListener('pointerdown', function (e) { document.getElementsByClassName('tab-panels')[0].style.height = '60vh' })
   }
+
+  document.getElementsByName('cancelEntrances')[0].addEventListener('click', allToBackground)
 
   document.register.addEventListener('submit', async event => {
     event.preventDefault()
@@ -763,20 +984,20 @@ function todoOnload () {
     data.forEach((value, key) => (formDataObj[key] = value))
 
     fetch(
-        apiUrl + '/register',
-        {
-          method: 'POST',
-          body: JSON.stringify(formDataObj)
-        }
+      apiUrl + '/register',
+      {
+        method: 'POST',
+        body: JSON.stringify(formDataObj)
+      }
     ).then(response => response.json()
     ).then(data => registerMe(data)
     ).catch(
       error => registerError(error)
     )
-    })
+  })
 
   document.getElementById('cnvUserBox').addEventListener('click', function (e) {
-    document.getElementById('cnvUserBox').style.zIndex = '5'
+    document.getElementById('cnvUserBox').style.display = 'none'
   })
 
   document.access.addEventListener('submit', async event => {
@@ -786,6 +1007,27 @@ function todoOnload () {
     ).catch(
       error => loginError(error)
     )
+  })
+
+  document.entrances.addEventListener('submit', async event => {
+    event.preventDefault()
+    var latlng
+    var nn
+    if (entranceMarker !== undefined) {
+      latlng = entranceMarker.getLatLng()
+      nn = nearestNodeID([latlng.lat,latlng.lng], waysDataNtts)
+    }
+    const streetName = document.getElementById('entrances-street').value
+    const streetNumber = document.getElementById('entrances-street_number').value
+    const city = document.getElementById('entrances-city').value
+    const id = document.getElementById('entrances-id').value
+    const flatCount = document.getElementById('entrances-flats_count').value
+    const inhabitedFlatCount = document.getElementById('entrances-inhabited_flats_count').value
+    if (id === '') {
+      createNewEntrance(latlng, streetName, streetNumber, city, flatCount, inhabitedFlatCount, nn)
+    } else {
+      updateEntrance(id, streetName, streetNumber, city, flatCount, inhabitedFlatCount)
+    }
   })
 
   document.logout.addEventListener('submit', async event => {
@@ -813,6 +1055,34 @@ function todoOnload () {
       updatePlace(activeMarker, { description: html })
     }
   })
+  
+  const spinners = document.querySelectorAll('input[type="number"].spinner');
+  spinners.forEach(function(spinner) {
+    const decreaseDiv = document.createElement('div');
+    decreaseDiv.textContent = '-';
+    decreaseDiv.classList.add('decrease');
+    decreaseDiv.addEventListener('click', function() {
+      if (spinner.value >= 0) {
+        spinner.value = parseInt(spinner.value) - 1;
+      }
+    });
+    spinner.parentNode.insertBefore(decreaseDiv, spinner);
+
+    const increaseDiv = document.createElement('div');
+    increaseDiv.textContent = '+';
+    increaseDiv.classList.add('increase');
+    if (spinner.id === "entrances-flats_count") { 
+      increaseDiv.addEventListener('click', function() {
+        spinner.value = parseInt(spinner.value) + 1;
+        spinner.parentElement.nextElementSibling.children[2].value = parseInt(spinner.parentElement.nextElementSibling.children[2].value) + 1;
+      });
+    } else {
+      increaseDiv.addEventListener('click', function() {
+        spinner.value = parseInt(spinner.value) + 1;
+      });
+    }
+    spinner.parentNode.insertBefore(increaseDiv, spinner.nextSibling);
+  });
 
   initMap()
 }

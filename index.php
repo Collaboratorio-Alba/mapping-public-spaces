@@ -78,6 +78,7 @@
                         <option value="scuola_h">scuola superiore</option>
                         <option value="biblioteca">biblioteca/libreria/centro culturale</option>
                         <option value="parrocchia">parrocchia/centro religioso</option>
+                        <option value="cinema_teatro">cinema/teatro</option>
                         <option value="centro_sportivo">campo sportivo/area gioco</option>
                         <option value="centro_giovani">centro giovani</option>
                         <option value="centro_sociale">circolo/centro sociale</option>
@@ -296,45 +297,45 @@
                     <tbody>
                       <tr>
                         <td class="tg-0lax">densità residenti nell'area raggiungibile [abitanti/ha]</td>
-                        <td class="tg-0lax"><input type="number" min="0" max="20000" value="0" class="readonly form-control ui" id="spazi-habha_5_m_walk" readonly></td>
-                        <td class="tg-0lax"><input type="number" min="0" max="20000" value="0" class="readonly form-control ui" id="spazi-habha_10_m_walk" readonly></td>
-                        <td class="tg-0lax"><input type="number" min="0" max="20000" value="0" class="readonly form-control ui" id="spazi-habha_15_m_walk" readonly></td>
+                        <td class="tg-0lax"><input type="number" class="readonly form-control ui" id="spazi-habha_5_m_walk" readonly></td>
+                        <td class="tg-0lax"><input type="number" class="readonly form-control ui" id="spazi-habha_10_m_walk" readonly></td>
+                        <td class="tg-0lax"><input type="number" class="readonly form-control ui" id="spazi-habha_15_m_walk" readonly></td>
                       </tr>
                       <tr>
                         <td class="tg-0lax">persone residenti nell'area raggiungibile [ab]</td>
-                        <td class="tg-0lax"><input type="number" min="0" max="20000" value="0" class="readonly form-control ui" id="spazi-residents_5_m_walk" readonly></td>
-                        <td class="tg-0lax"><input type="number" min="0" max="20000" value="0" class="readonly form-control ui" id="spazi-residents_10_m_walk" readonly></td>
-                        <td class="tg-0lax"><input type="number" min="0" max="20000" value="0" class="readonly form-control ui" id="spazi-residents_15_m_walk" readonly></td>
+                        <td class="tg-0lax"><input type="number" class="readonly form-control ui" id="spazi-residents_5_m_walk" readonly></td>
+                        <td class="tg-0lax"><input type="number" class="readonly form-control ui" id="spazi-residents_10_m_walk" readonly></td>
+                        <td class="tg-0lax"><input type="number" class="readonly form-control ui" id="spazi-residents_15_m_walk" readonly></td>
                       </tr>
                       <tr>
                         <td class="tg-0lax">n. di studenti da uscite scuole materne<br></td>
-                        <td class="tg-0lax"><input type="number" min="0" max="2000" value="0" class="readonly form-control ui" id="spazi-students_k_5_m_walk" readonly></td>
-                        <td class="tg-0lax"><input type="number" min="0" max="5000" value="0" class="readonly form-control ui" id="spazi-students_k_10_m_walk" readonly></td>
-                        <td class="tg-0lax"><input type="number" min="0" max="5000" value="0" class="readonly form-control ui" id="spazi-students_k_15_m_walk" readonly></td>
+                        <td class="tg-0lax"><input type="number" class="readonly form-control ui" id="spazi-students_k_5_m_walk" readonly></td>
+                        <td class="tg-0lax"><input type="number" class="readonly form-control ui" id="spazi-students_k_10_m_walk" readonly></td>
+                        <td class="tg-0lax"><input type="number" class="readonly form-control ui" id="spazi-students_k_15_m_walk" readonly></td>
                       </tr>
                       <tr>
                         <td class="tg-0lax">n. di studenti da uscite scuole elementari</td>
-                        <td class="tg-0lax"><input type="number" min="0" max="5000" value="0" class="readonly form-control ui" id="spazi-students_p_5_m_walk" readonly></td>
-                        <td class="tg-0lax"><input type="number" min="0" max="5000" value="0" class="readonly form-control ui" id="spazi-students_p_10_m_walk" readonly></td>
-                        <td class="tg-0lax"><input type="number" min="0" max="5000" value="0" class="readonly form-control ui" id="spazi-students_p_15_m_walk" readonly></td>
+                        <td class="tg-0lax"><input type="number" class="readonly form-control ui" id="spazi-students_p_5_m_walk" readonly></td>
+                        <td class="tg-0lax"><input type="number" class="readonly form-control ui" id="spazi-students_p_10_m_walk" readonly></td>
+                        <td class="tg-0lax"><input type="number" class="readonly form-control ui" id="spazi-students_p_15_m_walk" readonly></td>
                       </tr>
                       <tr>
                         <td class="tg-0lax">n. di studenti da uscite scuole medie</td>
-                        <td class="tg-0lax"><input type="number" min="0" max="5000" value="0" class="readonly form-control ui" id="spazi-students_m_5_m_walk" readonly></td>
-                        <td class="tg-0lax"><input type="number" min="0" max="5000" value="0" class="readonly form-control ui" id="spazi-students_m_10_m_walk" readonly></td>
-                        <td class="tg-0lax"><input type="number" min="0" max="5000" value="0" class="readonly form-control ui" id="spazi-students_m_15_m_walk" readonly></td>
+                        <td class="tg-0lax"><input type="number" class="readonly form-control ui" id="spazi-students_m_5_m_walk" readonly></td>
+                        <td class="tg-0lax"><input type="number" class="readonly form-control ui" id="spazi-students_m_10_m_walk" readonly></td>
+                        <td class="tg-0lax"><input type="number" class="readonly form-control ui" id="spazi-students_m_15_m_walk" readonly></td>
                       </tr>
                       <tr>
                         <td class="tg-0lax">n. di studenti da uscite scuole superiori</td>
-                        <td class="tg-0lax"><input type="number" min="0" max="5000" value="0" class="readonly form-control ui" id="spazi-students_h_5_m_walk" readonly></td>
-                        <td class="tg-0lax"><input type="number" min="0" max="5000" value="0" class="readonly form-control ui" id="spazi-students_h_10_m_walk" readonly></td>
-                        <td class="tg-0lax"><input type="number" min="0" max="5000" value="0" class="readonly form-control ui" id="spazi-students_h_15_m_walk" readonly></td>
+                        <td class="tg-0lax"><input type="number" class="readonly form-control ui" id="spazi-students_h_5_m_walk" readonly></td>
+                        <td class="tg-0lax"><input type="number" class="readonly form-control ui" id="spazi-students_h_10_m_walk" readonly></td>
+                        <td class="tg-0lax"><input type="number" class="readonly form-control ui" id="spazi-students_h_15_m_walk" readonly></td>
                       </tr>
                       <tr>
                         <td class="tg-0lax">n. di persone frequentanti altri poli di aggregazione sociale</td>
-                        <td class="tg-0lax"><input type="number" min="0" max="5000" value="0" class="readonly form-control ui" id="spazi-social_spaces_5_m_walk" readonly></td>
-                        <td class="tg-0lax"><input type="number" min="0" max="5000" value="0" class="readonly form-control ui" id="spazi-social_spaces_10_m_walk" readonly></td>
-                        <td class="tg-0lax"><input type="number" min="0" max="5000" value="0" class="readonly form-control ui" id="spazi-social_spaces_15_m_walk" readonly></td>
+                        <td class="tg-0lax"><input type="number" class="readonly form-control ui" id="spazi-social_spaces_5_m_walk" readonly></td>
+                        <td class="tg-0lax"><input type="number" class="readonly form-control ui" id="spazi-social_spaces_10_m_walk" readonly></td>
+                        <td class="tg-0lax"><input type="number" class="readonly form-control ui" id="spazi-social_spaces_15_m_walk" readonly></td>
                       </tr>
                     </tbody>
                   </table>
@@ -348,10 +349,10 @@
                         <span><input type="checkbox" class="fairness ui" id="disabilità" name="disabilità" value="disabilità">
                         <label for="disabilità">disabilità</label></span>
 
-                        <span><input type="checkbox" class="fairness ui" name="età" id="età" value="età">
+                        <span><input type="checkbox" class="fairness ui" name="infanzia" id="infanzia" value="infanzia">
                         <label for="infanzia">prima infanzia e maternità</label></span>
 
-                        <span><input type="checkbox" class="fairness ui" name="età" id="età" value="età">
+                        <span><input type="checkbox" class="fairness ui" name="terza_età" id="terza_età" value="terza_età">
                         <label for="terza_età">terza e quarta età</label></span>
 
                         <span><input type="checkbox" class="fairness ui" name="economiche" id="economiche" value="economiche">
@@ -666,6 +667,40 @@
         </form>
         </div>
     </section>    
+</div>
+<!-- entrances -->
+<div id="cnvEntrancesBox">
+        <div class="profile" id="mpsEntrances">
+          <form name="entrances" action="#">
+            <div>
+            <label for="entrances-city" class="entrances-meta-label">Città</label></td>
+            <input type="text" class="form-control ui" name="entrances-city" id="entrances-city">
+            </div>
+            <div>
+            <label for="entrances-street" class="entrances-meta-label">Strada/via</label></td>
+            <input type="text" class="form-control ui" name="entrances-street" id="entrances-street">
+            </div>
+            <div>
+            <label for="entrances-street_number" class="entrances-meta-label">Numero civico</label></td>
+            <input type="text" class="form-control ui" name="entrances-street_number" id="entrances-street_number">
+            </div>
+            <div>
+            <label for="entrances-flats_count" class="entrances-meta-label">Interni uso abitazione</label></td>
+            <input type="number" class="form-control spinner ui" name="entrances-flats_count" id="entrances-flats_count">
+            </div>
+            <div>
+            <label for="entrances-inhabited_flats_count" class="entrances-meta-label">Interni abitati (&#128236;)</label></td>
+            <input type="number" class="form-control spinner ui" name="entrances-inhabited_flats_count" id="entrances-inhabited_flats_count">
+            </div>
+            <div>
+            <input type="hidden" name="entrances-id" id="entrances-id" value="">
+            </div>
+            <div class="clear">
+              <input type="button" name="cancelEntrances" value="Annulla" />
+              <input type="submit" name="Entrances" value="Invia">
+            </div>
+          </form>
+        </div>    
 </div>
 <div id="cnvAuthBox">
     <section class="wrapper">

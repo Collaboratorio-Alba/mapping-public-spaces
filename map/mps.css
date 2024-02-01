@@ -22,6 +22,7 @@ html, body, #mpsMap {
 }
 
 .leaflet-control-filter-button,
+.leaflet-control-entrances-button,
 .leaflet-user-button  {
     display: block;
     background-color: #fff;
@@ -49,6 +50,7 @@ html, body, #mpsMap {
 }
 
 /* Chrome, Safari, Edge, Opera */
+/*
 input[type="number"].readonly::-webkit-outer-spin-button ,
 input[type="number"].readonly::-webkit-inner-spin-button   {
     -webkit-appearance: none;
@@ -56,9 +58,10 @@ input[type="number"].readonly::-webkit-inner-spin-button   {
     width: 5em;
     background-color: transparent;
 }
+*/
 
 /* Firefox */
-input[type="number"].readonly {
+#utenza > table input[type="number"] {
     -moz-appearance: textfield;
     width: 5em;
     background-color: transparent;
@@ -75,7 +78,7 @@ input[type="number"].readonly {
     cursor: ns-resize;
 }
 
-#cnvAuthBox, #cnvUserBox {
+#cnvAuthBox, #cnvUserBox, #cnvEntrancesBox {
     position: absolute;
     top: 15vh;
     left: 0; 
@@ -84,7 +87,7 @@ input[type="number"].readonly {
     width:80vw;
     max-width: 600px;
     padding:10px;
-    z-index: 5;
+    z-index: 15;
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
     border-radius: 12px;
@@ -101,7 +104,7 @@ input[type="number"].readonly {
     width:90vw;
     max-width:550px;
     padding:8px;
-    z-index: 5;
+    z-index: 15;
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
     border-radius: 12px;
@@ -115,12 +118,45 @@ input[type="number"].readonly {
 #mpsAuthentication, #mpsUser, #mpsPlace {
 }
 
+#cnvEntrancesBox input {
+    width: 5em;
+    margin: 0.3em;
+}
+
+#cnvEntrancesBox {
+    z-index: 15;
+    top: 10vh;
+}
+
+#cnvEntrancesBox input[name="Entrances"]{
+    float: right;
+}
+
+#cnvEntrancesBox input[name="entrances-street"]{
+    width: 50%;
+}
+
+#cnvEntrancesBox input[name="entrances-flats_count"],
+#cnvEntrancesBox input[name="entrances-inhabited_flats_count"]{
+    width: 2em;
+}
+
+#cnvEntrancesBox .clear {
+    clear: both;
+}
+
+#cnvEntrancesBox label {
+    display: inline-block;
+    margin: 0.3em;
+    width: 30%;
+    text-align: right;
+}
 
 #blanket {
     position:fixed;
     width:100vw;
-    height:100vw;
-    z-index: 8;
+    height:100vh;
+    z-index: 18;
     background-color: white;
 }
 /* login form */
@@ -528,3 +564,27 @@ fieldset span {
     vertical-align:top
 }
 
+.decrease, .increase {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  line-height: 20px;
+  text-align: center;
+  cursor: pointer;
+  user-select: none;
+}
+
+input[type=number] {
+    -moz-appearance: textfield; /* Firefox */
+    appearance: textfield; /* Others */
+}
+
+/* Style the decrease button */
+.decrease {
+  background-color: #ffcccc;
+}
+
+/* Style the increase button */
+.increase {
+  background-color: #ccffcc;
+}
