@@ -8,7 +8,7 @@ const mapCenter = [44.6798, 8.0362]
 const waysDataFile = '/data/nodes.json'
 const waysDataNtts = {}
 const peoplePerNtts = {}
-const flat_density = 2.25 // in base a dati ISTAT 2011
+const flatDensity = 2.25 // in base a dati ISTAT 2011
 let me
 let mpsMap
 let activeMarker
@@ -24,8 +24,7 @@ const pedonalDistance5 = parseInt(pedonalDistance15 / 3)
 // 'Access-Control-Allow-Methods':'GET, POST, PUT, DELETE, PATCH, OPTIONS',
 // 'Access-Control-Allow-Headers':'Origin, X-Requested-With, Content, Accept, Content-Type, Authorization'}};
 // limits of colored map computation
-const boundingRect = L.latLngBounds(L.latLng(44.6437000,7.9709000), L.latLng(44.7370000,8.0593000));
-
+// const boundingRect = L.latLngBounds(L.latLng(44.6437000,7.9709000), L.latLng(44.7370000,8.0593000));
 
 /**
  * Represents a JavaScript CRUD API client for performing CRUD operations on a specific API endpoint.
@@ -195,33 +194,31 @@ function loadSpaces () {
 
 function loadEntrances () {
   jca.list('entrances')
-  .then(function (response) {
-    response.records.forEach(function (item, index) {
-      const lat = parseFloat(item.latitude)
-      const lng = parseFloat(item.longitude)
-      const nndist = parseFloat(item.nearest_node_dst)
-      const color = item.flats_count >= 0 ? '#72a3eb' : '#ae7a7a'
-      const circMar = L.circleMarker([lat, lng], { radius: 5, color })
-      circMar.data = item
-      circMar.data.latitude = lat
-      circMar.data.longitude = lng
-      circMar.data.nearest_node_dst = nndist
-      circMar.bindTooltip(circMar.data.street_number)
-      circMar.on('click', onCircleEntranceClick)
-      circMar.addTo(houses)
-      // fill a dict with people distribution
-      if ( circMar.data.inhabited_flats_count != -1 ) {
-        const peoplePerNtt = circMar.data.inhabited_flats_count * flat_density
-        if (typeof peoplePerNtts[circMar.data.nearest_node_ID] === 'undefined') { peoplePerNtts[circMar.data.nearest_node_ID] = [] }
-        peoplePerNtts[circMar.data.nearest_node_ID].push([parseFloat(circMar.data.nearest_node_dst), peoplePerNtt])        
-      }
-    })
-  }).catch(
+    .then(function (response) {
+      response.records.forEach(function (item, index) {
+        const lat = parseFloat(item.latitude)
+        const lng = parseFloat(item.longitude)
+        const nndist = parseFloat(item.nearest_node_dst)
+        const color = item.flats_count >= 0 ? '#72a3eb' : '#ae7a7a'
+        const circMar = L.circleMarker([lat, lng], { radius: 5, color })
+        circMar.data = item
+        circMar.data.latitude = lat
+        circMar.data.longitude = lng
+        circMar.data.nearest_node_dst = nndist
+        circMar.bindTooltip(circMar.data.street_number)
+        circMar.on('click', onCircleEntranceClick)
+        circMar.addTo(houses)
+        // fill a dict with people distribution
+        if (circMar.data.inhabited_flats_count !== -1) {
+          const peoplePerNtt = circMar.data.inhabited_flats_count * flatDensity
+          if (typeof peoplePerNtts[circMar.data.nearest_node_ID] === 'undefined') { peoplePerNtts[circMar.data.nearest_node_ID] = [] }
+          peoplePerNtts[circMar.data.nearest_node_ID].push([parseFloat(circMar.data.nearest_node_dst), peoplePerNtt])
+        }
+      })
+    }).catch(
       error => console.log(error)
-  )
+    )
 }
-
-
 
 function colorizeMarker (marker) {
   const topic = marker.data.vocation
@@ -270,11 +267,11 @@ async function addPlace (latlng, data) {
 }
 
 // draw but do not show
-function drawIsochrone (marker, force_update=false) {
+function drawIsochrone (marker, forceUpdate = false) {
   const latlng = [parseFloat(marker.data.latitude), parseFloat(marker.data.longitude)]
   const nn = nearestNodeID(latlng, waysDataNtts)
   // detect missing data or moved node this solution is prone to missing updates in case of markers far away from nodes
-  if (force_update || ((nn[0] !== marker.data.nearest_node_ID) || (Number.isNaN(marker.data.isochrone_area5)))) {
+  if (forceUpdate || ((nn[0] !== marker.data.nearest_node_ID) || (Number.isNaN(marker.data.isochrone_area5)))) {
     recomputeDistances(marker, nn)
     // update record
     if (me !== null) {
@@ -304,6 +301,13 @@ function drawIsochrone (marker, force_update=false) {
   marker.viewdata.isochrone15 = L.polygon(marker.data.isochrone15_latlngs, { weight: 1 }).bindTooltip('15 minuti a piedi')
   marker.viewdata.nearLine = L.polyline([coordsNear, latlng])
   marker.viewdata.near = L.circleMarker(coordsNear, { radius: 5 })
+}
+
+// eslint-disable-next-line no-unused-vars
+function recomputeAllMarkers () {
+  if ((typeof me !== 'undefined') && (me !== null)) {
+    markers.eachLayer(function (l) { console.log(l.data.name); drawIsochrone(l, true) })
+  }
 }
 
 function recomputeDistances (marker, nearNode) {
@@ -352,24 +356,24 @@ function extractSpatialData (srcMarkerList, peopleCount, dstMarker) {
       addValueToDict(updatedFields, fieldName, ma.data.attendees_yearly)
       // if distance is 0-5 add also to 5-10 and 10-15
       if (distanceSuffix === '_5_m_walk') {
-        let tenFieldName = fieldName.replace('_5_', '_10_')
-        let ftFieldName = fieldName.replace('_5_', '_15_')
+        const tenFieldName = fieldName.replace('_5_', '_10_')
+        const ftFieldName = fieldName.replace('_5_', '_15_')
         addValueToDict(updatedFields, tenFieldName, ma.data.attendees_yearly)
         addValueToDict(updatedFields, ftFieldName, ma.data.attendees_yearly)
       }
       // if distance is 5-10 add also to 10-15
       if (distanceSuffix === '_10_m_walk') {
-        let fifteenFieldName = fieldName.replace('_10_', '_15_')
+        const fifteenFieldName = fieldName.replace('_10_', '_15_')
         addValueToDict(updatedFields, fifteenFieldName, ma.data.attendees_yearly)
       }
     }
   })
-  updatedFields['residents_5_m_walk'] = parseInt(peopleCount[0])
-  updatedFields['residents_10_m_walk'] = parseInt(peopleCount[1])
-  updatedFields['residents_15_m_walk'] = parseInt(peopleCount[2])
-  updatedFields['habha_5_m_walk'] = (peopleCount[0] / ( dstMarker.data.isochrone_area5 / 10000 )).toFixed(2)
-  updatedFields['habha_10_m_walk'] = (peopleCount[1] / ( dstMarker.data.isochrone_area10 / 10000 )).toFixed(2)
-  updatedFields['habha_15_m_walk'] = (peopleCount[2] / ( dstMarker.data.isochrone_area15 / 10000 )).toFixed(2)
+  updatedFields.residents_5_m_walk = parseInt(peopleCount[0])
+  updatedFields.residents_10_m_walk = parseInt(peopleCount[1])
+  updatedFields.residents_15_m_walk = parseInt(peopleCount[2])
+  updatedFields.habha_5_m_walk = (peopleCount[0] / (dstMarker.data.isochrone_area5 / 10000)).toFixed(2)
+  updatedFields.habha_10_m_walk = (peopleCount[1] / (dstMarker.data.isochrone_area10 / 10000)).toFixed(2)
+  updatedFields.habha_15_m_walk = (peopleCount[2] / (dstMarker.data.isochrone_area15 / 10000)).toFixed(2)
   updatePlace(dstMarker, updatedFields)
 }
 
@@ -435,21 +439,21 @@ function createNewEntrance (latlng, streetName, streetNumber, city, flatCount, i
   let datetimeNow = new Date()
   datetimeNow = datetimeNow.toISOString()
   const enData = {
-      street: streetName,
-      street_number: streetNumber,
-      city,
-      latitude: latlng.lat,
-      longitude: latlng.lng,
-      nearest_node_ID: nearestNode[0],
-      nearest_node_dst: nearestNode[1],
-      flats_count: flatCount,
-      inhabited_flats_count: inhabitedFlatCount,
-      datetime_created: datetimeNow,
-      created_by: me.username
-    }
+    street: streetName,
+    street_number: streetNumber,
+    city,
+    latitude: latlng.lat,
+    longitude: latlng.lng,
+    nearest_node_ID: nearestNode[0],
+    nearest_node_dst: nearestNode[1],
+    flats_count: flatCount,
+    inhabited_flats_count: inhabitedFlatCount,
+    datetime_created: datetimeNow,
+    created_by: me.username
+  }
   jca.create('entrances', [
     enData
-  ]).then(function (response) { 
+  ]).then(function (response) {
     if (Number.isInteger(response[0])) {
       const idEn = response[0]
       console.log(response)
@@ -457,10 +461,11 @@ function createNewEntrance (latlng, streetName, streetNumber, city, flatCount, i
       const circMar = L.circleMarker(latlng, { radius: 5, color }).bindTooltip(streetNumber).on('click', onCircleEntranceClick)
       circMar.data = enData
       circMar.data.id = idEn
-      circMar.addTo(houses) 
-    } }).catch(
-      error => console.log(error)
-    )
+      circMar.addTo(houses)
+    }
+  }).catch(
+    error => console.log(error)
+  )
 }
 
 function updateEntrance (id, streetName, streetNumber, city, flatCount, inhabitedFlatCount) {
@@ -582,14 +587,14 @@ function setMe (dati) {
       loadEntrances()
     }
   }
-  if (me.id == 1) {
+  if (me.id === 1) {
     mpsMap.addLayer(houseNumbersLayer)
   }
 }
 
 function unsetMe () {
   if (me != null) {
-    if (me.id == 1) {
+    if (me.id === 1) {
       mpsMap.removeLayer(houseNumbersLayer)
     }
   }
@@ -611,7 +616,6 @@ function unsetMe () {
   })
   allToBackground()
   document.getElementById('entrances').parentElement.style.display = 'none'
-
 }
 
 function fillEntranceFields (data) {
@@ -625,7 +629,7 @@ function fillEntranceFields (data) {
 function fillPlaceFields (data) {
   for (const [key, value] of Object.entries(data)) {
     if (document.getElementById('spazi-' + key)) {
-      let readonly = document.getElementById('spazi-' + key).readOnly
+      const readonly = document.getElementById('spazi-' + key).readOnly
       document.getElementById('spazi-' + key).readOnly = false
       // dirotta immagini su img field, il browser blocca input file fields
       if (['picture_1', 'picture_2', 'picture_3'].includes(key)) {
@@ -641,7 +645,7 @@ function fillPlaceFields (data) {
         for (const b of fboxes) {
           if (b.checked) { b.checked = false };
         };
-        if ((value != null) && (value != '')) {
+        if ((value != null) && (value !== '')) {
           const values = value.split(', ')
           values.forEach(function (v) { document.getElementsByName(v.replace(' ', '_'))[0].checked = true })
         }
@@ -650,7 +654,7 @@ function fillPlaceFields (data) {
         for (const b of rboxes) {
           if (b.checked) { b.checked = false };
         };
-        if ((value != null) && (value != '')) {
+        if ((value != null) && (value !== '')) {
           const values = value.split(', ')
           values.forEach(function (v) { document.getElementsByName(v.replace(' ', '_'))[0].checked = true })
         }
@@ -729,8 +733,8 @@ function authToForeground () {
   document.getElementById('cnvAuthBox').style.display = 'block'
 }
 
-function entrancesToForeground (data=null) {
-  if (data != null) { 
+function entrancesToForeground (data = null) {
+  if (data != null) {
     fillEntranceFields(data)
   }
   panelsHidden = false
@@ -1011,11 +1015,11 @@ function todoOnload () {
 
   document.entrances.addEventListener('submit', async event => {
     event.preventDefault()
-    var latlng
-    var nn
+    let latlng
+    let nn
     if (entranceMarker !== undefined) {
       latlng = entranceMarker.getLatLng()
-      nn = nearestNodeID([latlng.lat,latlng.lng], waysDataNtts)
+      nn = nearestNodeID([latlng.lat, latlng.lng], waysDataNtts)
     }
     const streetName = document.getElementById('entrances-street').value
     const streetNumber = document.getElementById('entrances-street_number').value
@@ -1055,34 +1059,34 @@ function todoOnload () {
       updatePlace(activeMarker, { description: html })
     }
   })
-  
-  const spinners = document.querySelectorAll('input[type="number"].spinner');
-  spinners.forEach(function(spinner) {
-    const decreaseDiv = document.createElement('div');
-    decreaseDiv.textContent = '-';
-    decreaseDiv.classList.add('decrease');
-    decreaseDiv.addEventListener('click', function() {
-      if (spinner.value >= 0) {
-        spinner.value = parseInt(spinner.value) - 1;
-      }
-    });
-    spinner.parentNode.insertBefore(decreaseDiv, spinner);
 
-    const increaseDiv = document.createElement('div');
-    increaseDiv.textContent = '+';
-    increaseDiv.classList.add('increase');
-    if (spinner.id === "entrances-flats_count") { 
-      increaseDiv.addEventListener('click', function() {
-        spinner.value = parseInt(spinner.value) + 1;
-        spinner.parentElement.nextElementSibling.children[2].value = parseInt(spinner.parentElement.nextElementSibling.children[2].value) + 1;
-      });
+  const spinners = document.querySelectorAll('input[type="number"].spinner')
+  spinners.forEach(function (spinner) {
+    const decreaseDiv = document.createElement('div')
+    decreaseDiv.textContent = '-'
+    decreaseDiv.classList.add('decrease')
+    decreaseDiv.addEventListener('click', function () {
+      if (spinner.value >= 0) {
+        spinner.value = parseInt(spinner.value) - 1
+      }
+    })
+    spinner.parentNode.insertBefore(decreaseDiv, spinner)
+
+    const increaseDiv = document.createElement('div')
+    increaseDiv.textContent = '+'
+    increaseDiv.classList.add('increase')
+    if (spinner.id === 'entrances-flats_count') {
+      increaseDiv.addEventListener('click', function () {
+        spinner.value = parseInt(spinner.value) + 1
+        spinner.parentElement.nextElementSibling.children[2].value = parseInt(spinner.parentElement.nextElementSibling.children[2].value) + 1
+      })
     } else {
-      increaseDiv.addEventListener('click', function() {
-        spinner.value = parseInt(spinner.value) + 1;
-      });
+      increaseDiv.addEventListener('click', function () {
+        spinner.value = parseInt(spinner.value) + 1
+      })
     }
-    spinner.parentNode.insertBefore(increaseDiv, spinner.nextSibling);
-  });
+    spinner.parentNode.insertBefore(increaseDiv, spinner.nextSibling)
+  })
 
   initMap()
 }

@@ -191,7 +191,7 @@ function findIsodistancePolyline (dictionary, peoplePerNode, nodeId, placeId, di
   if (!Object.prototype.hasOwnProperty.call(dictionary, nodeId)) {
     throw new Error('Node id does not exist in the dictionary.')
   }
-  
+
   // three intervals are hardcoded
   const distance15 = distances[0]
   const distance10 = distances[1]
@@ -207,7 +207,7 @@ function findIsodistancePolyline (dictionary, peoplePerNode, nodeId, placeId, di
 
   // Initialize an array to store the coordinates of the isodistance polyline <5,<10,<15min
   const polylineCoordinates = [[[startLat, startLng]], [[startLat, startLng]], [[startLat, startLng]]]
-  const peopleCount = [0,0,0]
+  const peopleCount = [0, 0, 0]
 
   // for each visited node, store the distance reached, starting with the max_distance. if another path allows to cross the node with a lower distance, try it and update the distance for that node, otherwise skip the path.
   const visitedNodes = {}
@@ -276,12 +276,12 @@ function findIsodistancePolyline (dictionary, peoplePerNode, nodeId, placeId, di
   // Start finding the coordinates of the isodistance polyline
   findCoordinates(nodeId, parseInt(currentDist))
   polylineCoordinates.push(Object.values(placesFound))
-  
+
   // using visited nodes also to count people associated to them
   for (const [node, dst] of Object.entries(visitedNodes)) {
     // add entrances found while traversing the map
     if (peoplePerNode[node] !== undefined) {
-      peoplePerNode[node].forEach( (dstCnt) => {
+      peoplePerNode[node].forEach((dstCnt) => {
         // here we do not distinguish between directions, this is a little rough
         const newDistance = dst + dstCnt[0]
         if (newDistance <= distance15) {
@@ -290,7 +290,7 @@ function findIsodistancePolyline (dictionary, peoplePerNode, nodeId, placeId, di
             arrayAddress = 2
           } else if (newDistance >= distance5) {
             arrayAddress = 1
-          }          
+          }
           peopleCount[arrayAddress] += dstCnt[1]
         }
       })
