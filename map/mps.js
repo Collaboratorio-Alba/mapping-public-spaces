@@ -69,7 +69,7 @@ function initMap () {
   mpsMap = L.map('mpsMap', mapOptions).setView(mapCenter, 14)
   L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
     maxZoom: 19,
-    attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, <a href="https://github.com/Collaboratorio-Alba/mapping-public-spaces"><img class="githubLogo" src="images/github-mark.svg" alt="Github repository"/></a>, <a href="mailto:ssh8lt5kr@mozmail.com?subject=segnalazione%20problema%20del%20sito%20collab.42web.io&body=Mentre%20usavo%20il%20sito%20ho%20riscontrato%20questo%20problema%3A%0A%0A%C3%A8%20successo%20mentre%20stavo...%0A%0Asto%20navigando%20da%3A%20telefono%2Fcomputer%0A%0Acon%20il%20browser%3A%20%0A">Segnala</a> un problema.'
+    attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, <a href="https://github.com/Collaboratorio-Alba/mapping-public-spaces"><img class="githubLogo" src="images/github-mark.svg" alt="Github repository"/></a>, <a href="mailto:alba@collab.42web.io?subject=segnalazione%20problema%20del%20sito%20collab.42web.io&body=Mentre%20usavo%20il%20sito%20ho%20riscontrato%20questo%20problema%3A%0A%0A%C3%A8%20successo%20mentre%20stavo...%0A%0Asto%20navigando%20da%3A%20telefono%2Fcomputer%0A%0Acon%20il%20browser%3A%20%0A">Segnala</a> un problema.'
   }).addTo(mpsMap)
 
   // house_numbers layer
@@ -219,6 +219,25 @@ function loadEntrances () {
       error => console.log(error)
     )
 }
+
+function computeEntrances () {
+  jca.list('entrances')
+    .then(function (response) {
+      response.records.forEach(function (item, index) {
+        const nndist = parseFloat(item.nearest_node_dst)
+        // fill a dict with people distribution
+        if (item.inhabited_flats_count !== -1) {
+          const peoplePerNtt = item.inhabited_flats_count * flatDensity
+          if (typeof peoplePerNtts[item.nearest_node_ID] === 'undefined') { peoplePerNtts[item.nearest_node_ID] = [] }
+          peoplePerNtts[item.nearest_node_ID].push([parseFloat(nndist), peoplePerNtt])
+        }
+      })
+    }).catch(
+      error => console.log(error)
+    )
+}
+
+
 
 function colorizeMarker (marker) {
   const topic = marker.data.vocation
@@ -586,6 +605,8 @@ function setMe (dati) {
     if (houses.getLayers().length === 0) {
       loadEntrances()
     }
+  } else {
+    computeEntrances()
   }
   if (me.id === 1) {
     mpsMap.addLayer(houseNumbersLayer)
@@ -921,6 +942,11 @@ function loadAmenities (dct) {
   }
 }
 
+// Function to close the popup
+function closePopup() {
+  document.getElementById("popupWelcomeBox").style.display = "none";
+}
+
 // initialize events in window.onload
 function todoOnload () {
   const wrapper = document.querySelector('.wrapper')
@@ -1059,6 +1085,20 @@ function todoOnload () {
       updatePlace(activeMarker, { description: html })
     }
   })
+  
+  if (localStorage.getItem('popupShown') === 'false') {
+    closePopup()
+  } else {
+  document.getElementById("popupWelcomeBox").style.zIndex = '15'
+  // Check if the "Don't show this again" checkbox is checked
+  document.getElementById("noShow").addEventListener("change", function() {
+    if (this.checked) {
+      closePopup()
+      // Store this state in localStorage to remember the user's choice
+      localStorage.setItem("popupShown", "false")
+    }
+  })
+  };
 
   const spinners = document.querySelectorAll('input[type="number"].spinner')
   spinners.forEach(function (spinner) {

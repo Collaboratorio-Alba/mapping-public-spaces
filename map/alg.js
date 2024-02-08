@@ -73,6 +73,14 @@ function nearestNodeID (latlon, waysData) {
   return [minID, hdist]
 }
 
+// sigmoidean decay function, placing the inflection point at the value of a [in minutes of walking]
+// (for example obtained with a questionnaire that evaluates the attractiveness of the place)
+// returns a value: 0 < v < 1 Use it to attenuate the population according to its distance from the place
+function decay(x, a) {
+  return (1 - Math.tanh((x - a) / 2)) / 2;
+}
+
+
 // haversine Distance
 function haversineDistance (coords1, coords2) {
   function toRad (x) {

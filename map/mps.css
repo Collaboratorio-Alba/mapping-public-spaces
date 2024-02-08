@@ -36,6 +36,10 @@ html, body, #mpsMap {
     border-radius: 2px;
 }
 
+.justify {
+    text-align: justify;
+}
+
 .githubLogo {
     height: 1em;
 }
@@ -587,4 +591,52 @@ input[type=number] {
 /* Style the increase button */
 .increase {
   background-color: #ccffcc;
+}
+
+/* Style for the popup */
+.popup {
+  overflow-y: auto;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-radius: 12px;
+  border-style: double;
+  border-color: darkgray;
+  width: 80vw;
+  max-width: 600px;
+  height: 80vh;
+  position: fixed;
+  z-index: 6;
+  left: 50%;
+  top: 50%;
+  padding: 2em;
+  transform: translate(-50%, -50%);
+  background-color: whitesmoke;
+  text-align: justify;
+/*
+  background-image: url('/images/breathtaking_m.webp');
+  background-size: cover;
+*/
+  background-position: center;
+  /* Add other styles as per your requirement */
+}
+
+.popup p, .popup label {
+  font-family: sans-serif;
+/*
+  background-color: rgba(240, 240, 240, 0.8);
+*/
+  padding: 4px;
+  margin-bottom: 2em;
+  font-size: 1.5em;
+}
+
+.close {
+  float: right;
+  cursor: pointer;
+}
+.popup .close {
+  position: fixed;
+  top: 8px;
+  right: 8px;
+  font-size: 2em;
 }

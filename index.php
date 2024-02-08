@@ -271,6 +271,8 @@
                         <option value="residenti">residenti</option>
                     </select>
                   </div>
+                  <label for="spazi-accessibility" class="spazi-meta-label">considerazioni</label>
+                  <textarea rows="8" cols="38" class="fout form-control ui" name="spazi-accessibility" id="spazi-accessibility"></textarea>
                   <!-- frequentatori --> 
                   <div class="field-select">
                         <label for="spazi-attendees_yearly" class="spazi-meta-label">frequentatori abituali (stima su base annua):
@@ -283,7 +285,7 @@
                   <div class="field-select">
                         <label for="spazi-attendee_max_age" class="spazi-meta-label">età massima tipica per i destinatari/frequentatori abituali:
                         <input type="number" min="0" max="100" value="0" class="fout form-control ui" id="spazi-attendee_max_age"></label>
-                  </div> 
+                  </div>
                   <!-- distanze -->  
                   <table class="tg">
                     <thead>
@@ -339,9 +341,6 @@
                       </tr>
                     </tbody>
                   </table>
- 
-                  <label for="spazi-accessibility" class="spazi-meta-label">considerazioni</label>
-                  <textarea rows="8" cols="38" class="fout form-control ui" name="spazi-accessibility" id="spazi-accessibility"></textarea>
                   <!-- equità -->
                   <div class="checkbox">
                       <fieldset id="spazi-fairness" class="lbfout">
@@ -386,6 +385,13 @@
                 </section>
                 <section id="partecipazione" class="tab-panel">
                   <h2>Opportunità di partecipazione</h2>
+                    <div class="user-messages">
+                      <p class="justify">Raccogli dati con il <a href="https://forms.gle/rpuz6DiLjb21oKy47">questionario</a>. Invita chi frequenta lo spazio a compilarlo. Inseriremo nel diagramma qui sotto e nei campi pertinenti i dati raccolti (in forma anonima e aggregata).</p>
+                    </div>
+                  <div class="field-select">
+                        <label for="spazi-collected_surveys" class="spazi-meta-label">Numero di questionari raccolti:
+                        <input type="number" min="0" value="0" class="fout form-control ui" id="spazi-collected_surveys"></label>
+                  </div> 
                     <figure class="slidercontainer">
                         <div class="octowrapper" id="octoslider">
                             <label for="spazi-physical_activity" class="spazi-meta-label octolabel">movimento</label>
@@ -701,6 +707,15 @@
             </div>
           </form>
         </div>    
+</div>
+<div id="popupWelcomeBox" class="popup">
+    <span class="close" onclick="closePopup()">&times;</span>
+    <p>Siamo sulla mappa sociale collaborativa di Alba, dove raccogliamo informazioni sugli spazi albesi che hanno o potrebbero avere importanza per le comunità.</p>
+    <p>Puoi <a href="iscrizione.html">iscriverti</a> ed <a href="uso.html">inserire schede</a> degli spazi aiutandoti con le guide o chiedendo aiuto via <a href="mailto:alba@collab.42web.io?subject=richiesta%20supporto%20per%20collab.42web.io">email</a>.</p>
+    <p>Sentiti liberə di curiosare, contribuire, discutere: questo dovrebbe essere uno spazio di comunità, seppure virtuale.</p>
+    <p>Sei responsabile per quello che fai, per cui controlla i dati che inserisci e verifica con chi frequenta e opera nello spazio la correttezza dei dati, inoltre è buona norma chiedere il loro consenso prima di pubblicare le informazioni che li riguardano.</p>
+    <p>Questa mappatura non è completa, è necessario il contributo di tutti! Nel corso della primavera 2024 aggiungeremo interessanti modalità di visualizzazione dei dati raccolti, direttamente sulla mappa.</p>
+    <label for="noShow"><input type="checkbox" id="noShow">Non mostrare più questo riquadro.</label>
 </div>
 <div id="cnvAuthBox">
     <section class="wrapper">
