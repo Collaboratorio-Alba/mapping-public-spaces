@@ -15,9 +15,9 @@
     <script src="api/js-crud-api-min.js"></script>
     <script src="vendor/pell.min.js"></script>
     <link rel="stylesheet" type="text/css" href="vendor/pell.min.css">
+    <link rel="stylesheet" type="text/css" href="map/tooltip.css">
     <link rel="stylesheet" type="text/css" href="map/mps.css">
     <link rel="stylesheet" type="text/css" href="map/radial-octoslider-monstruosity.css">
-    
     <script src="map/mps.js"></script>
 </head>
 <body>
@@ -55,21 +55,30 @@
                   <h2>Funzione, caratteristiche</h2>
                   <!-- tipo sottotipo -->
                   <div class="field-select">
-                    <label for="spazi-vocation" class="spazi-meta-label">vocazione del luogo: </label>
+                    <label for="spazi-vocation" class="spazi-meta-label tooltip">vocazione del luogo:<span class="tttext">Qual'è la principale ragione d'essere dello spazio, nel caso sia organizzato e ospiti attività. 
+                    <br>Nel caso non ci siano attività può comunque essere dotato di strutture tali da favorire una certa vocazione. 
+                    <br>Se non è così usare la voce 'nessuna'. <b>Il colore del marcatore sulla mappa cambierà in base a questa selezione.</b>
+                    <br><b>Movimento:</b> per esempio camminare, fare sport, ballare.<br><b>Natura:</b> osservare o interagire con la natura e prendersi cura dell'ambiente.
+                    <br><b>Pensiero critico e creatività:</b> per esempio la creazione o l'espressione artistica, come recitare o fare musica. La crescita di individui come soggetti autonomi e capaci di esprimere il loro pensiero critico.
+                    <br><b>Socializzazione:</b> per esempio mangiare e bere assieme, feste, riunioni o giocare. L'integrazione degli individui nella società e nella cultura.
+                    <br><b>Cura:</b> per esempio fare volontariato, fornire assistenza e supporto a persone in situazioni di bisogno. L'espressione degli individui come soggetti capaci di cura.
+                    <br><b>Contemplazione:</b> per esempio attività come preghiera, meditazione, consapevolezza di sé.
+                    <br><b>Attivismo:</b> attività civiche, politiche, culturali o sociali che generano un valore o che promuovono il benessere e lo sviluppo delle comunità.
+                    <br><b>Formazione:</b> per esempio lo studio in gruppo e la partecipazione ad attività educative. La trasmissione di conoscenze e abilità.</span></label>
                     <select class="fout form-control ui" name="spazi-vocation" id="spazi-vocation">
                         <option value="nessuna">nessuna</option>
                         <option value="movimento">movimento</option>
                         <option value="natura">natura</option>
-                        <option value="creatività">creatività</option>
-                        <option value="comunità">comunità</option>
+                        <option value="creatività">pensiero critico e creatività</option>
+                        <option value="socializzazione">socializzazione</option>
                         <option value="cura">cura</option>
                         <option value="contemplazione">contemplazione</option>
                         <option value="attivismo">attivismo</option>
-                        <option value="educazione">educazione</option>
+                        <option value="formazione">formazione</option>
                     </select>
                   </div>
                   <div class="field-select">
-                    <label for="spazi-type" class="spazi-meta-label">tipologia: </label>
+                    <label for="spazi-type" class="spazi-meta-label tooltip">tipologia: <span class="tttext">Lo spazio rientra in una delle tipologie elencate? Il dato è utile per i filtri di ricerca.</span></label>
                     <select class="fout form-control ui" name="spazi-type" id="spazi-type">
                         <option value="nessuna">nessuna</option>
                         <option value="scuola_k">scuola infanzia</option>
@@ -78,6 +87,7 @@
                         <option value="scuola_h">scuola superiore</option>
                         <option value="biblioteca">biblioteca/libreria/centro culturale</option>
                         <option value="parrocchia">parrocchia/centro religioso</option>
+                        <option value="cinema_teatro">cinema/teatro</option>
                         <option value="centro_sportivo">campo sportivo/area gioco</option>
                         <option value="centro_giovani">centro giovani</option>
                         <option value="centro_sociale">circolo/centro sociale</option>
@@ -96,15 +106,24 @@
                   <!-- risorse -->
                   <div class="checkbox">
                       <fieldset id="spazi-resources" class="lbfout">
-                      <legend>risorse:</legend>
+                      <legend class="tooltip">risorse:<span class="tttext">Risorse presenti, anche se non utilizzate/utilizzabili dai frequentatori</span></legend>
                         <span><input type="checkbox" class="resources ui" name="locali_interni" id="locali_interni" value="locali_interni">
                         <label for="locali_interni">locali interni</label></span>
                         
                         <span><input type="checkbox" class="resources ui" name="spazi_esterni" id="spazi_esterni" value="spazi_esterni">
-                        <label for="spazi_esterni">spazi esterni pedonali</label></span>
+                        <label for="spazi_esterni" class="tooltip">spazi esterni pedonali<span class="tttext">intesi come spazi esenti da traffico veicolare</span></label></span>
                         
                         <span><input type="checkbox" class="resources ui" name="esterni_illuminati" id="esterni_illuminati" value="esterni_illuminati">
                         <label for="esterni_illuminati">spazi esterni illuminati</label></span>
+                        
+                        <span><input type="checkbox" class="resources ui" name="esterni_coperti" id="esterni_coperti" value="esterni_coperti">
+                        <label for="esterni_coperti">spazi esterni coperti</label></span>
+                        
+                        <span><input type="checkbox" class="resources ui" name="soglia_impalpabile" id="soglia_impalpabile" value="soglia_impalpabile">
+                        <label for="soglia_impalpabile" class="tooltip">soglia "debole"<span class="tttext">Sono presenti condizioni architettoniche per le quali è in qualche misura impercettibile il passaggio tra dentro e fuori, condizione che abbassa le resistenze all'entrare in esso (esempio: mercato, parco pubblico privo di recinzioni).</span></label></span>
+                        
+                        <span><input type="checkbox" class="resources ui" name="sedute_comunitarie" id="sedute_comunitarie" value="sedute_comunitarie">
+                        <label for="sedute_comunitarie" class="tooltip">spazi per sedersi socializzanti<span class="tttext">Per esempio tavolate uniche o gradinate dove potenziali sconosciuti possono trovarsi vicino.</span></label></span>
                         
                         <span><input type="checkbox" class="resources ui" name="verde" id="verde" value="verde">
                         <label for="verde">spazi nel verde</label></span>
@@ -113,7 +132,7 @@
                         <label for="orti">orti</label></span>
                         
                         <span><input type="checkbox" class="resources ui" name="calcetto_pingpong" id="calcetto_pingpong" value="calcetto_pingpong">
-                        <label for="calcetto_pingpong">calcetto pingpong</label></span>
+                        <label for="calcetto_pingpong">calciobalilla pingpong</label></span>
                         
                         <span><input type="checkbox" class="resources ui" name="area_gioco" id="area_gioco" value="area_gioco">
                         <label for="area_gioco">area gioco bimbi</label></span>
@@ -167,7 +186,7 @@
                         <label for="tavoli_e_sedie">tavoli e sedie</label></span>
 
                         <span><input type="checkbox" class="resources ui" name="WiFi" id="WiFi" value="WiFi">
-                        <label for="WiFi">WiFi libero</label></span>
+                        <label for="WiFi">WiFi</label></span>
 
                         <span><input type="checkbox" class="resources ui" name="PC" id="PC" value="PC">
                         <label for="PC">postazioni informatiche</label></span>
@@ -213,7 +232,7 @@
                     condizioni delle strutture
 -->
                   <div class="field-select">
-                    <label for="spazi-status" class="spazi-meta-label">condizioni delle strutture e risorse disponibili</label>
+                    <label for="spazi-status" class="spazi-meta-label tooltip">condizioni delle strutture e risorse disponibili<span class="tttext"><b>pessime</b>: inutilizzabili, in rovina o con gravi non conformità di sicurezza. <b>Trascurate</b>: bisognose di molta manutenzione e rinnovi. <b>Buone</b>: necessitano di pochi interventi di manutenzione. <b>Ottime</b>: strutture in perfetto stato.</span></label>
                     <select class="fout form-control ui" name="spazi-status" id="spazi-status">
                         <option value="pessime">pessime</option>
                         <option value="trascurate">trascurate</option>
@@ -246,40 +265,54 @@
                     </select>
                   </div>
                   <div class="spazi-meta form-group">
-                        <label for="spazi-operator" class="spazi-meta-label">gestore: </label>
+                        <label for="spazi-operator" class="spazi-meta-label tooltip">gestore: <span class="tttext">Indicare il nome o ragione sociale.</span></label>
                         <input type="text" class="fout form-control ui" name="spazi-operator" id="spazi-operator">
                   </div>
-                  <label for="spazi-use" class="spazi-meta-label">osservazioni</label>
+                  <div class="spazi-meta form-group">
+                        <label for="spazi-contacts" class="spazi-meta-label tooltip"><span class="tttext">Indicare, previo consenso, nome ed eventualmente contatti della persona referente.</span>referente e contatti: </label>
+                        <input type="text" class="fout form-control ui" name="spazi-contacts" id="spazi-contacts">
+                  </div>
+                  <label for="spazi-use" class="spazi-meta-label tooltip"><span class="tttext">Qual'è la storia di questo spazio? Ci sono progetti, o proposte da portatori di interesse?</span>osservazioni</label>
                   <textarea rows="8" cols="38" class="fout form-control ui" name="spazi-use" id="spazi-use"></textarea>
                 </section>
                 <section id="utenza" class="tab-panel">
                   <h2>Bacino d'utenza, accessibilità</h2>
                   <!-- accesso -->
                   <div class="field-select">
-                    <label for="spazi-access" class="spazi-meta-label">accesso: </label>
+                    <label for="spazi-access" class="spazi-meta-label tooltip">accesso: <span class="tttext"><b>Libero</b>: è possibile entrare e circolare liberamente in tutto o gran parte dello spazio. <br><b>Parziale</b>: è possibile entrare e circolare liberamente solo in una parte dello spazio (escludendo locali tecnici e di servizio). <br><b>Inaccessibile</b>: Non è possibile accedere.</span></label>
                     <select class="fout form-control ui" name="spazi-access" id="spazi-access">
-                        <option value="privato">privato</option>
                         <option value="libero">libero</option>
-                        <option value="libero">inaccessibile</option>
+                        <option value="parziale">parziale</option>
+                        <option value="inaccessibile">inaccessibile</option>
+                    </select>
+                  </div>
+                  <div class="field-select">
+                    <label for="spazi-access_title" class="spazi-meta-label tooltip">titolarità d'accesso: <span class="tttext"><b>Privato</b>: accesso riservato a proprietari/locatari. <br><b>Pubblico</b>: É possibile accedere senza avere requisiti specifici. <br><b>Oneroso</b>: accesso condizionato da un pagamento per ottenere un servizio o riservare uno spazio, nel caso si applichi anche 'iscritti' scegliere comunque questo. <br><b>Iscritti</b>: accesso ristretto a chi è iscritto. <br><b>Residenti</b>: struttura esplicitamente riservata ai residenti (del complesso, quartiere, condominio, ...)</span></label>
+                    <select class="fout form-control ui" name="spazi-access_title" id="spazi-access_title">
+                        <option value="privato">privato</option>
+                        <option value="pubblico">pubblico</option>
                         <option value="oneroso">oneroso</option>
                         <option value="iscritti">iscritti</option>
                         <option value="residenti">residenti</option>
                     </select>
                   </div>
+                  <label for="spazi-accessibility" class="spazi-meta-label">considerazioni</label>
+                  <textarea rows="8" cols="38" class="fout form-control ui" name="spazi-accessibility" id="spazi-accessibility"></textarea>
                   <!-- frequentatori --> 
                   <div class="field-select">
-                        <label for="spazi-attendees_yearly" class="spazi-meta-label">frequentatori abituali (stima su base annua):
-                        <input type="number" min="0" max="30000" value="0" class="fout form-control ui" id="spazi-attendees_yearly"></label>
-                  </div>    
+                        <label for="spazi-attendees_yearly" class="spazi-meta-label tooltip">frequentatori abituali giornalieri: <span class="tttext">Quanti frequentatori accedono allo spazio, in un giorno in cui è aperto? Non considerare picchi eccezionali di affluenza: determinare un valore medio su base annua per i giorni di apertura. Nel caso non si sappia, lasciare vuoto</span></label>
+                        <input type="number" min="-1" max="30000" value="0" class="fout form-control ui" id="spazi-attendees_yearly">
+                  </div> 
                   <div class="field-select">
-                        <label for="spazi-attendee_min_age" class="spazi-meta-label">età minima tipica per i destinatari/frequentatori abituali:
-                        <input type="number" min="0" max="100" value="0" class="fout form-control ui" id="spazi-attendee_min_age"></label>
+                        <label for="spazi-attendee_min_age" class="spazi-meta-label tooltip">età minima tipica per i frequentatori: <span class="tttext">Esistono condizioni che restringono l'età minima tipica di chi frequenta lo spazio? Nel caso non ci sia età minima lasciare vuoto</span></label>
+                        <input type="number" min="-1" value="0" class="fout form-control ui" id="spazi-attendee_min_age">
                   </div>
                   <div class="field-select">
-                        <label for="spazi-attendee_max_age" class="spazi-meta-label">età massima tipica per i destinatari/frequentatori abituali:
-                        <input type="number" min="0" max="100" value="0" class="fout form-control ui" id="spazi-attendee_max_age"></label>
-                  </div> 
+                        <label for="spazi-attendee_max_age" class="spazi-meta-label tooltip">età massima tipica per i frequentatori: <span class="tttext">Esistono condizioni che restringono l'età massima tipica di chi frequenta lo spazio? Nel caso non ci sia età massima lasciare vuoto</span></label>
+                        <input type="number" min="-1" max="100" value="0" class="fout form-control ui" id="spazi-attendee_max_age">
+                  </div>
                   <!-- distanze -->  
+                  <p class="tooltip">***<span class="tttext">Attenzione: il calcolo si basa su dati che sono ancora in fase di raccolta: attualmente siamo al 37% della costruzione della base di calcolo.</span></p>
                   <table class="tg">
                     <thead>
                       <tr>
@@ -292,62 +325,62 @@
                     <tbody>
                       <tr>
                         <td class="tg-0lax">densità residenti nell'area raggiungibile [abitanti/ha]</td>
-                        <td class="tg-0lax"><input type="number" min="0" max="20000" value="0" class="readonly form-control ui" id="spazi-habha_5_m_walk" readonly></td>
-                        <td class="tg-0lax"><input type="number" min="0" max="20000" value="0" class="readonly form-control ui" id="spazi-habha_10_m_walk" readonly></td>
-                        <td class="tg-0lax"><input type="number" min="0" max="20000" value="0" class="readonly form-control ui" id="spazi-habha_15_m_walk" readonly></td>
+                        <td class="tg-0lax"><input type="number" class="readonly form-control ui" id="spazi-habha_5_m_walk" readonly></td>
+                        <td class="tg-0lax"><input type="number" class="readonly form-control ui" id="spazi-habha_10_m_walk" readonly></td>
+                        <td class="tg-0lax"><input type="number" class="readonly form-control ui" id="spazi-habha_15_m_walk" readonly></td>
                       </tr>
                       <tr>
                         <td class="tg-0lax">persone residenti nell'area raggiungibile [ab]</td>
-                        <td class="tg-0lax"><input type="number" min="0" max="20000" value="0" class="readonly form-control ui" id="spazi-residents_5_m_walk" readonly></td>
-                        <td class="tg-0lax"><input type="number" min="0" max="20000" value="0" class="readonly form-control ui" id="spazi-residents_10_m_walk" readonly></td>
-                        <td class="tg-0lax"><input type="number" min="0" max="20000" value="0" class="readonly form-control ui" id="spazi-residents_15_m_walk" readonly></td>
+                        <td class="tg-0lax"><input type="number" class="readonly form-control ui" id="spazi-residents_5_m_walk" readonly></td>
+                        <td class="tg-0lax"><input type="number" class="readonly form-control ui" id="spazi-residents_10_m_walk" readonly></td>
+                        <td class="tg-0lax"><input type="number" class="readonly form-control ui" id="spazi-residents_15_m_walk" readonly></td>
                       </tr>
                       <tr>
                         <td class="tg-0lax">n. di studenti da uscite scuole materne<br></td>
-                        <td class="tg-0lax"><input type="number" min="0" max="2000" value="0" class="readonly form-control ui" id="spazi-students_k_5_m_walk" readonly></td>
-                        <td class="tg-0lax"><input type="number" min="0" max="5000" value="0" class="readonly form-control ui" id="spazi-students_k_10_m_walk" readonly></td>
-                        <td class="tg-0lax"><input type="number" min="0" max="5000" value="0" class="readonly form-control ui" id="spazi-students_k_15_m_walk" readonly></td>
+                        <td class="tg-0lax"><input type="number" class="readonly form-control ui" id="spazi-students_k_5_m_walk" readonly></td>
+                        <td class="tg-0lax"><input type="number" class="readonly form-control ui" id="spazi-students_k_10_m_walk" readonly></td>
+                        <td class="tg-0lax"><input type="number" class="readonly form-control ui" id="spazi-students_k_15_m_walk" readonly></td>
                       </tr>
                       <tr>
                         <td class="tg-0lax">n. di studenti da uscite scuole elementari</td>
-                        <td class="tg-0lax"><input type="number" min="0" max="5000" value="0" class="readonly form-control ui" id="spazi-students_p_5_m_walk" readonly></td>
-                        <td class="tg-0lax"><input type="number" min="0" max="5000" value="0" class="readonly form-control ui" id="spazi-students_p_10_m_walk" readonly></td>
-                        <td class="tg-0lax"><input type="number" min="0" max="5000" value="0" class="readonly form-control ui" id="spazi-students_p_15_m_walk" readonly></td>
+                        <td class="tg-0lax"><input type="number" class="readonly form-control ui" id="spazi-students_p_5_m_walk" readonly></td>
+                        <td class="tg-0lax"><input type="number" class="readonly form-control ui" id="spazi-students_p_10_m_walk" readonly></td>
+                        <td class="tg-0lax"><input type="number" class="readonly form-control ui" id="spazi-students_p_15_m_walk" readonly></td>
                       </tr>
                       <tr>
                         <td class="tg-0lax">n. di studenti da uscite scuole medie</td>
-                        <td class="tg-0lax"><input type="number" min="0" max="5000" value="0" class="readonly form-control ui" id="spazi-students_m_5_m_walk" readonly></td>
-                        <td class="tg-0lax"><input type="number" min="0" max="5000" value="0" class="readonly form-control ui" id="spazi-students_m_10_m_walk" readonly></td>
-                        <td class="tg-0lax"><input type="number" min="0" max="5000" value="0" class="readonly form-control ui" id="spazi-students_m_15_m_walk" readonly></td>
+                        <td class="tg-0lax"><input type="number" class="readonly form-control ui" id="spazi-students_m_5_m_walk" readonly></td>
+                        <td class="tg-0lax"><input type="number" class="readonly form-control ui" id="spazi-students_m_10_m_walk" readonly></td>
+                        <td class="tg-0lax"><input type="number" class="readonly form-control ui" id="spazi-students_m_15_m_walk" readonly></td>
                       </tr>
                       <tr>
                         <td class="tg-0lax">n. di studenti da uscite scuole superiori</td>
-                        <td class="tg-0lax"><input type="number" min="0" max="5000" value="0" class="readonly form-control ui" id="spazi-students_h_5_m_walk" readonly></td>
-                        <td class="tg-0lax"><input type="number" min="0" max="5000" value="0" class="readonly form-control ui" id="spazi-students_h_10_m_walk" readonly></td>
-                        <td class="tg-0lax"><input type="number" min="0" max="5000" value="0" class="readonly form-control ui" id="spazi-students_h_15_m_walk" readonly></td>
+                        <td class="tg-0lax"><input type="number" class="readonly form-control ui" id="spazi-students_h_5_m_walk" readonly></td>
+                        <td class="tg-0lax"><input type="number" class="readonly form-control ui" id="spazi-students_h_10_m_walk" readonly></td>
+                        <td class="tg-0lax"><input type="number" class="readonly form-control ui" id="spazi-students_h_15_m_walk" readonly></td>
                       </tr>
                       <tr>
                         <td class="tg-0lax">n. di persone frequentanti altri poli di aggregazione sociale</td>
-                        <td class="tg-0lax"><input type="number" min="0" max="5000" value="0" class="readonly form-control ui" id="spazi-social_spaces_5_m_walk" readonly></td>
-                        <td class="tg-0lax"><input type="number" min="0" max="5000" value="0" class="readonly form-control ui" id="spazi-social_spaces_10_m_walk" readonly></td>
-                        <td class="tg-0lax"><input type="number" min="0" max="5000" value="0" class="readonly form-control ui" id="spazi-social_spaces_15_m_walk" readonly></td>
+                        <td class="tg-0lax"><input type="number" class="readonly form-control ui" id="spazi-social_spaces_5_m_walk" readonly></td>
+                        <td class="tg-0lax"><input type="number" class="readonly form-control ui" id="spazi-social_spaces_10_m_walk" readonly></td>
+                        <td class="tg-0lax"><input type="number" class="readonly form-control ui" id="spazi-social_spaces_15_m_walk" readonly></td>
                       </tr>
                     </tbody>
                   </table>
- 
-                  <label for="spazi-accessibility" class="spazi-meta-label">considerazioni</label>
-                  <textarea rows="8" cols="38" class="fout form-control ui" name="spazi-accessibility" id="spazi-accessibility"></textarea>
                   <!-- equità -->
                   <div class="checkbox">
                       <fieldset id="spazi-fairness" class="lbfout">
-                      <legend>Organizzazione, pratiche e strutture attente a...</legend> <!-- disabilità, età, economiche, lingua, orientamento sessuale, dipendenze, etnia, religione, nazionalità o geografica, condizione sociale, convinzione politica -->
+                      <legend>Organizzazione, pratiche e strutture attente e aperte a...</legend> <!-- disabilità, età, economiche, lingua, orientamento sessuale, dipendenze, etnia, religione, nazionalità o geografica, condizione sociale, convinzione politica -->
                         <span><input type="checkbox" class="fairness ui" id="disabilità" name="disabilità" value="disabilità">
                         <label for="disabilità">disabilità</label></span>
 
-                        <span><input type="checkbox" class="fairness ui" name="età" id="età" value="età">
+                        <span><input type="checkbox" class="fairness ui" name="infanzia" id="infanzia" value="infanzia">
                         <label for="infanzia">prima infanzia e maternità</label></span>
 
-                        <span><input type="checkbox" class="fairness ui" name="età" id="età" value="età">
+                        <span><input type="checkbox" class="fairness ui" name="fragilità" id="fragilità" value="fragilità">
+                        <label for="fragilità">fragilità</label></span>
+
+                        <span><input type="checkbox" class="fairness ui" name="terza_età" id="terza_età" value="terza_età">
                         <label for="terza_età">terza e quarta età</label></span>
 
                         <span><input type="checkbox" class="fairness ui" name="economiche" id="economiche" value="economiche">
@@ -381,6 +414,13 @@
                 </section>
                 <section id="partecipazione" class="tab-panel">
                   <h2>Opportunità di partecipazione</h2>
+                    <div class="user-messages">
+                      <p class="justify">Raccogli dati con il <a href="https://forms.gle/rpuz6DiLjb21oKy47">questionario</a>. Invita chi frequenta lo spazio a compilarlo. Inseriremo nel diagramma qui sotto e nei campi pertinenti i dati raccolti (in forma anonima e aggregata).</p>
+                    </div>
+                  <div class="field-select">
+                        <label for="spazi-collected_surveys" class="spazi-meta-label">Numero di questionari raccolti:
+                        <input type="number" min="0" value="0" class="fout form-control ui" id="spazi-collected_surveys"></label>
+                  </div> 
                     <figure class="slidercontainer">
                         <div class="octowrapper" id="octoslider">
                             <label for="spazi-physical_activity" class="spazi-meta-label octolabel">movimento</label>
@@ -397,7 +437,7 @@
                             <input type="range" min="0" max="3" value="0" class="octoslider six_5 ui" id="spazi-contemplation">
                             <label for="spazi-citizenship" class="spazi-meta-label octolabel">attivismo</label>
                             <input type="range" min="0" max="3" value="0" class="octoslider seven_6 ui" id="spazi-citizenship">
-                            <label for="spazi-learning" class="spazi-meta-label octolabel">educazione</label>
+                            <label for="spazi-learning" class="spazi-meta-label octolabel">formazione</label>
                             <input type="range" min="0" max="3" value="0" class="octoslider eight_7 ui" id="spazi-learning">
                             <div class="dot0" id="octomin"></div>
                             <div class="dot1"></div>
@@ -415,7 +455,7 @@
                     concomitanza di attività
 -->
                   <div class="field-select">
-                    <label for="spazi-concomitance" class="spazi-meta-label">concomitanza di diverse attività</label>
+                    <label for="spazi-concomitance" class="spazi-meta-label tooltip">possibilità di incontri fortuiti<span class="tttext">Dato utile a comprendere la possibilità di incontri non programmati. Esprime le potenzialità che ha lo spazio di favorire nuove relazioni: la concomitanza di attività in 'celle stagne' prive di luoghi o tempi di contatto non favorisce questa possibilità.</span></label>
                     <select class="fout form-control ui" name="spazi-concomitance" id="spazi-concomitance">
                         <option value="quotidiane">quotidiana</option>
                         <option value="settimanali">settimanale</option>
@@ -425,10 +465,25 @@
                     </select>
                   </div>
 <!--
+                    architettura e disegno degli spazi a favore della socialità
+-->
+<!--
+                  <div class="field-select">
+                    <label for="spazi-architecture" class="spazi-meta-label tooltip">spazi che favoriscono la socialità<span class="tttext">Dato utile a comprendere quanto lo spazio fisico favorisca o pregiudichi l'incontro. Oppure lo spazio è vuoto e non ha elementi a favore o contro la possibilità di ritrovarsi? Quale tipo di socialità: fugace o durevole? La presenza di sedute. L'uso di lunghe sedute uniche, panchine vicine e tavoli unici al posto di sedute singole, tavolini per piccoli gruppi.</span></label>
+                    <select class="fout form-control ui" name="spazi-architecture" id="spazi-architecture">
+                        <option value="quotidiane">quotidiana</option>
+                        <option value="settimanali">settimanale</option>
+                        <option value="saltuarie">saltuaria</option>
+                        <option value="annuali">annuale</option>
+                        <option value="mai">mai</option>
+                    </select>
+                  </div>
+-->
+<!--
                     frequenza attività spontanee
 -->
                   <div class="field-select">
-                    <label for="spazi-self_organized_activities_frequency" class="spazi-meta-label">ordinarietà delle attività spontanee: </label>
+                    <label for="spazi-self_organized_activities_frequency" class="spazi-meta-label tooltip">ordinarietà delle attività spontanee: <span class="tttext">Si considerino attività organizzate dai <b>frequentatori</b> dello spazio</span></label>
                     <select class="fout form-control ui" name="spazi-self_organized_activities_frequency" id="spazi-self_organized_activities_frequency">
                         <option value="quotidiane">quotidiane</option>
                         <option value="settimanali">settimanali</option>
@@ -441,7 +496,7 @@
                     frequenza attività organizzate
 -->
                   <div class="field-select">
-                    <label for="spazi-organized_activities_frequency" class="spazi-meta-label">ordinarietà delle attività organizzate da operatore: </label>
+                    <label for="spazi-organized_activities_frequency" class="spazi-meta-label tooltip">ordinarietà delle attività istituzionali: <span class="tttext">Si considerino attività organizzate dagli <b>operatori</b> dello spazio</span></label>
                     <select class="fout form-control ui" name="spazi-organized_activities_frequency" id="spazi-organized_activities_frequency">
                         <option value="quotidiane">quotidiane</option>
                         <option value="settimanali">settimanali</option>
@@ -526,6 +581,15 @@
                   <div class="spazi-meta form-group">
                         <p><a id="spazi-linkPP" href="#" target="_blank">Partecipa con la comunità per ridefinire l'uso di questo spazio!</a></p>
                   </div>
+                  
+                  <h3>Discussione</h3>
+                  <p>In merito a schedatura, questionari, interviste su questo spazio.</p>
+                  <form name="posta">
+                  <label for="forum-post" class="spazi-meta-label">scrivi e rispondi</label>
+                  <textarea rows="8" cols="38" class="form-control ui" name="forumPost" id="forum-post"></textarea>
+                  <input type="submit" name="Posta" value="invia">
+                  </form>
+                  <div name="talk" id="talk"></div>
                 </section>
                 <section id="foto" class="tab-panel">
                   <h2>Fotografie</h2>
@@ -590,7 +654,7 @@
                     <hr>
                                       <!-- stage della scheda -->
                   <div class="field-select stage">
-                    <label for="spazi-stage" class="spazi-meta-label">stato della scheda: </label>
+                    <label for="spazi-stage" class="spazi-meta-label tooltip">stato della scheda: <span class="tttext"><b>Da completare</b>: chiunque può proseguire la compilazione. <b>In lavorazione</b>: qualcuno sta lavorando su questa scheda, si prega di non interferire, salvo aggiungere commenti nel pannello 'discussioni'. <b>Completa</b>: tutti i campi che aveva senso compilare sono stati compilati. Eventualmente verificare la data dell'ultima modifica, se è superiore ad un anno si può verificare che i dati siano ancora validi.</span></label>
                     <select class="fout form-control ui" name="spazi-stage" id="spazi-stage">
                         <option value="da_completare">da completare</option>
                         <option value="in_lavorazione">in lavorazione</option>
@@ -655,7 +719,7 @@
             </tbody>
             </table>
             <div class="user-messages">
-                <p>Leggi la <a href="uso.html">guida all'uso</a></p>
+                <p>Guarda la <a href="uso.html">guida all'uso</a></p>
             </div>
         <form name="logout" action="#">
             <input type="submit" name="Logout" value="Logout">
@@ -663,11 +727,57 @@
         </div>
     </section>    
 </div>
+<!-- entrances -->
+<div id="cnvEntrancesBox">
+        <div class="profile" id="mpsEntrances">
+          <form name="entrances" action="#">
+            <div>
+            <label for="entrances-city" class="entrances-meta-label">Città</label></td>
+            <input type="text" class="form-control ui" name="entrances-city" id="entrances-city">
+            </div>
+            <div>
+            <label for="entrances-street" class="entrances-meta-label">Strada/via</label></td>
+            <input type="text" class="form-control ui" name="entrances-street" id="entrances-street">
+            </div>
+            <div>
+            <label for="entrances-street_number" class="entrances-meta-label">Numero civico</label></td>
+            <input type="text" class="form-control ui" name="entrances-street_number" id="entrances-street_number">
+            </div>
+            <div>
+            <label for="entrances-flats_count" class="entrances-meta-label">Interni uso abitazione</label></td>
+            <input type="number" class="form-control spinner ui" name="entrances-flats_count" id="entrances-flats_count">
+            </div>
+            <div>
+            <label for="entrances-inhabited_flats_count" class="entrances-meta-label">Interni abitati (&#128236;)</label></td>
+            <input type="number" class="form-control spinner ui" name="entrances-inhabited_flats_count" id="entrances-inhabited_flats_count">
+            </div>
+            <div>
+            <input type="hidden" name="entrances-id" id="entrances-id" value="">
+            </div>
+            <div class="clear">
+              <input type="button" name="cancelEntrances" value="Annulla" />
+              <input type="submit" name="Entrances" value="Invia">
+            </div>
+          </form>
+        </div>    
+</div>
+<div id="popupWelcomeBox" class="popup">
+    <span class="close" onclick="closePopup()">&times;</span>
+    <p>Siamo sulla mappa sociale collaborativa di Alba, dove raccogliamo informazioni sugli spazi albesi che hanno o potrebbero avere importanza per le comunità.</p>
+    <p>Puoi <a href="iscrizione.html">iscriverti</a> ed <a href="uso.html">inserire schede</a> degli spazi aiutandoti con le guide o chiedendo aiuto via <a href="mailto:alba@collab.42web.io?subject=richiesta%20supporto%20per%20collab.42web.io">email</a>.</p>
+    <p>Sentiti liberə di curiosare, contribuire, discutere: questo dovrebbe essere uno spazio di comunità, seppure virtuale.</p>
+    <p>Sei responsabile per quello che fai, per cui controlla i dati che inserisci e verifica con chi frequenta e opera nello spazio la correttezza dei dati, inoltre è buona norma chiedere il loro consenso prima di pubblicare le informazioni che li riguardano.</p>
+    <p>Questa mappatura non è completa, è necessario il contributo di tutti! Nel corso della primavera 2024 aggiungeremo interessanti modalità di visualizzazione dei dati raccolti, direttamente sulla mappa.</p>
+    <label for="noShow"><input type="checkbox" id="noShow">Non mostrare più questo riquadro.</label>
+</div>
 <div id="cnvAuthBox">
     <section class="wrapper">
         <div id="mpsAuthentication">
           <div class="form signup">
             <h2>Signup</h2>
+            <div class="user-messages">
+              <p>Guarda la <a href="uso.html">guida all'uso</a></p>
+            </div>
             <form name="register" action="#">
               <input class="registr" type="text" name="first_name" autocomplete="given-name" placeholder="First name" required>
               <input class="registr" type="text" name="last_name" autocomplete="family-name" placeholder="Last name" required>
@@ -698,6 +808,5 @@
     </section>
 </div>
 <div id="mpsMap"></div>
-
 </body>
 </html>

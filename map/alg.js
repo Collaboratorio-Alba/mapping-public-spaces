@@ -73,6 +73,14 @@ function nearestNodeID (latlon, waysData) {
   return [minID, hdist]
 }
 
+// sigmoidean decay function, placing the inflection point at the value of a [in minutes of walking]
+// (for example obtained with a questionnaire that evaluates the attractiveness of the place)
+// returns a value: 0 < v < 1 Use it to attenuate the population according to its distance from the place
+function decay(x, a) {
+  return (1 - Math.tanh((x - a) / 2)) / 2;
+}
+
+
 // haversine Distance
 function haversineDistance (coords1, coords2) {
   function toRad (x) {
@@ -178,18 +186,21 @@ function distToSegment (p, v, w) { return Math.sqrt(distToSegmentSquared(p, v, w
  * Function to find the coordinates of an isodistance polyline.
  *
  * @param {Object} dictionary - The dictionary containing node ids and their corresponding latitude, longitude, and connections.
+ * @param {Object} peoplePerNode - The dictionary containing node ids and their corresponding people count expressed as a list of [distanceFromNode,peopleCount].
  * @param {string} nodeId - The node id for which the isodistance polyline needs to be found.
  * @param {string} placeId - The place id for which the isodistance polyline needs to be found.
  * @param {number} distance - The distance for the isodistance polyline.
  * @returns {Array} The coordinates of the isodistance polyline and a dict of relevant nodes foud traversing the map.
  */
 // eslint-disable-next-line no-unused-vars
-function findIsodistancePolyline (dictionary, nodeId, placeId, distances, currentDist) {
+function findIsodistancePolyline (dictionary, peoplePerNode, nodeId, placeId, distances, currentDist) {
+  // TODO: if isEmpty(peoplePerNode) {do not calculate people reachability} else {...}
   // Check if the node id exists in the dictionary
   if (!Object.prototype.hasOwnProperty.call(dictionary, nodeId)) {
     throw new Error('Node id does not exist in the dictionary.')
   }
 
+  // three intervals are hardcoded
   const distance15 = distances[0]
   const distance10 = distances[1]
   const distance5 = distances[2]
@@ -204,6 +215,7 @@ function findIsodistancePolyline (dictionary, nodeId, placeId, distances, curren
 
   // Initialize an array to store the coordinates of the isodistance polyline <5,<10,<15min
   const polylineCoordinates = [[[startLat, startLng]], [[startLat, startLng]], [[startLat, startLng]]]
+  const peopleCount = [0, 0, 0]
 
   // for each visited node, store the distance reached, starting with the max_distance. if another path allows to cross the node with a lower distance, try it and update the distance for that node, otherwise skip the path.
   const visitedNodes = {}
@@ -273,6 +285,29 @@ function findIsodistancePolyline (dictionary, nodeId, placeId, distances, curren
   findCoordinates(nodeId, parseInt(currentDist))
   polylineCoordinates.push(Object.values(placesFound))
 
+  // using visited nodes also to count people associated to them
+  for (const [node, dst] of Object.entries(visitedNodes)) {
+    // add entrances found while traversing the map
+    if (peoplePerNode[node] !== undefined) {
+      peoplePerNode[node].forEach((dstCnt) => {
+        // here we do not distinguish between directions, this is a little rough
+        const newDistance = dst + dstCnt[0]
+        if (newDistance <= distance15) {
+          let arrayAddress = 0
+          if (newDistance >= distance10) {
+            arrayAddress = 2
+          } else if (newDistance >= distance5) {
+            arrayAddress = 1
+          }
+          peopleCount[arrayAddress] += dstCnt[1]
+        }
+      })
+    }
+  }
+  // finally add the people counted in the innermost isochrones to the others.
+  peopleCount[1] += peopleCount[0]
+  peopleCount[2] += peopleCount[1]
+  polylineCoordinates.push(peopleCount)
   return polylineCoordinates
 }
 

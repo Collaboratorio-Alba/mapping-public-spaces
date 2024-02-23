@@ -9,11 +9,27 @@ body {
 html, body, #mpsMap {
     height: 100%;
     width: 100vw;
+    font-family: arial;
 }
 
 #mpsMap {
     z-index: 10;
 }
+
+a {
+  color: #4070f4;
+  text-decoration: none;
+  text-transform: uppercase;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+a:active {
+  color: black;
+}
+
 .leaflet-container {
     height: 400px;
     width: 600px;
@@ -22,6 +38,7 @@ html, body, #mpsMap {
 }
 
 .leaflet-control-filter-button,
+.leaflet-control-entrances-button,
 .leaflet-user-button  {
     display: block;
     background-color: #fff;
@@ -35,6 +52,14 @@ html, body, #mpsMap {
     border-radius: 2px;
 }
 
+.justify {
+    text-align: justify;
+}
+
+.githubLogo {
+    height: 1em;
+}
+
 .marker1 {
     fill-opacity: 0.7;
     fill: #ff5ca8;
@@ -45,6 +70,7 @@ html, body, #mpsMap {
 }
 
 /* Chrome, Safari, Edge, Opera */
+/*
 input[type="number"].readonly::-webkit-outer-spin-button ,
 input[type="number"].readonly::-webkit-inner-spin-button   {
     -webkit-appearance: none;
@@ -52,9 +78,10 @@ input[type="number"].readonly::-webkit-inner-spin-button   {
     width: 5em;
     background-color: transparent;
 }
+*/
 
 /* Firefox */
-input[type="number"].readonly {
+#utenza > table input[type="number"] {
     -moz-appearance: textfield;
     width: 5em;
     background-color: transparent;
@@ -71,7 +98,7 @@ input[type="number"].readonly {
     cursor: ns-resize;
 }
 
-#cnvAuthBox, #cnvUserBox {
+#cnvAuthBox, #cnvUserBox, #cnvEntrancesBox {
     position: absolute;
     top: 15vh;
     left: 0; 
@@ -80,7 +107,7 @@ input[type="number"].readonly {
     width:80vw;
     max-width: 600px;
     padding:10px;
-    z-index: 5;
+    z-index: 15;
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
     border-radius: 12px;
@@ -97,7 +124,7 @@ input[type="number"].readonly {
     width:90vw;
     max-width:550px;
     padding:8px;
-    z-index: 5;
+    z-index: 15;
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
     border-radius: 12px;
@@ -111,12 +138,45 @@ input[type="number"].readonly {
 #mpsAuthentication, #mpsUser, #mpsPlace {
 }
 
+#cnvEntrancesBox input {
+    width: 5em;
+    margin: 0.3em;
+}
+
+#cnvEntrancesBox {
+    z-index: 15;
+    top: 10vh;
+}
+
+#cnvEntrancesBox input[name="Entrances"]{
+    float: right;
+}
+
+#cnvEntrancesBox input[name="entrances-street"]{
+    width: 50%;
+}
+
+#cnvEntrancesBox input[name="entrances-flats_count"],
+#cnvEntrancesBox input[name="entrances-inhabited_flats_count"]{
+    width: 2em;
+}
+
+#cnvEntrancesBox .clear {
+    clear: both;
+}
+
+#cnvEntrancesBox label {
+    display: inline-block;
+    margin: 0.3em;
+    width: 30%;
+    text-align: right;
+}
 
 #blanket {
     position:fixed;
     width:100vw;
-    height:100vw;
-    z-index: 8;
+    height:100vh;
+    z-index: 18;
     background-color: white;
 }
 /* login form */
@@ -385,7 +445,7 @@ hr {
 
 .spazi-meta {
     margin: 0.5em;
-    text-align: right;
+    text-align: left;
 }
 
 .field-select input {
@@ -454,6 +514,7 @@ textarea:disabled {
     border-radius: 6px;
 }
 
+#forum-post,
 #spazi-use,
 #spazi-accessibility,
 #spazi-interviews,
@@ -524,3 +585,136 @@ fieldset span {
     vertical-align:top
 }
 
+#spazi-linkPP {
+    visibility: hidden;
+}
+
+.decrease, .increase {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    line-height: 20px;
+    text-align: center;
+    cursor: pointer;
+    user-select: none;
+}
+
+input[type=number] {
+    -moz-appearance: textfield; /* Firefox */
+    appearance: textfield; /* Others */
+}
+
+/* Style the decrease button */
+.decrease {
+    background-color: #ffcccc;
+}
+
+/* Style the increase button */
+.increase {
+    background-color: #ccffcc;
+}
+
+/* Style for the popup */
+.popup {
+    overflow-y: auto;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-radius: 12px;
+    border-style: double;
+    border-color: darkgray;
+    width: 80vw;
+    max-width: 600px;
+    height: 80vh;
+    position: fixed;
+    z-index: 6;
+    left: 50%;
+    top: 50%;
+    padding: 2em;
+    transform: translate(-50%, -50%);
+    background-color: whitesmoke;
+    text-align: justify;
+/*
+  background-image: url('/images/breathtaking_m.webp');
+  background-size: cover;
+*/
+    background-position: center;
+  /* Add other styles as per your requirement */
+}
+
+.popup p, .popup label {
+    font-family: sans-serif;
+/*
+  background-color: rgba(240, 240, 240, 0.8);
+*/
+    padding: 4px;
+    margin-bottom: 2em;
+    font-size: 1.5em;
+}
+
+.close {
+    float: right;
+    cursor: pointer;
+}
+.popup .close {
+    position: fixed;
+    top: 8px;
+    right: 8px;
+    font-size: 2em;
+}
+
+#talk {
+    font-family: monospace;
+}
+
+#talk p {
+    padding: 0.5em;
+}
+
+.msg_received {
+    position: relative;
+    border-radius: 0px 6px 6px 6px;
+    background-color: #fff;
+    width: 85%;
+}
+
+.msg_received :after {
+    border-width: 0px 10px 10px 0;
+    border-color: transparent #fff transparent transparent;
+    position: absolute;
+    top: 0;
+    left: -10px;
+    content: "";
+    width: 0;
+    height: 0;
+    border-style: solid;
+    box-sizing: inherit;
+    color: #000;
+    line-height: 18px;
+    font-size: 15px;
+    word-wrap: break-word;
+}
+
+.msg_sent {
+    position: relative;
+    border-radius: 6px 0px 6px 6px;
+    background-color: #e1ffc7;
+    width: 85%;
+    margin-left: 10%;
+}
+
+.msg_sent :after {
+    border-width: 0px 0 10px 10px;
+    border-color: transparent transparent transparent #e1ffc7;
+    position: absolute;
+    top: 0;
+    right: -10px;
+    content: "";
+    width: 0;
+    height: 0;
+    border-style: solid;
+    box-sizing: inherit;
+    color: #000;
+    line-height: 18px;
+    font-size: 15px;
+    word-wrap: break-word;
+}
