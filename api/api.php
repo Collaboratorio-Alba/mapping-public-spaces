@@ -12486,14 +12486,14 @@ namespace Tqdev\PhpCrudApi {
     use Tqdev\PhpCrudApi\ResponseUtils;
     
     $emailSettings = [
-        'host' => 'smtp.gmail.com',
-        'username' => 'albacollaboratorio@gmail.com',
-        'password' => 'xbxpsjinlplkjoxq',
+        'host' => 'smtp.xxxxxxxxxx.com',
+        'username' => 'xxxxxxxxxxxxxxx@xxxxxxxx.xx',
+        'password' => 'xxxxxxxxxxxxxxx',
         'secure' => 'tls',
         'port' => 587,
-        'from' => 'alba@collab.42web.io',
+        'from' => 'xxxxxxxxxxxxxxx@xxxxxxxx.xx',
         'confirmSubject' => 'Collab - Conferma dell\'indirizzo email',
-        'confirmTemplate' => '<p>Grazie per l\'iscrizione a collab.42web.io,<br>congratulazioni!</p> <p>Ti sei registrata/o.<br>Per verificare il tuo indirizzo email clicca sul link qui sotto: </p>'
+        'confirmTemplate' => '<p>Grazie per l\'iscrizione a xxxxxxxxxxx.xx,<br>congratulazioni!</p> <p>Ti sei registrata/o.<br>Per verificare il tuo indirizzo email clicca sul link qui sotto: </p>'
     ];
 
     $config = new Config([
