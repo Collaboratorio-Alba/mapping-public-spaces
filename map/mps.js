@@ -192,6 +192,50 @@ function loadSpaces () {
     )
 }
 
+/**
+ * Loads talks from the API and adds them to the UI.
+ *
+ * This function retrieves a list of messages from the API, related to one space,
+ * and adds them to the UI by calling the addTalks function.
+ */
+function loadTalks (spaceID) {
+  // clear talk div
+  document.getElementById('talk').innerHTML = "";
+  jca.list('talks', { filter: 'space_id,eq,'+spaceID, order: 'datetime_created,desc' })
+    .then(function (response) {
+      response.records.forEach(function (item, index) {
+        if (index < 20) {
+          document.getElementById('talk').appendChild(formatTalk(item))
+        }
+      })
+    }).catch(
+      error => console.log(error)
+    )
+}
+
+/**
+ * Adds a single message to the UI.
+ */
+function formatTalk (record) {
+  const newDiv = document.createElement("div");
+  let divClass = "msg_received"
+  if (me !== null) {
+    if (record.user_id === me.id) {
+      divClass = "msg_sent"
+    }
+  }
+  newDiv.classList.add(divClass)
+  const metaP = document.createElement("p")
+  const metaTextNode = document.createTextNode(record.username + ' - ' + record.datetime_created.substr(0, 16).replace('T',' '))
+  metaP.appendChild(metaTextNode)
+  const newP = document.createElement("p")
+  const textNode = document.createTextNode(record.text)
+  newP.appendChild(textNode)
+  newDiv.appendChild(metaP)
+  newDiv.appendChild(newP)
+  return newDiv
+}
+
 function loadEntrances () {
   jca.list('entrances')
     .then(function (response) {
@@ -241,7 +285,7 @@ function computeEntrances () {
 
 function colorizeMarker (marker) {
   const topic = marker.data.vocation
-  const topics = ['nessuna', 'movimento', 'natura', 'creatività', 'comunità', 'cura', 'contemplazione', 'attivismo', 'educazione']
+  const topics = ['nessuna', 'movimento', 'natura', 'creatività', 'socializzazione', 'cura', 'contemplazione', 'attivismo', 'formazione']
   const mappingHue = [0, 25, 270, 240, 190, 145, 90, 320, 0]
   const mappingSat = [1, 1.6, 1.4, 1.8, 1.4, 1.1, 1, 1.1, 1.1]
   if (topics.indexOf(topic) === 0) {
@@ -593,6 +637,7 @@ function setMe (dati) {
   }
   document.getElementsByClassName('pell-content')[0].setAttribute('contenteditable', 'true')
   document.getElementsByClassName('pell-actionbar')[0].style.display = 'block'
+  document.Delete.style.display = 'block' 
   markers.eachLayer(function (l) {
     if (Object.prototype.hasOwnProperty.call(l, 'dragging')) {
       l.dragging.enable()
@@ -630,6 +675,7 @@ function unsetMe () {
   }
   document.getElementsByClassName('pell-content')[0].setAttribute('contenteditable', 'false')
   document.getElementsByClassName('pell-actionbar')[0].style.display = 'none'
+  document.Delete.style.display = 'none' 
   markers.eachLayer(function (l) {
     if (Object.prototype.hasOwnProperty.call(l, 'dragging')) {
       l.dragging.disable()
@@ -694,6 +740,7 @@ function fillPlaceFields (data) {
       };
     };
   }
+  loadTalks(data.id)
   const OSMURL = 'https://www.openstreetmap.org/#map=18/' + data.latitude + '/' + data.longitude
   document.getElementById('spazi-linkOSM').setAttribute('href', OSMURL)
   const URIURL = apiUrl + '/records/spaces/' + data.id
@@ -887,14 +934,14 @@ function setOctoMiniature (event, isLabel) {
 const octomappings = { 0: 'physical_activity', 1: 'nature', 2: 'creativity', 3: 'conviviality', 4: 'care', 5: 'contemplation', 6: 'citizenship', 7: 'learning' }
 
 const octodescriptions = {
-  physical_activity: '<b>Movimento:</b> per esempio camminare, fare sport, ballare. ',
+  physical_activity: '<b>Movimento:</b> per esempio camminare, fare sport, ballare.',
   nature: "<b>Natura:</b> osservare o interagire con la natura e prendersi cura dell'ambiente.",
-  creativity: "<b>Creatività:</b> per esempio la creazione o l'espressione artistica, come recitare, laboratori artistici o fare musica. ",
-  conviviality: '<b>Comunità:</b> per esempio mangiare e bere assieme, feste, riunioni o giocare. ',
-  care: '<b>Cura:</b> per esempio fare volontariato, fornire assistenza e supporto a persone in situazioni di bisogno.',
-  contemplation: '<b>Contemplazione:</b> per esempio attività come preghiera, meditazione, consapevolezza.',
+  creativity: "<b>Pensiero critico e creatività:</b> per esempio la creazione o l'espressione artistica, come recitare o fare musica. La crescita di individui come soggetti autonomi e capaci di esprimere il loro pensiero critico.",
+  conviviality: "<b>Socializzazione:</b> per esempio mangiare e bere assieme, feste, riunioni o giocare. L'integrazione degli individui nella società e nella cultura.",
+  care: "<b>Cura:</b> per esempio fare volontariato, fornire assistenza e supporto a persone in situazioni di bisogno. L'espressione degli individui come soggetti capaci di cura.",
+  contemplation: '<b>Contemplazione:</b> per esempio attività come preghiera, meditazione, consapevolezza di sé.',
   citizenship: '<b>Attivismo:</b> attività civiche, politiche, culturali o sociali che generano un valore o che promuovono il benessere e lo sviluppo delle comunità.',
-  learning: '<b>Educazione:</b> per esempio lo studio in gruppo, i gruppi di lettura e la partecipazione ad attività educative.'
+  learning: '<b>Formazione:</b> per esempio lo studio in gruppo e la partecipazione ad attività educative. La trasmissione di conoscenze e abilità.'
 }
 
 function relocateOctosliderLabels (p, index) {
@@ -1024,6 +1071,29 @@ function todoOnload () {
     ).catch(
       error => registerError(error)
     )
+  })
+  
+  document.posta.addEventListener('submit', async event => {
+    event.preventDefault()
+    if (document.posta[0].value === "") { return }
+    let datetimeNow = new Date()
+    datetimeNow = datetimeNow.toISOString()
+    const data = new FormData(document.posta)
+    const formDataObj = {
+      datetime_created: datetimeNow,
+      space_id: activeMarker.data.id,
+      user_id: me.id,
+      username: me.username,
+      text: document.posta[0].value 
+    }
+    jca.create('talks', [
+      formDataObj
+    ]).catch(
+      error => console.log(error)
+    )
+    document.posta[0].value = ""
+    console.log(formDataObj)
+    document.getElementById('talk').prepend(formatTalk(formDataObj))
   })
 
   document.getElementById('cnvUserBox').addEventListener('click', function (e) {

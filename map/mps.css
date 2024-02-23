@@ -9,11 +9,27 @@ body {
 html, body, #mpsMap {
     height: 100%;
     width: 100vw;
+    font-family: arial;
 }
 
 #mpsMap {
     z-index: 10;
 }
+
+a {
+  color: #4070f4;
+  text-decoration: none;
+  text-transform: uppercase;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+a:active {
+  color: black;
+}
+
 .leaflet-container {
     height: 400px;
     width: 600px;
@@ -429,7 +445,7 @@ hr {
 
 .spazi-meta {
     margin: 0.5em;
-    text-align: right;
+    text-align: left;
 }
 
 .field-select input {
@@ -498,6 +514,7 @@ textarea:disabled {
     border-radius: 6px;
 }
 
+#forum-post,
 #spazi-use,
 #spazi-accessibility,
 #spazi-interviews,
@@ -568,14 +585,18 @@ fieldset span {
     vertical-align:top
 }
 
+#spazi-linkPP {
+    visibility: hidden;
+}
+
 .decrease, .increase {
-  display: inline-block;
-  width: 20px;
-  height: 20px;
-  line-height: 20px;
-  text-align: center;
-  cursor: pointer;
-  user-select: none;
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    line-height: 20px;
+    text-align: center;
+    cursor: pointer;
+    user-select: none;
 }
 
 input[type=number] {
@@ -585,58 +606,115 @@ input[type=number] {
 
 /* Style the decrease button */
 .decrease {
-  background-color: #ffcccc;
+    background-color: #ffcccc;
 }
 
 /* Style the increase button */
 .increase {
-  background-color: #ccffcc;
+    background-color: #ccffcc;
 }
 
 /* Style for the popup */
 .popup {
-  overflow-y: auto;
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border-radius: 12px;
-  border-style: double;
-  border-color: darkgray;
-  width: 80vw;
-  max-width: 600px;
-  height: 80vh;
-  position: fixed;
-  z-index: 6;
-  left: 50%;
-  top: 50%;
-  padding: 2em;
-  transform: translate(-50%, -50%);
-  background-color: whitesmoke;
-  text-align: justify;
+    overflow-y: auto;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-radius: 12px;
+    border-style: double;
+    border-color: darkgray;
+    width: 80vw;
+    max-width: 600px;
+    height: 80vh;
+    position: fixed;
+    z-index: 6;
+    left: 50%;
+    top: 50%;
+    padding: 2em;
+    transform: translate(-50%, -50%);
+    background-color: whitesmoke;
+    text-align: justify;
 /*
   background-image: url('/images/breathtaking_m.webp');
   background-size: cover;
 */
-  background-position: center;
+    background-position: center;
   /* Add other styles as per your requirement */
 }
 
 .popup p, .popup label {
-  font-family: sans-serif;
+    font-family: sans-serif;
 /*
   background-color: rgba(240, 240, 240, 0.8);
 */
-  padding: 4px;
-  margin-bottom: 2em;
-  font-size: 1.5em;
+    padding: 4px;
+    margin-bottom: 2em;
+    font-size: 1.5em;
 }
 
 .close {
-  float: right;
-  cursor: pointer;
+    float: right;
+    cursor: pointer;
 }
 .popup .close {
-  position: fixed;
-  top: 8px;
-  right: 8px;
-  font-size: 2em;
+    position: fixed;
+    top: 8px;
+    right: 8px;
+    font-size: 2em;
+}
+
+#talk {
+    font-family: monospace;
+}
+
+#talk p {
+    padding: 0.5em;
+}
+
+.msg_received {
+    position: relative;
+    border-radius: 0px 6px 6px 6px;
+    background-color: #fff;
+    width: 85%;
+}
+
+.msg_received :after {
+    border-width: 0px 10px 10px 0;
+    border-color: transparent #fff transparent transparent;
+    position: absolute;
+    top: 0;
+    left: -10px;
+    content: "";
+    width: 0;
+    height: 0;
+    border-style: solid;
+    box-sizing: inherit;
+    color: #000;
+    line-height: 18px;
+    font-size: 15px;
+    word-wrap: break-word;
+}
+
+.msg_sent {
+    position: relative;
+    border-radius: 6px 0px 6px 6px;
+    background-color: #e1ffc7;
+    width: 85%;
+    margin-left: 10%;
+}
+
+.msg_sent :after {
+    border-width: 0px 0 10px 10px;
+    border-color: transparent transparent transparent #e1ffc7;
+    position: absolute;
+    top: 0;
+    right: -10px;
+    content: "";
+    width: 0;
+    height: 0;
+    border-style: solid;
+    box-sizing: inherit;
+    color: #000;
+    line-height: 18px;
+    font-size: 15px;
+    word-wrap: break-word;
 }
