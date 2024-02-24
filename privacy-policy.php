@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html style="line-height: 25px; width: 90vw; max-width: 560px; font-size: 16px; margin: 2em; font-family: verdana;" lang="it">
+<html style="line-height: 25px; width: 90vw; max-width: 1200px; font-size: 16px; margin: 2em; font-family: verdana;">
   <head>
     <title>Privacy policy</title>
     <meta content="text/html; charset=UTF-8" http-equiv="content-type">
@@ -20,9 +20,9 @@
       <div id="personalData" class="row">
         <div class="col-12">
           <h4 style="color: rgb(21, 133, 224);">Titolare e responsabile del trattamento dati</h4>
-          <p style="margin-bottom: 2px;">Alessandro Proglio. collab.42web.io </p>
+          <p style="margin-bottom: 2px;">Collaboratorio Alba. Alessandro Proglio è designato come rappresentante legale del gruppo informale Collaboratorio Alba limitatamente alle attività realizzate attraverso il sito web collab.42web.io.</p>
           <p>Mail: alba@collab.42web.io</p>
-          <p>collab.42web.io attraverso la piattaforma e i suoi servizi (sito e app), in modo autonomo o tramite terze parti, raccoglie, utilizza ed è responsabile di alcune informazioni personali sugli utenti al fine di fornire i suoi servizi. Quando lo facciamo, siamo regolamentati dal Regolamento generale sulla protezione dei dati che si applica in tutta l'Unione Europea e siamo responsabili come "titolari" di tali informazioni personali ai fini di tali leggi. La protezione dei dati personali è della massima preoccupazione per collab.42web.io. Di seguito, spieghiamo quali informazioni raccogliamo e come vengono utilizzate.</p>
+          <p>collab.42web.io attraverso la piattaforma e i suoi servizi (sito web), in modo autonomo o tramite terze parti, raccoglie, utilizza ed è responsabile di alcune informazioni personali sugli utenti al fine di fornire i suoi servizi. Quando lo facciamo, siamo regolamentati dal Regolamento generale sulla protezione dei dati che si applica in tutta l'Unione Europea e siamo responsabili come "titolari" di tali informazioni personali ai fini di tali leggi. La protezione dei dati personali è della massima preoccupazione per collab.42web.io. Di seguito, spieghiamo quali informazioni raccogliamo e come vengono utilizzate.</p>
         </div>
       </div>
       <div id="dataCollection" class="row">
@@ -30,7 +30,7 @@
           <h4 style="color: rgb(21, 133, 224);">Raccolta dati</h4>
         </div>
         <div class="col-12">
-          <p>Riceviamo e archiviamo qualsiasi informazione che come utente fornisci volontariamente ed esplicitamente tramite i nostri servizi o che ci fornisci in qualsiasi altro modo utilizzando i nostri Servizi. In particolare i dati personali sono liberamente forniti dall’utente e i dati di utilizzo, sono raccolti automaticamente durante l’uso del sito e/o dell’app, anche attraverso i permessi abilitati nel dispositivo dell’utente. Se non diversamente specificato, tutti i dati richiesti sono obbligatori (indicati dall'asterisco). Se l’utente rifiuta di fornirli, potrebbe essere impossibile utilizzare il Servizio proposto da collab.42web.io. Nei casi in cui sono indicati alcuni dati come facoltativi, gli utenti sono liberi di astenersi dal fornire i dati, tale scelta potrebbe influire sull’utilizzo di alcuni servizi, limitando l’operatività degli applicativi. L’utente per utilizzare i nostri servizi con tutte le funzionalità deve prima registrarsi, e durante la registrazione deve fornire il proprio indirizzo e-mail e scegliere un username. Inoltre, l'utente può scegliere di aggiungere volontariamente ulteriori informazioni al proprio profilo, come il nome, il cognome, una foto profilo, la biografia e i link ai profili personali sui social media e al sito web. </p>
+          <p>Riceviamo e archiviamo qualsiasi informazione che come utente fornisci volontariamente ed esplicitamente tramite i nostri servizi o che ci fornisci in qualsiasi altro modo utilizzando i nostri Servizi. In particolare i dati personali sono liberamente forniti dall’utente e i dati di utilizzo, sono raccolti automaticamente durante l’uso del sito e/o dell’app, anche attraverso i permessi abilitati nel dispositivo dell’utente. Se non diversamente specificato, tutti i dati richiesti sono obbligatori (indicati dall'asterisco). Se l’utente rifiuta di fornirli, potrebbe essere impossibile utilizzare il Servizio proposto da collab.42web.io. Nei casi in cui sono indicati alcuni dati come facoltativi, gli utenti sono liberi di astenersi dal fornire i dati, tale scelta potrebbe influire sull’utilizzo di alcuni servizi, limitando l’operatività degli applicativi. L’utente per utilizzare i nostri servizi con tutte le funzionalità deve prima registrarsi, e durante la registrazione deve fornire il proprio indirizzo e-mail e scegliere un username. Inoltre, l'utente può scegliere di aggiungere volontariamente ulteriori informazioni al proprio profilo, come il nome e il cognome. </p>
         </div>
         <div class="col-12">
           <div id="dataSection1" class="row">
@@ -38,7 +38,7 @@
               <h4 style="color: rgb(21, 133, 224);">Informazioni che ci fornisci</h4>
             </div>
             <div class="col-12">
-              <p>Raccogliamo le informazioni che come utente fornisci volontariamente ed esplicitamente su di te. Ad esempio, condividi informazioni direttamente con noi quando crei un account (indirizzo e-mail e nome utente) e aggiungi volontariamente nome, cognome, una foto profilo, la biografia e altre informazioni, insieme ai link ai profili personali social e sito web. Fornisci contenuti di mappatura o altri contenuti tramite i nostri Servizi, partecipi ai progetti, commenti o segnali contenuti pubblicati da altri utenti, partecipi a una sfida, scarichi contenuti (come un set di dati di ricerca), invii messaggi, richiedi supporto, commenti i contenuti o comunichi in altro modo con noi. I tipi di informazioni che possiamo raccogliere su di te includono il tuo nome, indirizzo e-mail, credenziali dell'account, foto del profilo, biografia del profilo e qualsiasi altra informazione che scegli di fornire.</p>
+              <p>Raccogliamo le informazioni che come utente fornisci volontariamente ed esplicitamente su di te. Ad esempio, condividi informazioni direttamente con noi quando crei un account (indirizzo e-mail e nome utente) e aggiungi volontariamente nome e cognome. Fornisci contenuti di mappatura o altri contenuti tramite i nostri Servizi, partecipi ai progetti, commenti o segnali contenuti pubblicati da altri utenti, scarichi contenuti (come un set di dati di ricerca), invii messaggi, richiedi supporto, commenti i contenuti o comunichi in altro modo con noi. I tipi di informazioni che possiamo raccogliere su di te includono il tuo nome, indirizzo e-mail, credenziali dell'account e qualsiasi altra informazione che scegli di fornire.</p>
             </div>
           </div>
         </div>
@@ -49,10 +49,10 @@
             </div>
             <div class="col-12">
               <p>Quando accedi o utilizzi i nostri Servizi, raccogliamo automaticamente determinate informazioni su di te, tra cui:</p>
-              <p>Informazioni sul dispositivo e sull'attività: raccogliamo informazioni su come accedi ai nostri Servizi, inclusi dati sul dispositivo e sulla rete che utilizzi, come il modello hardware, la versione del sistema operativo, la rete mobile, l'indirizzo IP, gli identificatori univoci del dispositivo, il tipo di browser e l'app versione. Raccogliamo anche informazioni sulla tua attività sui nostri Servizi, come l'ora e la data in cui accedi ai nostri Servizi, i contenuti che hai caricato e tutte le informazioni a questo collegate, le pagine visualizzate e i link cliccati.</p>
-              <p>Informazioni sulla posizione: in base alle autorizzazioni impostate sul dispositivo, potremmo raccogliere informazioni sulla posizione precisa del dispositivo e sul suo movimento. Puoi interrompere la raccolta di informazioni precise sulla posizione in qualsiasi momento.</p>
-              <p>Informazioni memorizzate: possiamo accedere alle informazioni che hai memorizzato sul tuo dispositivo mobile tramite le nostre applicazioni mobili in conformità con le impostazioni di autorizzazione che hai impostato sul tuo dispositivo mobile. Ad esempio, con la tua autorizzazione, potremmo accedere a foto o video dalla galleria fotografica del tuo dispositivo mobile.</p>
-              <p>Informazioni raccolte da cookie e tecnologie di tracciamento simili: noi (e i nostri fornitori di servizi) utilizziamo tecnologie di tracciamento, come cookie e web beacon, per raccogliere informazioni su di te. Per maggiori informazioni sui cookie e su come disabilitarli, consulta la nostra Cookie Policy.</p>
+              <p><b>Informazioni sul dispositivo e sull'attività</b>: raccogliamo informazioni su come accedi ai nostri Servizi, inclusi dati sul dispositivo e sulla rete che utilizzi, come il modello hardware, la versione del sistema operativo, la rete mobile, l'indirizzo IP, gli identificatori univoci del dispositivo, il tipo di browser e versione dell'app. Raccogliamo anche informazioni sulla tua attività sui nostri Servizi, come l'ora e la data in cui accedi ai nostri Servizi, i contenuti che hai caricato e tutte le informazioni a questo collegate, le pagine visualizzate e i link cliccati.</p>
+              <p><b>Informazioni sulla posizione</b>: in base alle autorizzazioni impostate sul dispositivo, potremmo raccogliere informazioni sulla posizione precisa del dispositivo e sul suo movimento. Puoi interrompere la raccolta di informazioni precise sulla posizione in qualsiasi momento.</p>
+              <p><b>Informazioni memorizzate</b>: possiamo accedere alle informazioni che hai memorizzato sul tuo dispositivo mobile tramite le nostre applicazioni mobili in conformità con le impostazioni di autorizzazione che hai impostato sul tuo dispositivo mobile. Ad esempio, con la tua autorizzazione, potremmo accedere a foto o video dalla galleria fotografica del tuo dispositivo mobile.</p>
+              <p><b>Informazioni raccolte da cookie e tecnologie di tracciamento simili</b>: Desideriamo informarti che utilizziamo i cookie esclusivamente per consentire la gestione delle sessioni sul nostro sito web. I cookie sono piccoli file di testo che vengono temporaneamente memorizzati sul tuo dispositivo durante la tua visita al sito al fine di facilitare e migliorare la tua esperienza di navigazione. Questi cookie ci aiutano a gestire in modo efficiente le tue interazioni sul sito e a garantire il corretto funzionamento delle funzionalità legate alla sessione. Rispettiamo la tua privacy e utilizziamo i cookie solo per fini tecnici, senza fini pubblicitari o di tracciamento. I cookie di sessione vengono automaticamente eliminati una volta che chiudi il browser, non memorizzando alcuna informazione personale..</p>
             </div>
           </div>
         </div>
@@ -73,7 +73,7 @@
           <h4 style="color: rgb(21, 133, 224);">Finalità del Trattamento dei Dati raccolti</h4>
         </div>
         <div class="col-12">
-          <p>I dati dell'utente sono raccolti per diversi fini, tra cui la fornitura dei servizi, il rispetto degli obblighi di legge, la tutela dei diritti e degli interessi del Titolare, la prevenzione di attività fraudolente, l'autenticazione degli utenti, la gestione dei contatti, l'invio di messaggi e notifiche, l'interazione basata sulla posizione, la gestione delle preferenze e dei commenti sui contenuti, l'interazione con social network e piattaforme esterne, l'accesso agli account su servizi terzi, la gestione dei database degli utenti, la gestione dei tag, l'hosting e l'infrastruttura backend, la protezione, la sicurezza e il monitoraggio applicativi e delle infrastrutture, l'ottimizzazione e la distribuzione del traffico, la protezione dallo SPAM, la pubblicità, il remarketing e il behavioral targeting, i servizi di piattaforma e hosting, le statistiche e l'analisi, la visualizzazione di contenuti da piattaforme esterne.</p>
+          <p>I dati dell'utente sono raccolti per diversi fini, tra cui la fornitura dei servizi, il rispetto degli obblighi di legge, la tutela dei diritti e degli interessi del Titolare, la prevenzione di attività fraudolente, l'autenticazione degli utenti, la gestione dei contatti, l'invio di messaggi e notifiche, l'interazione basata sulla posizione, la gestione delle preferenze e dei commenti sui contenuti, l'interazione con social network e piattaforme esterne, l'accesso agli account su servizi terzi, la gestione dei database degli utenti, la gestione dei tag, l'hosting e l'infrastruttura backend, la protezione, la sicurezza e il monitoraggio applicativi e delle infrastrutture, l'ottimizzazione e la distribuzione del traffico, la protezione dallo SPAM, i servizi di piattaforma e hosting, le statistiche e l'analisi, la visualizzazione di contenuti da piattaforme esterne.</p>
         </div>
         <div class="col-12">
           <p>L’eventuale utilizzo di Cookie - o di altri strumenti di tracciamento - da parte di questa Applicazione o dei titolari dei servizi terzi utilizzati da questa Applicazione, ove non diversamente precisato, ha la finalità di fornire il Servizio richiesto dall'utente, oltre alle ulteriori finalità descritte nel presente documento e nella Cookie Policy.</p>
@@ -84,11 +84,8 @@
             <li>ricevere feedback e commenti sui contenuti e garantire che i contenuti del nostro sito siano presentati nel modo più efficace;</li>
             <li>fornire, mantenere e migliorare i nostri prodotti e servizi, anche per migliorare la tecnologia e gli algoritmi che alimentano i nostri Servizi e per sviluppare nuovi prodotti e servizi;</li>
             <li>personalizzare e migliorare l’esperienza sui nostri Servizi;</li>
-            <li>fornire, mantenere e migliorare i nostri prodotti e servizi, anche per migliorare la tecnologia e gli algoritmi che alimentano i nostri Servizi e per sviluppare nuovi prodotti e servizi;</li>
             <li>rispondere ai commenti e domande e indagare sui contenuti segnalati dagli utenti;</li>
             <li>comunicare informazioni su prodotti, servizi ed eventi che noi o altri offriamo e fornire informazioni che riteniamo possano interessarti ;</li>
-            <li>monitorare e analizzare tendenze, utilizzo e attività in relazione ai nostri Servizi e prodotti anche attraverso processi automatizzati;</li>
-            <li>facilitare concorsi, sfide, giochi e promozioni ed elaborare e fornire iscrizioni e premi;</li>
             <li>rilevare, indagare e prevenire incidenti di sicurezza e altre attività dannose, ingannevoli, fraudolente o illegali e proteggere i diritti e la proprietà di collab.42web.io e di altri;</li>
             <li>eseguire il debug per identificare e riparare gli errori nei nostri Servizi;</li>
             <li>perseguire qualsiasi altro scopo descritto all'utente al momento della partecipazione ai progetti.</li>
@@ -108,7 +105,7 @@
           <p>Con il tuo consenso o su tua indicazione. Ad esempio, se invii immagini o pubblichi contenuti in un'area pubblica dei nostri Servizi, condividiamo queste informazioni (ad esempio tramite le nostre API o pubblicamente sui nostri Servizi).</p>
           <p>Condividiamo anche informazioni aggregate e anonime che non possono essere ragionevolmente utilizzate per l’identificazione dell’utente.</p>
           <p>Condividiamo le informazioni, su richiesta, all’utente - amministratore che potrà utilizzarli in accordo alla suddetta informativa sulla privacy.</p>
-          <p>Per ottenere ulteriori informazioni dettagliate sulla condivisione delle informazioni, l’Utente può fare riferimento alle relative sezioni presenti sul sito www.collab.42web.io.com</p>
+          <p>Per ottenere ulteriori informazioni dettagliate sulla condivisione delle informazioni, l’Utente può fare riferimento alle relative sezioni presenti sul sito collab.42web.io</p>
         </div>
       </div>
       <div id="placeOfDataStorage" class="row">
@@ -161,7 +158,7 @@
         </div>
         <div class="col-12">
           <p>L’interessato ha inoltre diritto di rivolgersi Garante per la protezione dei dati personali, al fine di far valere i propri diritti in relazione al trattamento dei dati personali.</p>
-          <p>Per domande riguardanti la raccolta, l'elaborazione o l'utilizzo dei dati personali, la divulgazione, la correzione, il blocco o la cancellazione dei dati, contattare: hello@collab.42web.io.com</p>
+          <p>Per domande riguardanti la raccolta, l'elaborazione o l'utilizzo dei dati personali, la divulgazione, la correzione, il blocco o la cancellazione dei dati, contattare: alba@collab.42web.io</p>
         </div>
       </div>
       <div id="keepYourPersonal" class="row">
@@ -185,13 +182,7 @@
                 <p>Questo documento contiene informazioni in merito alle tecnologie che consentono a questa Applicazione di raggiungere gli scopi descritti di seguito. Tali tecnologie - definite “Strumenti di Tracciamento” - permettono al Titolare di raccogliere e salvare informazioni (per esempio tramite l’utilizzo di Cookie) o di utilizzare risorse (per esempio eseguendo uno script) sul dispositivo dell’Utente quando quest’ultimo interagisce con questa Applicazione. Alcune delle finalità per le quali vengono impiegati Strumenti di Tracciamento potrebbero, inoltre richiedere il consenso dell’Utente. Se viene prestato il consenso, esso può essere revocato liberamente in qualsiasi momento seguendo le istruzioni contenute in questo documento.</p>
               </div>
               <div class="col-12">
-                <p>Questa Applicazione utilizza Strumenti di Tracciamento gestiti direttamente dal Titolare (comunemente detti Strumenti di Tracciamento “di prima parte”) e Strumenti di Tracciamento che abilitano servizi forniti da terzi (comunemente detti Strumenti di Tracciamento “di terza parte”). Se non diversamente specificato all’interno di questo documento, tali terzi hanno accesso ai rispettivi Strumenti di Tracciamento. Durata e scadenza dei Cookie e degli altri Strumenti di Tracciamento simili possono variare a seconda di quanto impostato dal Titolare o da ciascun fornitore terzo. Alcuni di essi scadono al termine della sessione di navigazione dell’Utente.</p>
-              </div>
-              <div class="col-12">
-                <p>In aggiunta a quanto specificato nella descrizione di ciascuna delle categorie di seguito riportate, gli Utenti possono ottenere informazioni più dettagliate ed aggiornate sulla durata, così come qualsiasi altra informazione rilevante - quale la presenza di altri Strumenti di Tracciamento - nelle privacy policy dei rispettivi fornitori terzi (tramite i link messi a disposizione) o contattando il Titolare. Per avere ulteriori informazioni riguardo ai consumatori californiani e ai loro diritti sulla privacy, gli Utenti possono consultare la <span style="display: inline-block;">
-                    <a class="a-cookie-policy" href="https://www.collab.42web.io.com/signup#">privacy policy.</a>
-                  </span>
-                </p>
+                <p>Questa Applicazione utilizza Strumenti di Tracciamento gestiti direttamente dal Titolare (comunemente detti Strumenti di Tracciamento “di prima parte”). Durata e scadenza dei Cookie e degli altri Strumenti di Tracciamento simili possono variare a seconda di quanto impostato dal Titolare. Alcuni di essi scadono al termine della sessione di navigazione dell’Utente.</p>
               </div>
             </div>
             <div id="Activities" class="row">

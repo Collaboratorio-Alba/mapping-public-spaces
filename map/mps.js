@@ -69,7 +69,7 @@ function initMap () {
   mpsMap = L.map('mpsMap', mapOptions).setView(mapCenter, 14)
   L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
     maxZoom: 19,
-    attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, <a href="https://github.com/Collaboratorio-Alba/mapping-public-spaces"><img class="githubLogo" src="images/github-mark.svg" alt="Github repository"/></a>, <a href="mailto:alba@collab.42web.io?subject=segnalazione%20problema%20del%20sito%20collab.42web.io&body=Mentre%20usavo%20il%20sito%20ho%20riscontrato%20questo%20problema%3A%0A%0A%C3%A8%20successo%20mentre%20stavo...%0A%0Asto%20navigando%20da%3A%20telefono%2Fcomputer%0A%0Acon%20il%20browser%3A%20%0A">Segnala</a> un problema.'
+    attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, <a href="https://collab.42web.io/terms-and-conditions.php">Collaboratorio Alba</a>, <a href="https://github.com/Collaboratorio-Alba/mapping-public-spaces"><img class="githubLogo" src="images/github-mark.svg" alt="Github repository"/></a>'
   }).addTo(mpsMap)
 
   // house_numbers layer
@@ -994,6 +994,19 @@ function closePopup() {
   document.getElementById("popupWelcomeBox").style.display = "none";
 }
 
+
+function showAlertDeleteUser()
+  {
+    let confirmMsg = 'Sicuro di voler cancellare l\'utente?'
+    if (document.getElementById('DeleteUser').value !== confirmMsg) {
+      document.getElementById('DeleteUser').value = confirmMsg
+      return false
+    } else {
+      return true
+    }
+  }
+
+
 // initialize events in window.onload
 function todoOnload () {
   const wrapper = document.querySelector('.wrapper')
@@ -1031,6 +1044,25 @@ function todoOnload () {
     sldrlbl[i].addEventListener('pointerdown', e => setOctoMiniature(e, true))
   }
 
+
+  document.DelUser.addEventListener('submit', async event => {
+    event.preventDefault()
+    let lastChance = showAlertDeleteUser()
+    if (lastChance === true) {
+      fetch(
+        apiUrl + '/me',
+        {
+          method: 'DELETE'
+        }
+      ).then(data => {
+        window.location.reload();
+      }
+      ).catch(
+        error => console.log(error)
+      )
+    }
+  })
+  
   document.getElementById('signupCheck').addEventListener('click', checkTerms)
 
   document.getElementById('collapse').addEventListener('pointerdown', toggleTabPanels)
@@ -1096,9 +1128,9 @@ function todoOnload () {
     document.getElementById('talk').prepend(formatTalk(formDataObj))
   })
 
-  document.getElementById('cnvUserBox').addEventListener('click', function (e) {
-    document.getElementById('cnvUserBox').style.display = 'none'
-  })
+  //document.getElementById('cnvUserBox').addEventListener('click', function (e) {
+    //document.getElementById('cnvUserBox').style.display = 'none'
+  //})
 
   document.access.addEventListener('submit', async event => {
     event.preventDefault()

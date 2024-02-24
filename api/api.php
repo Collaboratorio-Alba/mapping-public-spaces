@@ -8289,7 +8289,8 @@ namespace Tqdev\PhpCrudApi\Middleware {
                 $mail->SMTPAuth = true;
                 $mail->Username = $smtpSettings['username'];
                 $mail->Password = $smtpSettings['password'];
-                $mail->SMTPSecure = $smtpSettings['secure'];
+                //$mail->SMTPSecure = $smtpSettings['secure'];
+                $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
                 $mail->Port = $smtpSettings['port'];
         
                 //Recipients
@@ -8299,14 +8300,13 @@ namespace Tqdev\PhpCrudApi\Middleware {
                 //Content
                 $mail->isHTML(true);
                 $mail->Subject = $smtpSettings['confirmSubject'];
-                $base_url="https://".$_SERVER['SERVER_NAME'].dirname($_SERVER["REQUEST_URI"].'?').'/';
-                $mail->Body = $smtpSettings['confirmTemplate'] . '<br><a href="' . $base_url . 'confirm/' . $token. '">Conferma</a><br><p>Dopo il caricamento del link potrai chiudere la pagina e accedere su collab.42web.io</p>';
-        
+                $base_url = "https://".$_SERVER['SERVER_NAME'].dirname($_SERVER["REQUEST_URI"].'?').'/';
+                $emlBody = $smtpSettings['confirmTemplate'] . ' <br><a href="' . $base_url . 'confirm/' . $token. '">Conferma</a><br><p>Dopo il caricamento del link potrai chiudere la pagina e accedere su collab.42web.io</p>';
+                $mail->Body = $emlBody;
                 $mail->send();
                 return true;
             } catch (Exception $e) {
-                //echo 'Message could not be sent.';
-                //echo 'Mailer Error: ' . $mail->ErrorInfo;
+                file_put_contents('./logs.txt', $mail->ErrorInfo, FILE_OPEN_APPEND);
                 return false;
             }
         }
@@ -8409,6 +8409,8 @@ namespace Tqdev\PhpCrudApi\Middleware {
                     $data['first_name'] = $firstName;
                     $data['last_name'] = $lastName;
                     $data['terms'] = $terms;
+                    $data['datetime_created'] = date("Y-m-d\ T\ H:i:s.u");
+
                     //
                     if ($confirmEmail) {
                         $data[$confirmedColumnName] = 0;
@@ -8504,6 +8506,20 @@ namespace Tqdev\PhpCrudApi\Middleware {
             if ($method == 'GET' && $path == 'me') {
                 if (isset($_SESSION['user'])) {
                     return $this->responder->success($_SESSION['user']);
+                }
+                return $this->responder->error(ErrorCode::AUTHENTICATION_REQUIRED, '');
+            }
+            if ($method == 'DELETE' && $path == 'me') {
+                if (isset($_SESSION['user'])) {
+                    $tableName = $this->getProperty('usersTable', 'users');
+                    $table = $this->reflection->getTable($tableName);
+                    // delete user
+                    $user = $_SESSION['user'];
+                    if (session_status() != PHP_SESSION_NONE) {
+                        session_destroy();
+                    }
+                    $deleted = $this->db->deleteSingle($table, $user['id']);
+                    return $this->responder->success($deleted);
                 }
                 return $this->responder->error(ErrorCode::AUTHENTICATION_REQUIRED, '');
             }
@@ -12498,7 +12514,7 @@ namespace Tqdev\PhpCrudApi {
 
     $config = new Config([
         'driver' => 'sqlite',
-        'address' => 'spaces.db',
+        'address' => '../../db/spaces.db',
         'middlewares' => 'cors, dbAuth, authorization',
         'dbAuth.mode' => 'optional',
         'dbAuth.registerUser' => '1',
