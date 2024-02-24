@@ -705,11 +705,11 @@
             <table>
             <tbody>
             <tr>
-                <td>First name:</td>
+                <td>Nome:</td>
                 <td id="profileFirst_name"></td>
             </tr>
             <tr>
-                <td>Last name:</td>
+                <td>Cognome:</td>
                 <td id="profileLast_name"></td>
             </tr>
             <tr>
@@ -721,8 +721,13 @@
             <div class="user-messages">
                 <p>Guarda la <a href="uso.html">guida all'uso</a></p>
             </div>
+
+        <form name="DelUser" class="deluser" action="#">
+          <input type="submit" name="DeleteUser" id="DeleteUser" value="Elimina l'utente">
+        </form>
+
         <form name="logout" action="#">
-            <input type="submit" name="Logout" value="Logout">
+          <input type="submit" name="Logout" value="Logout">
         </form>
         </div>
     </section>    
@@ -766,7 +771,7 @@
     <p>Siamo sulla mappa sociale collaborativa di Alba, dove raccogliamo informazioni sugli spazi albesi che hanno o potrebbero avere importanza per le comunità.</p>
     <p>Puoi <a href="iscrizione.html">iscriverti</a> ed <a href="uso.html">inserire schede</a> degli spazi aiutandoti con le guide o chiedendo aiuto via <a href="mailto:alba@collab.42web.io?subject=richiesta%20supporto%20per%20collab.42web.io">email</a>.</p>
     <p>Sentiti liberə di curiosare, contribuire, discutere: questo dovrebbe essere uno spazio di comunità, seppure virtuale.</p>
-    <p>Sei responsabile per quello che fai, per cui controlla i dati che inserisci e verifica con chi frequenta e opera nello spazio la correttezza dei dati, inoltre è buona norma chiedere il loro consenso prima di pubblicare le informazioni che li riguardano.</p>
+    <p>Sei responsabile per quello che fai, per cui controlla i dati che inserisci e verifica con chi frequenta e opera nello spazio la loro correttezza. Inoltre è buona norma chiedere il loro consenso prima di pubblicare le informazioni che li riguardano.</p>
     <p>Questa mappatura non è completa, è necessario il contributo di tutti! Nel corso della primavera 2024 aggiungeremo interessanti modalità di visualizzazione dei dati raccolti, direttamente sulla mappa.</p>
     <label for="noShow"><input type="checkbox" id="noShow">Non mostrare più questo riquadro.</label>
 </div>
@@ -777,6 +782,7 @@
             <h2>Signup</h2>
             <div class="user-messages">
               <p>Guarda la <a href="uso.html">guida all'uso</a></p>
+              <p><a href="mailto:alba@collab.42web.io?subject=segnalazione%20problema%20del%20sito%20collab.42web.io&body=Mentre%20usavo%20il%20sito%20ho%20riscontrato%20questo%20problema%3A%0A%0A%C3%A8%20successo%20mentre%20stavo...%0A%0Asto%20navigando%20da%3A%20telefono%2Fcomputer%0A%0Acon%20il%20browser%3A%20%0A">Segnala</a> un problema.</p>
             </div>
             <form name="register" action="#">
               <input class="registr" type="text" name="first_name" autocomplete="given-name" placeholder="First name" required>
@@ -786,7 +792,7 @@
               <input class="registr" type="password" name="password" autocomplete="new-password" placeholder="Password" required>
               <div class="checkbox">
                 <input type="checkbox" id="signupCheck" name="terms">
-                <label for="signupCheck">I accept all <a href="terms-and-conditions.php" target="_blank">terms & conditions</a> and <a href="privacy-policy.php" target="_blank">privacy policy</a></label>
+                <label for="signupCheck">Accetto i <a href="terms-and-conditions.php" target="_blank">termini e condizioni</a> e le <a href="privacy-policy.php" target="_blank">politiche sulla privacy</a></label>
               </div>
               <input type="submit" name="submitregistration" value="Signup">
             </form>
