@@ -8515,6 +8515,7 @@ namespace Tqdev\PhpCrudApi\Middleware {
                     $table = $this->reflection->getTable($tableName);
                     // delete user
                     $user = $_SESSION['user'];
+                    //unset($_SESSION['user']);
                     if (session_status() != PHP_SESSION_NONE) {
                         session_destroy();
                     }
