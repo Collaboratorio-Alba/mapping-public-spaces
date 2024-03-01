@@ -64,7 +64,7 @@
                     <br><b>Cura:</b> L'espressione degli individui come soggetti capaci di cura.
                     <br><b>Introspezione:</b> Processi di crescita personale basati sulla consapevolezza di sé, del proprio valore, delle proprie risorse.
                     <br><b>Attivismo:</b> attività civiche, politiche, culturali o sociali che generano un valore o che promuovono il benessere e lo sviluppo delle comunità.
-                    <br><b>Formazione:</b> La trasmissione di conoscenze e abilità. Per esempio lo studio in gruppo e la partecipazione ad attività educative.</span></label>
+                    <br><b>Formazione e memoria:</b> La trasmissione di conoscenze, abilità e della memoria collettiva. Per esempio lo studio in gruppo e la partecipazione ad attività educative.</span></label>
                     <select class="fout form-control ui" name="spazi-vocation" id="spazi-vocation">
                         <option value="nessuna">nessuna</option>
                         <option value="movimento">movimento</option>
@@ -74,7 +74,7 @@
                         <option value="cura">cura</option>
                         <option value="introspezione">introspezione</option>
                         <option value="attivismo">attivismo</option>
-                        <option value="formazione">formazione</option>
+                        <option value="formazione">formazione e memoria</option>
                     </select>
                   </div>
                   <div class="field-select">
