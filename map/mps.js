@@ -285,7 +285,7 @@ function computeEntrances () {
 
 function colorizeMarker (marker) {
   const topic = marker.data.vocation
-  const topics = ['nessuna', 'movimento', 'natura', 'creatività', 'socializzazione', 'cura', 'contemplazione', 'attivismo', 'formazione']
+  const topics = ['nessuna', 'movimento', 'natura', 'creatività', 'socializzazione', 'cura', 'introspezione', 'attivismo', 'formazione']
   const mappingHue = [0, 25, 270, 240, 190, 145, 90, 320, 0]
   const mappingSat = [1, 1.6, 1.4, 1.8, 1.4, 1.1, 1, 1.1, 1.1]
   if (topics.indexOf(topic) === 0) {
@@ -931,17 +931,17 @@ function setOctoMiniature (event, isLabel) {
   document.getElementById('octodescription').innerHTML = octodescriptions[imgName]
 }
 
-const octomappings = { 0: 'physical_activity', 1: 'nature', 2: 'creativity', 3: 'conviviality', 4: 'care', 5: 'contemplation', 6: 'citizenship', 7: 'learning' }
+const octomappings = { 0: 'physical_activity', 1: 'nature', 2: 'creativity', 3: 'conviviality', 4: 'care', 5: 'introspection', 6: 'citizenship', 7: 'learning' }
 
 const octodescriptions = {
   physical_activity: '<b>Movimento:</b> per esempio camminare, fare sport, ballare.',
   nature: "<b>Natura:</b> osservare o interagire con la natura e prendersi cura dell'ambiente.",
-  creativity: "<b>Pensiero critico e creatività:</b> per esempio la creazione o l'espressione artistica, come recitare o fare musica. La crescita di individui come soggetti autonomi e capaci di esprimere il loro pensiero critico.",
-  conviviality: "<b>Socializzazione:</b> per esempio mangiare e bere assieme, feste, riunioni o giocare. L'integrazione degli individui nella società e nella cultura.",
-  care: "<b>Cura:</b> per esempio fare volontariato, fornire assistenza e supporto a persone in situazioni di bisogno. L'espressione degli individui come soggetti capaci di cura.",
-  contemplation: '<b>Contemplazione:</b> per esempio attività come preghiera, meditazione, consapevolezza di sé.',
+  creativity: "<b>Pensiero critico e creatività:</b> La crescita di individui come soggetti autonomi e capaci di esprimere il loro pensiero critico. Per esempio confrontandosi su vari temi, la creazione o l'espressione artistica.",
+  conviviality: "<b>Socializzazione:</b> L'integrazione degli individui nella società e nella cultura.",
+  care: "<b>Cura:</b> L'espressione degli individui come soggetti capaci di cura.",
+  introspection: '<b>Introspezione:</b> Processi di crescita personale basati sulla consapevolezza di sé, del proprio valore, delle proprie risorse.',
   citizenship: '<b>Attivismo:</b> attività civiche, politiche, culturali o sociali che generano un valore o che promuovono il benessere e lo sviluppo delle comunità.',
-  learning: '<b>Formazione:</b> per esempio lo studio in gruppo e la partecipazione ad attività educative. La trasmissione di conoscenze e abilità.'
+  learning: '<b>Formazione:</b> La trasmissione di conoscenze e abilità. Per esempio lo studio in gruppo e la partecipazione ad attività educative.'
 }
 
 function relocateOctosliderLabels (p, index) {

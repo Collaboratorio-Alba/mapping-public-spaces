@@ -49,7 +49,7 @@
               <label for="tab6">&#128247;</label>  
               <!-- Tab 7 -->
               <input type="radio" name="tabset" id="tab7" aria-controls="meta">
-              <label for="tab7">&#128203;</label>          
+              <label for="tab7">&#128203;</label>
               <div class="tab-panels">
                 <section id="funzione" class="tab-panel">
                   <h2>Funzione, caratteristiche</h2>
@@ -59,12 +59,12 @@
                     <br>Nel caso non ci siano attività può comunque essere dotato di strutture tali da favorire una certa vocazione. 
                     <br>Se non è così usare la voce 'nessuna'. <b>Il colore del marcatore sulla mappa cambierà in base a questa selezione.</b>
                     <br><b>Movimento:</b> per esempio camminare, fare sport, ballare.<br><b>Natura:</b> osservare o interagire con la natura e prendersi cura dell'ambiente.
-                    <br><b>Pensiero critico e creatività:</b> per esempio la creazione o l'espressione artistica, come recitare o fare musica. La crescita di individui come soggetti autonomi e capaci di esprimere il loro pensiero critico.
-                    <br><b>Socializzazione:</b> per esempio mangiare e bere assieme, feste, riunioni o giocare. L'integrazione degli individui nella società e nella cultura.
-                    <br><b>Cura:</b> per esempio fare volontariato, fornire assistenza e supporto a persone in situazioni di bisogno. L'espressione degli individui come soggetti capaci di cura.
-                    <br><b>Contemplazione:</b> per esempio attività come preghiera, meditazione, consapevolezza di sé.
+                    <br><b>Pensiero critico e creatività:</b> La crescita di individui come soggetti autonomi e capaci di esprimere il loro pensiero critico. Per esempio confrontandosi su vari temi, la creazione o l'espressione artistica.
+                    <br><b>Socializzazione:</b> L'integrazione degli individui nella società e nella cultura.
+                    <br><b>Cura:</b> L'espressione degli individui come soggetti capaci di cura.
+                    <br><b>Introspezione:</b> Processi di crescita personale basati sulla consapevolezza di sé, del proprio valore, delle proprie risorse.
                     <br><b>Attivismo:</b> attività civiche, politiche, culturali o sociali che generano un valore o che promuovono il benessere e lo sviluppo delle comunità.
-                    <br><b>Formazione:</b> per esempio lo studio in gruppo e la partecipazione ad attività educative. La trasmissione di conoscenze e abilità.</span></label>
+                    <br><b>Formazione:</b> La trasmissione di conoscenze e abilità. Per esempio lo studio in gruppo e la partecipazione ad attività educative.</span></label>
                     <select class="fout form-control ui" name="spazi-vocation" id="spazi-vocation">
                         <option value="nessuna">nessuna</option>
                         <option value="movimento">movimento</option>
@@ -72,7 +72,7 @@
                         <option value="creatività">pensiero critico e creatività</option>
                         <option value="socializzazione">socializzazione</option>
                         <option value="cura">cura</option>
-                        <option value="contemplazione">contemplazione</option>
+                        <option value="introspezione">introspezione</option>
                         <option value="attivismo">attivismo</option>
                         <option value="formazione">formazione</option>
                     </select>
@@ -312,7 +312,7 @@
                         <input type="number" min="-1" max="100" value="0" class="fout form-control ui" id="spazi-attendee_max_age">
                   </div>
                   <!-- distanze -->  
-                  <p class="tooltip">***<span class="tttext">Attenzione: il calcolo si basa su dati che sono ancora in fase di raccolta: attualmente siamo al 37% della costruzione della base di calcolo.</span></p>
+                  <p class="tooltip">***<span class="tttext">Attenzione: il calcolo si basa su dati che sono ancora in fase di raccolta: attualmente siamo al 45% della costruzione della base di calcolo.</span></p>
                   <table class="tg">
                     <thead>
                       <tr>
@@ -433,8 +433,8 @@
                             <input type="range" min="0" max="3" value="0" class="octoslider four_3 ui" id="spazi-conviviality">
                             <label for="spazi-care" class="spazi-meta-label octolabel">cura</label>
                             <input type="range" min="0" max="3" value="0" class="octoslider five_4 ui" id="spazi-care">
-                            <label for="spazi-contemplation" class="spazi-meta-label octolabel">contemplazione</label>
-                            <input type="range" min="0" max="3" value="0" class="octoslider six_5 ui" id="spazi-contemplation">
+                            <label for="spazi-introspection" class="spazi-meta-label octolabel">introspezione</label>
+                            <input type="range" min="0" max="3" value="0" class="octoslider six_5 ui" id="spazi-introspection">
                             <label for="spazi-citizenship" class="spazi-meta-label octolabel">attivismo</label>
                             <input type="range" min="0" max="3" value="0" class="octoslider seven_6 ui" id="spazi-citizenship">
                             <label for="spazi-learning" class="spazi-meta-label octolabel">formazione</label>
