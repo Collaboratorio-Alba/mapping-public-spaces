@@ -4,6 +4,70 @@
 	<title>Public or vacant spaces map</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta  charset="utf-8">
+<?php
+
+// Check if markerID is present in the request
+if (!isset($_GET['markerID'])) {
+    // Default values for the meta tags
+    $defaultTitle = "Mappatura collaborativa di Alba";
+    $defaultDescription = "realizziamo assieme una mappa degli spazi sociali";
+    $defaultUrl = "https://collab.42web.io";
+    $defaultImage = "https://collab.42web.io/logo.jpg";
+
+    // Echo the default meta tags
+    echo '<meta property="og:title" content="' . $defaultTitle . '" />' . PHP_EOL;
+    echo '<meta property="og:description" content="' . $defaultDescription . '" />' . PHP_EOL;
+    echo '<meta property="og:url" content="' . $defaultUrl . '" />' . PHP_EOL;
+    echo '<meta property="og:image" content="' . $defaultImage . '" />' . PHP_EOL;
+
+} else {
+
+// Open SQLite database
+$db = new SQLite3('../database/spaces.db');
+
+// Get the markerID from the URL
+$markerID = $_GET['markerID'];
+
+// Prepare and execute the query to fetch data based on markerID
+$query = $db->prepare('SELECT id,name,description,picture_1 FROM spaces WHERE id = :markerID');
+$query->bindValue(':markerID', $markerID, SQLITE3_INTEGER);
+$result = $query->execute();
+
+// Fetch the row
+$row = $result->fetchArray(SQLITE3_ASSOC);
+
+$miniature_image_path = 'images/places/miniatures/' . basename($row['picture_1']);
+if (!file_exists($miniature_image_path)) {
+    $path_parts = pathinfo($row['picture_1']);
+    // Create the miniature image
+    if ($path_parts['extension'] == 'jpg') {
+        $original_image = imagecreatefromjpeg($row['picture_1']);
+        $miniature_image = imagecreatetruecolor(256, 256);
+        $side = min(imagesx($original_image),imagesy($original_image));
+        imagecopyresampled($miniature_image, $original_image, 0, 0, 0, 0, 256, 256, $side, $side);
+        imagejpeg($miniature_image, $miniature_image_path, 90);
+    } elseif ($path_parts['extension'] == 'png') {
+        $miniature_image = imagecreatetruecolor(256, 256);
+        $original_image = imagecreatefrompng($row['picture_1']);
+        $side = min(imagesx($original_image),imagesy($original_image));
+        imagecopyresampled($miniature_image, $original_image, 0, 0, 0, 0, $new_width, $new_height, $side, $side);
+        imagepng($miniature_image, $$miniature_image_path);
+    }
+    // Free up memory
+    imagedestroy($original_image);
+    imagedestroy($miniature_image);
+}
+
+// Fill the HTML tags with the retrieved data
+echo '<meta property="og:title" content="' . substr($row['name'], 0, 55) . '" />' . PHP_EOL;
+echo '<meta property="og:description" content="' . substr(strip_tags($row['description']), 0, 60)  . '..." />' . PHP_EOL;
+echo '<meta property="og:url" content="https://collab.42web.io/?markerID=' . $row['id'] . '" />' . PHP_EOL;
+echo '<meta property="og:image" content="https://collab.42web.io/' . $miniature_image_path . '" />' . PHP_EOL;
+
+// Close the database connection
+$db->close();
+}
+?>
     <link rel="icon" href="favicon.png">
     <script src="map/alg.js"></script>
     <link rel="stylesheet" type="text/css" href="vendor/leaflet.css">
@@ -304,15 +368,14 @@
                         <input type="number" min="-1" max="30000" value="0" class="fout form-control ui" id="spazi-attendees_yearly">
                   </div> 
                   <div class="field-select">
-                        <label for="spazi-attendee_min_age" class="spazi-meta-label tooltip">età minima tipica per i frequentatori: <span class="tttext">Esistono condizioni che restringono l'età minima tipica di chi frequenta lo spazio? Nel caso non ci sia età minima lasciare vuoto</span></label>
+                        <label for="spazi-attendee_min_age" class="spazi-meta-label tooltip">età minima per i frequentatori: <span class="tttext">Esistono condizioni che restringono l'età minima tipica di chi frequenta lo spazio? Nel caso non ci sia età minima lasciare vuoto</span></label>
                         <input type="number" min="-1" value="0" class="fout form-control ui" id="spazi-attendee_min_age">
                   </div>
                   <div class="field-select">
-                        <label for="spazi-attendee_max_age" class="spazi-meta-label tooltip">età massima tipica per i frequentatori: <span class="tttext">Esistono condizioni che restringono l'età massima tipica di chi frequenta lo spazio? Nel caso non ci sia età massima lasciare vuoto</span></label>
+                        <label for="spazi-attendee_max_age" class="spazi-meta-label tooltip">età massima per i frequentatori: <span class="tttext">Esistono condizioni che restringono l'età massima tipica di chi frequenta lo spazio? Nel caso non ci sia età massima lasciare vuoto</span></label>
                         <input type="number" min="-1" max="100" value="0" class="fout form-control ui" id="spazi-attendee_max_age">
                   </div>
                   <!-- distanze -->  
-                  <p class="tooltip">***<span class="tttext">Attenzione: il calcolo si basa su dati che sono ancora in fase di raccolta: attualmente siamo al 45% della costruzione della base di calcolo.</span></p>
                   <table class="tg">
                     <thead>
                       <tr>
@@ -690,6 +753,10 @@
                         <p><a id="spazi-linkOSM" href="#" target="_blank">Apri su Openstreetmap</a></p>
                         <p><a id="spazi-linkURI" href="#" target="_blank">Dati in formato JSON</a></p>
                         <p><a id="spazi-linkPDF" href="#" target="_blank">Dati in formato PDF</a></p>
+                    </div>
+                    <div class="spazi-meta form-group">
+                        <h2>Condividi</h2>
+                        <p><a id="spazi-condividiLink" href="#" target="_blank">Link a questa scheda</a></p>
                     </div>
                 </div>
                 </section>

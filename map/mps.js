@@ -4,6 +4,7 @@
 
 const apiUrl = 'https://collab.42web.io/api/api.php'
 const houseNumbersUrl = 'https://collab.42web.io/tiles/t'
+const populationDensityUrl = '/tiles/d'
 const mapCenter = [44.6798, 8.0362]
 const waysDataFile = '/data/nodes.json'
 const waysDataNtts = {}
@@ -15,6 +16,7 @@ let activeMarker
 let activeEntrance
 let editorP
 let houseNumbersLayer
+let overlayPopulationLayer
 let entranceMarker
 const pedonalDistance15 = 1000 // @ 4km/h , t=15min. Distance of a 15 minute walk
 const pedonalDistance10 = parseInt(pedonalDistance15 * 2 / 3)
@@ -24,7 +26,7 @@ const pedonalDistance5 = parseInt(pedonalDistance15 / 3)
 // 'Access-Control-Allow-Methods':'GET, POST, PUT, DELETE, PATCH, OPTIONS',
 // 'Access-Control-Allow-Headers':'Origin, X-Requested-With, Content, Accept, Content-Type, Authorization'}};
 // limits of colored map computation
-// const boundingRect = L.latLngBounds(L.latLng(44.6437000,7.9709000), L.latLng(44.7370000,8.0593000));
+const boundingRect = L.latLngBounds(L.latLng(44.6437000,7.9709000), L.latLng(44.7370000,8.0593000));
 
 /**
  * Represents a JavaScript CRUD API client for performing CRUD operations on a specific API endpoint.
@@ -60,6 +62,7 @@ window.onload = (event) => {
         )
       }
       todoOnload()
+      setTimeout( todoAfterLoad, 2000)
     }).catch(
       error => console.log(error)
     )
@@ -71,17 +74,25 @@ function initMap () {
     maxZoom: 19,
     attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, <a href="https://collab.42web.io/terms-and-conditions.php">Collaboratorio Alba</a>, <a href="https://github.com/Collaboratorio-Alba/mapping-public-spaces"><img class="githubLogo" src="images/github-mark.svg" alt="Github repository"/></a>'
   }).addTo(mpsMap)
+  
+  // Define the overlay tile layer
+  overlayPopulationLayer = L.tileLayer(populationDensityUrl + '/{z}/{x}/{y}.png', {
+    minZoom: 12,
+    maxZoom: 17
+  });
 
   // house_numbers layer
   houseNumbersLayer = L.tileLayer(houseNumbersUrl + '/{z}/{y}/{x}', {
     minZoom: 19,
     maxZoom: 19
   })
-
+  mpsMap.setMaxBounds(boundingRect)
+  mpsMap.setMinZoom(12)
   mpsMap.on('click', mapClick)
   mpsMap.addLayer(markers)
   mpsMap.addLayer(houses)
   mpsMap.addLayer(nears)
+  mpsMap.addLayer(overlayPopulationLayer)
   loadSpaces()
   mpsMap.on('click', allToBackground)
   L.control.scale().addTo(mpsMap)
@@ -102,6 +113,14 @@ function initMap () {
   filterButtonElement.id = 'filter'
   L.DomEvent.disableClickPropagation(filterButtonElement)
   L.DomEvent.on(filterButtonElement, 'click', filterButtonClick)
+  // Create the toggle population density button
+  const densityButtonElement = L.DomUtil.create('a', 'leaflet-control-filter-button', container)
+  densityButtonElement.setAttribute('href', '#')
+  densityButtonElement.title = 'Popolazione'
+  densityButtonElement.innerHTML = '\u{1F465}'
+  densityButtonElement.id = 'filter'
+  L.DomEvent.disableClickPropagation(densityButtonElement)
+  L.DomEvent.on(densityButtonElement, 'click', togglePopulationOverlay)
   // Create the entrances button
   const entrancesButtonElement = L.DomUtil.create('a', 'leaflet-control-entrances-button', container)
   entrancesButtonElement.setAttribute('href', '#')
@@ -135,6 +154,18 @@ function initMap () {
     }
   })
   // Add this leaflet control
+  const DensityControl = L.Control.extend({
+    options: {
+      position: 'topright'
+    },
+
+    onAdd: function () {
+      const container = L.DomUtil.create('div')
+      container.appendChild(densityButtonElement)
+      return container
+    }
+  })
+  // Add this leaflet control
   const EntrancesControl = L.Control.extend({
     options: {
       position: 'topright'
@@ -148,6 +179,7 @@ function initMap () {
   })
   mpsMap.addControl(new UserControl())
   mpsMap.addControl(new FilterControl())
+  mpsMap.addControl(new DensityControl())
   mpsMap.addControl(new EntrancesControl())
   // if(L.Browser.mobile) {
   // } else {
@@ -685,6 +717,17 @@ function unsetMe () {
   document.getElementById('entrances').parentElement.style.display = 'none'
 }
 
+// Function to toggle the display of the overlay tile layer
+function togglePopulationOverlay() {
+    if (mpsMap.hasLayer(overlayPopulationLayer)) {
+        // If the layer is currently added to the map, remove it
+        overlayPopulationLayer.removeFrom(mpsMap);
+    } else {
+        // If the layer is not added to the map, add it
+        overlayPopulationLayer.addTo(mpsMap);
+    }
+}
+
 function fillEntranceFields (data) {
   for (const [key, value] of Object.entries(data)) {
     if (document.getElementById('entrances-' + key)) {
@@ -749,6 +792,8 @@ function fillPlaceFields (data) {
   document.getElementById('spazi-linkPP').setAttribute('href', linkPP)
   const linkPDF = 'ptopdf.php?id=' + data.id
   document.getElementById('spazi-linkPDF').setAttribute('href', linkPDF)
+  const linkCondividi = 'https://' + window.location.hostname + '?markerID=' + data.id + '#'
+  document.getElementById('spazi-condividiLink').setAttribute('href', linkCondividi)
   redrawOctosliderCanvas()
 }
 
@@ -1007,6 +1052,30 @@ function showAlertDeleteUser()
   }
 
 
+function todoAfterLoad () {
+  const urlParams = new URLSearchParams(window.location.search);
+  const mID = parseInt(urlParams.get('markerID'))
+   
+  if (mID) {
+    var allMarkers = markers.getLayers();
+    const markerFromURL =  allMarkers.find(function(marker) {
+    return marker.data && marker.data.id === mID;
+});
+    // focus on the marker passed to URL parameters
+    markers.zoomToShowLayer(markerFromURL, function () {
+      markerFromURL.fire('click');
+      document.getElementsByClassName('tab-panels')[0].style.height = '60vh';
+      const mapHeight = mpsMap.getSize().y;
+      const vOff = mapHeight * 0.3;
+      mpsMap.panBy([0,vOff]);
+      //const linkCondividi = 'https://' + window.location.hostname + '?markerID=' + markerFromURL.data.id + '#'
+      //document.querySelector('meta[property="og:title"]').setAttribute('content', markerFromURL.data.name)
+      //document.querySelector('meta[property="og:url"]').setAttribute('content', linkCondividi)
+
+    });
+  }  
+}
+
 // initialize events in window.onload
 function todoOnload () {
   const wrapper = document.querySelector('.wrapper')
@@ -1231,4 +1300,5 @@ function todoOnload () {
   })
 
   initMap()
+  
 }
