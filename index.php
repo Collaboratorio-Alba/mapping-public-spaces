@@ -4,6 +4,130 @@
 	<title>Public or vacant spaces map</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta  charset="utf-8">
+<?php
+// Check if markerID is present in the request
+if (!isset($_GET["markerID"])) {
+    // Default values for the meta tags
+    $defaultTitle = "Mappatura collaborativa di Alba";
+    $defaultDescription = "realizziamo assieme una mappa degli spazi sociali";
+    $defaultUrl = "https://collab.42web.io";
+    $defaultImage = "https://collab.42web.io/logo.jpg";
+
+    // Echo the default meta tags
+    echo '<meta property="og:title" content="' .
+        $defaultTitle .
+        '" />' .
+        PHP_EOL;
+    echo '<meta property="og:description" content="' .
+        $defaultDescription .
+        '" />' .
+        PHP_EOL;
+    echo '<meta property="og:url" content="' . $defaultUrl . '" />' . PHP_EOL;
+    echo '<meta property="og:image" content="' .
+        $defaultImage .
+        '" />' .
+        PHP_EOL;
+} else {
+    // Open SQLite database
+    $db = new SQLite3("../database/spaces.db");
+
+    // Get the markerID from the URL
+    $markerID = (int) $_GET["markerID"];
+
+    // Prepare and execute the query to fetch data based on markerID
+    $query = $db->prepare(
+        "SELECT id,name,description,picture_1 FROM spaces WHERE id = :markerID"
+    );
+    $query->bindValue(":markerID", $markerID, SQLITE3_INTEGER);
+    $result = $query->execute();
+
+    // Fetch the row
+    $row = $result->fetchArray(SQLITE3_ASSOC);
+
+    $allowed = ["jpg", "png"];
+    $default_image = "images/default.jpg";
+    $ext = strtolower(pathinfo($row["picture_1"], PATHINFO_EXTENSION));
+
+    if (in_array($ext, $allowed)) {
+        $miniature_image_path =
+            "images/places/miniatures/" . basename($row["picture_1"]);
+    } else {
+        $miniature_image_path = $default_image;
+    }
+
+    if (!file_exists($miniature_image_path)) {
+        $path_parts = pathinfo($row["picture_1"]);
+        // Create the miniature image
+        if ($path_parts["extension"] == "jpg") {
+            $original_image = imagecreatefromjpeg($row["picture_1"]);
+            $miniature_image = imagecreatetruecolor(256, 256);
+            $side = min(imagesx($original_image), imagesy($original_image));
+            imagecopyresampled(
+                $miniature_image,
+                $original_image,
+                0,
+                0,
+                0,
+                0,
+                256,
+                256,
+                $side,
+                $side
+            );
+            imagejpeg($miniature_image, $miniature_image_path, 90);
+        } elseif ($path_parts["extension"] == "png") {
+            $miniature_image = imagecreatetruecolor(256, 256);
+            $original_image = imagecreatefrompng($row["picture_1"]);
+            $side = min(imagesx($original_image), imagesy($original_image));
+            imagecopyresampled(
+                $miniature_image,
+                $original_image,
+                0,
+                0,
+                0,
+                0,
+                $new_width,
+                $new_height,
+                $side,
+                $side
+            );
+            imagepng($miniature_image, $miniature_image_path);
+        }
+        // Free up memory
+        imagedestroy($original_image);
+        imagedestroy($miniature_image);
+    }
+
+    // Fill the HTML tags with the retrieved data
+    echo '<meta property="og:title" content="' .
+        htmlspecialchars(substr($row["name"], 0, 55), ENT_QUOTES) .
+        '" />' .
+        PHP_EOL;
+    echo '<meta property="og:description" content="' .
+        htmlspecialchars(
+            substr(strip_tags($row["description"]), 0, 80),
+            ENT_QUOTES
+        ) .
+        '..." />' .
+        PHP_EOL;
+
+    $clean_id = (int) $row["id"];
+    $image_url = file_exists($miniature_image_path)
+        ? rawurlencode($miniature_image_path)
+        : "images/places/default.jpg";
+
+    echo '<meta property="og:url" content="https://collab.42web.io/?markerID=' .
+        $clean_id .
+        '" />' .
+        PHP_EOL;
+    echo '<meta property="og:image" content="https://collab.42web.io/' .
+        htmlspecialchars($image_url, ENT_QUOTES) .
+        '" />' .
+        PHP_EOL;
+
+    // Close the database connection
+    $db->close();
+} ?>
     <link rel="icon" href="favicon.png">
     <script src="map/alg.js"></script>
     <link rel="stylesheet" type="text/css" href="vendor/leaflet.css">
@@ -27,7 +151,7 @@
         <div class="profile" id="mpsPlace">
             <div id="collapse" class="dropdown-content">&#9776;</div>
             <input type="text" class="fout form-control ui" name="spazi-name" id="spazi-name">
-            
+
             <div class="tabset">
               <!-- Tab 1 -->
               <input type="radio" name="tabset" id="tab1" aria-controls="funzione" checked>
@@ -43,10 +167,10 @@
               <label for="tab4">&#164;</label>
               <!-- Tab 5 -->
               <input type="radio" name="tabset" id="tab5" aria-controls="colloqui">
-              <label for="tab5">&#8264;</label>  
+              <label for="tab5">&#8264;</label>
               <!-- Tab 6 -->
               <input type="radio" name="tabset" id="tab6" aria-controls="foto">
-              <label for="tab6">&#128247;</label>  
+              <label for="tab6">&#128247;</label>
               <!-- Tab 7 -->
               <input type="radio" name="tabset" id="tab7" aria-controls="meta">
               <label for="tab7">&#128203;</label>
@@ -55,8 +179,8 @@
                   <h2>Funzione, caratteristiche</h2>
                   <!-- tipo sottotipo -->
                   <div class="field-select">
-                    <label for="spazi-vocation" class="spazi-meta-label tooltip">vocazione del luogo:<span class="tttext">Qual'è la principale ragione d'essere dello spazio, nel caso sia organizzato e ospiti attività. 
-                    <br>Nel caso non ci siano attività può comunque essere dotato di strutture tali da favorire una certa vocazione. 
+                    <label for="spazi-vocation" class="spazi-meta-label tooltip">vocazione del luogo:<span class="tttext">Qual'è la principale ragione d'essere dello spazio, nel caso sia organizzato e ospiti attività.
+                    <br>Nel caso non ci siano attività può comunque essere dotato di strutture tali da favorire una certa vocazione.
                     <br>Se non è così usare la voce 'nessuna'. <b>Il colore del marcatore sulla mappa cambierà in base a questa selezione.</b>
                     <br><b>Movimento:</b> per esempio camminare, fare sport, ballare.<br><b>Natura:</b> osservare o interagire con la natura e prendersi cura dell'ambiente.
                     <br><b>Pensiero critico e creatività:</b> La crescita di individui come soggetti autonomi e capaci di esprimere il loro pensiero critico. Per esempio confrontandosi su vari temi, la creazione o l'espressione artistica.
@@ -109,40 +233,40 @@
                       <legend class="tooltip">risorse:<span class="tttext">Risorse presenti, anche se non utilizzate/utilizzabili dai frequentatori</span></legend>
                         <span><input type="checkbox" class="resources ui" name="locali_interni" id="locali_interni" value="locali_interni">
                         <label for="locali_interni">locali interni</label></span>
-                        
+
                         <span><input type="checkbox" class="resources ui" name="spazi_esterni" id="spazi_esterni" value="spazi_esterni">
                         <label for="spazi_esterni" class="tooltip">spazi esterni pedonali<span class="tttext">intesi come spazi esenti da traffico veicolare</span></label></span>
-                        
+
                         <span><input type="checkbox" class="resources ui" name="esterni_illuminati" id="esterni_illuminati" value="esterni_illuminati">
                         <label for="esterni_illuminati">spazi esterni illuminati</label></span>
-                        
+
                         <span><input type="checkbox" class="resources ui" name="esterni_coperti" id="esterni_coperti" value="esterni_coperti">
                         <label for="esterni_coperti">spazi esterni coperti</label></span>
-                        
+
                         <span><input type="checkbox" class="resources ui" name="soglia_impalpabile" id="soglia_impalpabile" value="soglia_impalpabile">
                         <label for="soglia_impalpabile" class="tooltip">soglia "debole"<span class="tttext">Sono presenti condizioni architettoniche per le quali è in qualche misura impercettibile il passaggio tra dentro e fuori, condizione che abbassa le resistenze all'entrare in esso (esempio: mercato, parco pubblico privo di recinzioni).</span></label></span>
-                        
+
                         <span><input type="checkbox" class="resources ui" name="sedute_comunitarie" id="sedute_comunitarie" value="sedute_comunitarie">
                         <label for="sedute_comunitarie" class="tooltip">spazi per sedersi socializzanti<span class="tttext">Per esempio tavolate uniche o gradinate dove potenziali sconosciuti possono trovarsi vicino.</span></label></span>
-                        
+
                         <span><input type="checkbox" class="resources ui" name="verde" id="verde" value="verde">
                         <label for="verde">spazi nel verde</label></span>
-                        
+
                         <span><input type="checkbox" class="resources ui" name="orti" id="orti" value="orti">
                         <label for="orti">orti</label></span>
-                        
+
                         <span><input type="checkbox" class="resources ui" name="calcetto_pingpong" id="calcetto_pingpong" value="calcetto_pingpong">
                         <label for="calcetto_pingpong">calciobalilla pingpong</label></span>
-                        
+
                         <span><input type="checkbox" class="resources ui" name="area_gioco" id="area_gioco" value="area_gioco">
                         <label for="area_gioco">area gioco bimbi</label></span>
-                        
+
                         <span><input type="checkbox" class="resources ui" name="campo_sportivo" id="campo_sportivo" value="campo_sportivo">
                         <label for="campo_sportivo">campo sportivo</label></span>
-                        
+
                         <span><input type="checkbox" class="resources ui" name="spogliatoi" id="spogliatoi" value="spogliatoi">
                         <label for="spogliatoi">spogliatoi/docce</label></span>
-                        
+
                         <span><input type="checkbox" class="resources ui" name="palestra" id="palestra" value="palestra">
                         <label for="palestra">palestra</label></span>
 
@@ -220,7 +344,7 @@
 
                         <span><input type="checkbox" class="resources ui" name="appartamento" id="appartamento" value="appartamento">
                         <label for="appartamento">appartamento</label></span>
-                        
+
                         <div class="spazi-meta form-group">
                             <label for="spazi-other_resources" class="spazi-meta-label">altro: </label>
                             <input type="text" class="fout form-control ui" name="spazi-other_resources" id="spazi-other_resources">
@@ -240,7 +364,7 @@
                         <option value="ottime">ottime</option>
                     </select>
                   </div>
-  
+
               </section>
                 <section id="uso" class="tab-panel">
                   <h2>Uso, storia, prospettive</h2>
@@ -298,21 +422,20 @@
                   </div>
                   <label for="spazi-accessibility" class="spazi-meta-label">considerazioni</label>
                   <textarea rows="8" cols="38" class="fout form-control ui" name="spazi-accessibility" id="spazi-accessibility"></textarea>
-                  <!-- frequentatori --> 
+                  <!-- frequentatori -->
                   <div class="field-select">
                         <label for="spazi-attendees_yearly" class="spazi-meta-label tooltip">frequentatori abituali giornalieri: <span class="tttext">Quanti frequentatori accedono allo spazio, in un giorno in cui è aperto? Non considerare picchi eccezionali di affluenza: determinare un valore medio su base annua per i giorni di apertura. Nel caso non si sappia, lasciare vuoto</span></label>
                         <input type="number" min="-1" max="30000" value="0" class="fout form-control ui" id="spazi-attendees_yearly">
-                  </div> 
+                  </div>
                   <div class="field-select">
-                        <label for="spazi-attendee_min_age" class="spazi-meta-label tooltip">età minima tipica per i frequentatori: <span class="tttext">Esistono condizioni che restringono l'età minima tipica di chi frequenta lo spazio? Nel caso non ci sia età minima lasciare vuoto</span></label>
+                        <label for="spazi-attendee_min_age" class="spazi-meta-label tooltip">età minima per i frequentatori: <span class="tttext">Esistono condizioni che restringono l'età minima tipica di chi frequenta lo spazio? Nel caso non ci sia età minima lasciare vuoto</span></label>
                         <input type="number" min="-1" value="0" class="fout form-control ui" id="spazi-attendee_min_age">
                   </div>
                   <div class="field-select">
-                        <label for="spazi-attendee_max_age" class="spazi-meta-label tooltip">età massima tipica per i frequentatori: <span class="tttext">Esistono condizioni che restringono l'età massima tipica di chi frequenta lo spazio? Nel caso non ci sia età massima lasciare vuoto</span></label>
+                        <label for="spazi-attendee_max_age" class="spazi-meta-label tooltip">età massima per i frequentatori: <span class="tttext">Esistono condizioni che restringono l'età massima tipica di chi frequenta lo spazio? Nel caso non ci sia età massima lasciare vuoto</span></label>
                         <input type="number" min="-1" max="100" value="0" class="fout form-control ui" id="spazi-attendee_max_age">
                   </div>
-                  <!-- distanze -->  
-                  <p class="tooltip">***<span class="tttext">Attenzione: il calcolo si basa su dati che sono ancora in fase di raccolta: attualmente siamo al 45% della costruzione della base di calcolo.</span></p>
+                  <!-- distanze -->
                   <table class="tg">
                     <thead>
                       <tr>
@@ -420,7 +543,7 @@
                   <div class="field-select">
                         <label for="spazi-collected_surveys" class="spazi-meta-label">Numero di questionari raccolti:
                         <input type="number" min="0" value="0" class="fout form-control ui" id="spazi-collected_surveys"></label>
-                  </div> 
+                  </div>
                     <figure class="slidercontainer">
                         <div class="octowrapper" id="octoslider">
                             <label for="spazi-physical_activity" class="spazi-meta-label octolabel">movimento</label>
@@ -507,7 +630,7 @@
                   </div>
                   <label for="spazi-participation" class="spazi-meta-label">osservazioni</label>
                   <textarea rows="8" cols="38" class="fout form-control ui" name="spazi-participation" id="spazi-participation"></textarea>
-                  
+
                   <!--
                     partecipazione nella proprietà
                   -->
@@ -581,7 +704,7 @@
                   <div class="spazi-meta form-group">
                         <p><a id="spazi-linkPP" href="#" target="_blank">Partecipa con la comunità per ridefinire l'uso di questo spazio!</a></p>
                   </div>
-                  
+
                   <h3>Discussione</h3>
                   <p>In merito a schedatura, questionari, interviste su questo spazio.</p>
                   <form name="posta">
@@ -691,12 +814,16 @@
                         <p><a id="spazi-linkURI" href="#" target="_blank">Dati in formato JSON</a></p>
                         <p><a id="spazi-linkPDF" href="#" target="_blank">Dati in formato PDF</a></p>
                     </div>
+                    <div class="spazi-meta form-group">
+                        <h2>Condividi</h2>
+                        <p>Tocca qui per copiare il <a id="spazi-condividiLink" href="#" target="_blank">Link a questa scheda &#128203;</a></p>
+                    </div>
                 </div>
                 </section>
               </div>
             </div>
         </div>
-    </div>    
+    </div>
 </div>
 <div id="cnvUserBox">
     <section class="wrapperUser">
@@ -730,7 +857,7 @@
           <input type="submit" name="Logout" value="Logout">
         </form>
         </div>
-    </section>    
+    </section>
 </div>
 <!-- entrances -->
 <div id="cnvEntrancesBox">
@@ -764,7 +891,7 @@
               <input type="submit" name="Entrances" value="Invia">
             </div>
           </form>
-        </div>    
+        </div>
 </div>
 <div id="popupWelcomeBox" class="popup">
     <span class="close" onclick="closePopup()">&times;</span>
@@ -798,13 +925,13 @@
             </form>
             <div class="registerMessage"><p id="registerMessage"></p></div>
           </div>
-    
+
           <div class="form login">
             <h2>Login</h2>
             <form name="access" action="#">
               <input type="text" id="loginUsername" name="username" autocomplete="username" placeholder="Username" required>
               <input type="password" id="loginPassword" name="password" autocomplete="current-password" placeholder="Password" required>
-              
+
               <input type="submit" name="Login" value="Login">
             </form>
             <div class="loginMessage"><p id="loginMessage"></p></div>
